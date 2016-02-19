@@ -12,6 +12,7 @@
 # License: GPL-3
 #------------------------------------------------------------------------------#
 
+# makes an index and  calculates the product of all options
 getComboQty <- function(register, verbose=TRUE)
 {
     # if(class(register) != "data.frame") stop ("Argument 'register' must be of 'data.frame' class.")
@@ -53,6 +54,46 @@ getComboQty <- function(register, verbose=TRUE)
     accum
     args_qty <- length(r)
     out <- list(total_qty=accum,idx=result, args_qty=args_qty)
+}
+
+
+# rename to prepareTestParamIds
+# (returns environment with test combos of args (their ids within the register))
+getTestParamIds <- function(register, verbose=FALSE, DEBUG=FALSE)
+{
+    # create a container
+    # with meta data explicitly stated:
+    # capacity (number of possible records)
+    # next available slot within the matrix
+
+    e <- new.env() # storage.env
+    # size <- getComboQty(register=idx, verbose=TRUE)
+    # size <- getComboQty(register=zz$idx, verbose=TRUE)
+    combos <- getComboQty(register=register, verbose=FALSE)
+    combos$args_qty
+    combos$total_qty
+
+    # reserve memory
+    e$container_test_args <- matrix(nrow=combos$total_qty, ncol = combos$args_qty)
+    e$container_test_results <- vector( length = combos$total_qty, mode = "character")
+
+    e$result_slot_next=1
+    e$result_slot_max=combos$total_qty
+
+    str(e$container_test_args)
+    str(e$container_test_results)
+    e$result_slot_next
+    e$result_slot_max
+
+    get_leafs(idx=zz$idx,storage.env = e)
+    if(!is.null(e$result_slot_next)) stop ("not all test combos have been generated.")
+
+    message("------------------------------")
+    message("Result: SUCCESS.")
+    message("Returning test combinations of arguments within an environment")
+    message("------------------------------")
+    print(ls(envir = e))
+    e
 }
 
 
@@ -113,47 +154,8 @@ store_test_set <- function(env=stop("storage environment must be provided"),
     if(e$result_slot_next>e$result_slot_max) { e$result_slot_next <- NULL }
 }
 
-# rename to prepareTestParamIds
-# (returns environment with test combos of args (their ids within the register))
-getTestParamIds <- function(register, verbose=FALSE, DEBUG=FALSE)
-{
-    # create a container
-    # with meta data explicitly stated:
-    # capacity (number of possible records)
-    # next available slot within the matrix
 
-    e <- new.env() # storage.env
-    # size <- getComboQty(register=idx, verbose=TRUE)
-    # size <- getComboQty(register=zz$idx, verbose=TRUE)
-    combos <- getComboQty(register=register, verbose=FALSE)
-    combos$args_qty
-    combos$total_qty
-
-    # reserve memory
-    e$container_test_args <- matrix(nrow=combos$total_qty, ncol = combos$args_qty)
-    e$container_test_results <- vector( length = combos$total_qty, mode = "character")
-
-    e$result_slot_next=1
-    e$result_slot_max=combos$total_qty
-
-    str(e$container_test_args)
-    str(e$container_test_results)
-    e$result_slot_next
-    e$result_slot_max
-
-    get_leafs(idx=zz$idx,storage.env = e)
-    if(!is.null(e$result_slot_next)) stop ("not all test combos have been generated.")
-
-    message("------------------------------")
-    message("Result: SUCCESS.")
-    message("Returning test combinations of arguments within an environment")
-    message("------------------------------")
-    print(ls(envir = e))
-    e
-}
-
-
-
+# prepare a single combination of arguments
 prepareArgs <- function(arg_register, arg_selection_vector, verbose=FALSE)
 {
     # switch to more convenient (to me) internal variables
@@ -236,7 +238,7 @@ prepareArgs <- function(arg_register, arg_selection_vector, verbose=FALSE)
 }
 
 
-
+# the actual testing function (handles FUN and args) and catches exceptions
 errorHandlingTest <- function(FUN,args)
 {
     rc <- try(do.call(what = FUN,args=args))
@@ -250,13 +252,14 @@ errorHandlingTest <- function(FUN,args)
 
 
 # TODO: bring out the environment out to be able to save it easily
-crashTest <- function(arg_register, FUN)#, test_set_container)
+# crashTest <- function(env,arg_register, FUN, verbose=FALSE)#, test_set_container)
+crashTest <- function(env, FUN, verbose=FALSE)#, test_set_container)
 {
 
-    r=arg_register
-    
-    cont.env <- getTestParamIds(register = r)
-    ls(envir = cont.env)
+    # r=arg_register
+    # 
+    # cont.env <- getTestParamIds(register = r)
+    # ls(envir = cont.env)
     cont.env$container_test_args
     
     # arg_ids.vct <- cont.env$container_test_args[10000,]
@@ -283,72 +286,8 @@ crashTest <- function(arg_register, FUN)#, test_set_container)
 
 
 #------------------------------------------------------------------------------#
-
-# TESTS:
-if(0) {
-
-
-    # get_next_branch(zz$idx, branch_id=1,accum_leafs=c(0))
-
-    getArg(zz$idx,10)
-
-    zz$idx[10,"qty"]
-
-    # for(i in 1:)
-
-    #
-    args <- list(1,2,3,NULL)
-    args
-    args[[1]] <- NULL
-
-
-    args
-    args[['test']]=TRUE
-    args
-    args[['test']] <- NULL # remove from the list
-    args[['test']] = NULL # remove from the list
-    args
-    args
-
-    args$invert=TRUE
-    args
-}
-
-# do.call() reference:
-if(0) {
-    # If quote is FALSE, the default, then the arguments are evaluated (in the
-    # calling environment, not in envir). If quote is TRUE then each argument is
-    # quoted (see quote) so that the effect of argument evaluation is to remove the
-    # quotes – leaving the original arguments unevaluated when the call is
-    # constructed.
-
-    do.call()
-
-    do.call
-    function (what, args, quote = FALSE, envir = parent.frame())
-    {
-        if (!is.list(args))
-            stop("second argument must be a list")
-        if (quote)
-            args <- lapply(args, enquote)
-        .Internal(do.call(what, args, envir))
-    }
-
-}
-
-# TESTS: get_leafs
-if(0) {
-    test_idx <- get_next_branch(zz$idx, branch_id=1, accum_leafs=c())#, DEBUG=TRUE)
-    get_next_branch(zz$idx, branch_id=8)#, DEBUG=TRUE)
-    get_next_branch(zz$idx)
-    get_next_branch(zz$idx, branch_id=11, accum_leafs=c())#, DEBUG=TRUE)
-    get_next_branch(zz$idx, branch_id=11, accum_leafs=c(), DEBUG=TRUE)
-}
-
-#------------------------------------------------------------------------------#
 if(0) { # the main test
 
-    
     if(0) {
         ## Title: Error tests for ES()
         ## Description: tests ES() for producing errors based on all possible combinations of options
@@ -376,9 +315,6 @@ if(0) { # the main test
         
     }
     
-    
-    
-    
     ## set up test for a function
     
     # arguments:
@@ -397,26 +333,14 @@ if(0) { # the main test
     r$invert           = list( "TRUE", "FALSE", "__MISSING__" )
     r$operational      = list( "TRUE", "FALSE", "__MISSING__" )
     
-    str(r)
-    length(r)
-    r
-    
-    unlist(r$p[1]  )
+    # str(r)
+    # length(r)
+    # r
+    # 
+    # unlist(r$p[1]  )
+    # names(r[1])
     
 
-    if(0) {
-        zz <- getComboQty(r)
-        str(zz)
-        names(r[1])
-        
-        zz
-        
-    }
-    
-    
-    
-    
-        
     require(PerformanceAnalytics)
     # 1. create register of possible options (values/missing) for each argument
     # 
@@ -424,15 +348,88 @@ if(0) { # the main test
     # zz <- getComboQty(r)
     zz <- getComboQty(r) # creates an index
     
-    # 3. create a container for the combos & results
-    #    
-    # 4. performTesting
-    crashTest(arg_register = r,FUN=ES  )
+    # 3. create a container for the combos & results & fill it & provide a ref.
+    cont.env <- getTestParamIds(register = r)
+    ls(envir = cont.env)
+
+        # 4. performTesting
+    crashTest(env=cont.env, FUN=ES)
     
     
     results <- .Last.value
-    save(list="results", file = "ES_test1-20160220-0118.RData")
+    save(list="results", file = "ES_test1-20160220-0208.RData")
     getwd()
     
 }
+
+
+#------------------------------------------------------------------------------#
+
+# TESTS:
+if(0) {
+    
+    
+    # get_next_branch(zz$idx, branch_id=1,accum_leafs=c(0))
+    
+    getArg(zz$idx,10)
+    
+    zz$idx[10,"qty"]
+    
+    # for(i in 1:)
+    
+    #
+    args <- list(1,2,3,NULL)
+    args
+    args[[1]] <- NULL
+    
+    
+    args
+    args[['test']]=TRUE
+    args
+    args[['test']] <- NULL # remove from the list
+    args[['test']] = NULL # remove from the list
+    args
+    args
+    
+    args$invert=TRUE
+    args
+}
+
+# do.call() reference:
+if(0) {
+    # If quote is FALSE, the default, then the arguments are evaluated (in the
+    # calling environment, not in envir). If quote is TRUE then each argument is
+    # quoted (see quote) so that the effect of argument evaluation is to remove the
+    # quotes – leaving the original arguments unevaluated when the call is
+    # constructed.
+    
+    do.call()
+    
+    do.call
+    function (what, args, quote = FALSE, envir = parent.frame())
+    {
+        if (!is.list(args))
+            stop("second argument must be a list")
+        if (quote)
+            args <- lapply(args, enquote)
+        .Internal(do.call(what, args, envir))
+    }
+    
+}
+
+# TESTS: get_leafs
+if(0) {
+    test_idx <- get_next_branch(zz$idx, branch_id=1, accum_leafs=c())#, DEBUG=TRUE)
+    get_next_branch(zz$idx, branch_id=8)#, DEBUG=TRUE)
+    get_next_branch(zz$idx)
+    get_next_branch(zz$idx, branch_id=11, accum_leafs=c())#, DEBUG=TRUE)
+    get_next_branch(zz$idx, branch_id=11, accum_leafs=c(), DEBUG=TRUE)
+}
+
+#------------------------------------------------------------------------------#
+
+
+
+
+
 
