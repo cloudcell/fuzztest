@@ -58,7 +58,8 @@ getComboQty <- function(register, verbose=TRUE)
 }
 
 
-# rename to prepareTestParamIds
+# TODO: rename to prepareTestParamIds
+# or "setupTestContainer"
 # (returns environment with test combos of args (their ids within the register))
 getTestParamIds <- function(register, verbose=FALSE, DEBUG=FALSE)
 {
@@ -345,15 +346,16 @@ if(0) { # the main test
     
     # 3. create an environment
     #    as a container for the combos & results & fill it & provide a ref.
-    cont.env <- getTestParamIds(register = r)
+    cont.env <- getTestParamIds(register = r) # TODO: rename to setupTestContainer
     # ls(envir = cont.env)
 
         # 4. performTesting
-    results2 <- crashTest(env=cont.env, FUN=ES)
+    results <- crashTest(env=cont.env, FUN=ES)
     
+    plot(which(results=="PASS"))
     
-    results <- .Last.value
-    save(list="results", file = "ES_test1-20160220-0208.RData")
+    #results <- .Last.value
+    save(list="results", file = "ES_test1-20160220-0235.RData")
     getwd()
     
 }
