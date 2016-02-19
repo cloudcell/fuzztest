@@ -9,6 +9,9 @@
 ## Title: Error tests for ES()
 ## Description: tests ES() for producing errors based on all possible combinations of options
 ##
+
+if(0) {
+    
 ES(R = ,
    p = 0.95,
    # ... = ,
@@ -23,15 +26,19 @@ ES(R = ,
    invert           = TRUE,
    operational      = TRUE)
 
-
-combinations()
-
+}
 
 
+# combinations()
 
 
-errorHandlingTest("+",args = list(1,1))
-errorHandlingTest("+",args = list(1,1,3))
+
+
+if(0){
+    errorHandlingTest("+",args = list(1,1))
+    errorHandlingTest("+",args = list(1,1,3))
+}
+
 
 ## Towards a Higher Level Quality of R Code
 ## Improving the Quality of R Code
@@ -56,6 +63,7 @@ r$operational      = list( "TRUE", "FALSE", "__MISSING__" )
 
 str(r)
 length(r)
+r
 
 unlist(r$p[1]  )
 
@@ -66,7 +74,7 @@ getComboQty <- function(register, verbose=TRUE)
     if(verbose) print(register)
 
     if(verbose) cat("----------------------------------------\n")
-    if(verbose) cat("arg_id \t:  qty \t:       arg_name\n")
+    if(verbose) cat(" arg_id\t:  qty \t:       arg_name\n")
     if(verbose) cat("----------------------------------------\n")
 
     # use a handy variable name:
@@ -103,11 +111,11 @@ getComboQty <- function(register, verbose=TRUE)
 
 if(0) {
     zz <- getComboQty(r)
+    str(zz)
+    names(r[1])
 
     zz
-    str(zz)
 
-    names(r[1])
 }
 
 
@@ -150,7 +158,8 @@ get_leafs <- function(idx, start_branch_id=1, accum_leafs=c(),
     }
 }
 
-
+# store an indivisual test set (one argument set for one test)
+# (service function)
 store_test_set <- function(env=stop("storage environment must be provided"),
                            test_set=stop("test set must be provided"))
 {
@@ -208,17 +217,6 @@ getTestParamIds <- function(register, verbose=FALSE, DEBUG=FALSE)
 }
 
 
-cont.env <- getTestParamIds(register = r)
-cont.env$container_test_args
-
-arg_ids.vct <- cont.env$container_test_args[10000,]
-arg_ids.vct <- cont.env$container_test_args[1,]
-
-str(r)
-i=2
-i=1
-
-# browser()
 
 prepareArgs <- function(arg_register, arg_selection_vector)
 {
@@ -300,6 +298,7 @@ prepareArgs <- function(arg_register, arg_selection_vector)
 }
 
 
+
 errorHandlingTest <- function(FUN,args)
 {
     rc <- try(do.call(what = FUN,args=args))
@@ -313,17 +312,37 @@ errorHandlingTest <- function(FUN,args)
 
 
 
-performTesting <- function(arg_register, test_set_container)
+performTesting <- function(arg_register, FUN)#, test_set_container)
 {
 
-
+    r=arg_register
+    
+    cont.env <- getTestParamIds(register = r)
+    ls(envir = cont.env)
+    cont.env$container_test_args
+    
+    # arg_ids.vct <- cont.env$container_test_args[10000,]
+    # store_test_set(env = )
     # loop thru all the test arg. set
 
-    final_arg <- prepareArgs(arg_register = r, arg_selection_vector = arg_ids.vct)
+    for(i in 1:cont.env$result_slot_max) {
+        arg_ids.vct <- cont.env$container_test_args[i,]
+        
+        # prepare arguments for testing
+        final_arg <- prepareArgs(arg_register = r, arg_selection_vector = arg_ids.vct)
+        
+        # test error handling / crash
+        result <- errorHandlingTest(FUN=FUN, args = final_arg)
+        
+        cont.env$container_test_results[i] <- result
+        
+    }
 
-    errorHandlingTest(FUN=ES, args = final_arg)
-
+    cont.env$container_test_results
 }
+
+
+
 
 
 # TESTS:
@@ -388,6 +407,10 @@ if(0) {
     get_next_branch(zz$idx, branch_id=11, accum_leafs=c(), DEBUG=TRUE)
 }
 
+#------------------------------------------------------------------------------#
 
-
-
+# 1. create register of possible options (values/missing) for each argument
+# 2. zz <- getComboQty(r)
+zz <- getComboQty(r)
+# 3. performTesting
+performTesting(arg_register = r,FUN=ES  )
