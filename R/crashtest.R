@@ -1,95 +1,41 @@
-# Author: cloudcell
+#------------------------------------------------------------------------------#
+# Package: "crashtest"
+# Test functions aimed at improving the quality of R code
+#------------------------------------------------------------------------------#
 # Description: a set of functions to verify that none of 
 #              the combinations of input arguments
 #              causes a function undergoing crash test (stress test)
 #              to produce an error
+# 
+# Author: cloudcell
 # Date: 2016-02-19
 # License: GPL-3
-
-## Title: Error tests for ES()
-## Description: tests ES() for producing errors based on all possible combinations of options
-##
-
-if(0) {
-    
-ES(R = ,
-   p = 0.95,
-   # ... = ,
-   method           = c("modified", "gaussian", "historical"),
-   clean            = c("none", "boudt", "geltner"),
-   portfolio_method = c("single", "component"),
-   weights          = NULL,
-   mu               = NULL,
-   sigma            = NULL,
-   m3               = NULL,
-   m4               = NULL,
-   invert           = TRUE,
-   operational      = TRUE)
-
-}
-
-
-# combinations()
-
-
-
-
-if(0){
-    errorHandlingTest("+",args = list(1,1))
-    errorHandlingTest("+",args = list(1,1,3))
-}
-
-
-## Towards a Higher Level Quality of R Code
-## Improving the Quality of R Code
-
-## set up test for a function
-
-# arguments:
-# * set up argument register with all possible arg. value assignments
-r <- list()
-r$R                = list( pr ) # variable name as character string ?
-r$p                = list( 0.95, "__MISSING__" )
-r$method           = list( "modified", "gaussian", "historical", "__MISSING__" )
-r$clean            = list( "none", "boudt", "geltner", "__MISSING__" )
-r$portfolio_method = list( "single", "component", "__MISSING__" )
-r$weights          = list( "NULL", c(1.0), "__MISSING__" )
-r$mu               = list( "NULL", "__MISSING__" )
-r$sigma            = list( "NULL", "__MISSING__" )
-r$m3               = list( "NULL", "__MISSING__" )
-r$m4               = list( "NULL", "__MISSING__" )
-r$invert           = list( "TRUE", "FALSE", "__MISSING__" )
-r$operational      = list( "TRUE", "FALSE", "__MISSING__" )
-
-str(r)
-length(r)
-r
-
-unlist(r$p[1]  )
+#------------------------------------------------------------------------------#
 
 getComboQty <- function(register, verbose=TRUE)
 {
     # if(class(register) != "data.frame") stop ("Argument 'register' must be of 'data.frame' class.")
     if(class(register) != "list") stop ("Argument 'register' must be of 'list' class.")
     if(verbose) print(register)
-
-    if(verbose) cat("----------------------------------------\n")
-    if(verbose) cat(" arg_id\t:  qty \t:       arg_name\n")
-    if(verbose) cat("----------------------------------------\n")
-
+    
+    if(verbose) message("----------------------------------------\n")
+    if(verbose) message(" arg_id\t:  qty \t:       arg_name\n")
+    if(verbose) message("----------------------------------------\n")
+    
     # use a handy variable name:
     # no duplication in R unless the new variable is modified
     r=register
-
+    
     result <- data.frame(arg_id=integer(),
                          qty=integer(),
                          row.names=NULL, stringsAsFactors = FALSE) # NULL
     # names(result)
     accum <- 0L
     for(i in 1:length(r)){
-        if(verbose) cat("  ",i, "\t:   ", length(r[[i]]), "\t: ", names(r[i]),
-                        "\n", sep="")
+        if(verbose) 
+            message(paste0( "  ", i, "\t:   ", length(r[[i]]), "\t: ", names(r[i]) ) )
         current_length <- length(r[[i]])
+        
         if(i==1){
             accum=current_length
         } else {
@@ -102,22 +48,12 @@ getComboQty <- function(register, verbose=TRUE)
         # }
     }
     # names(result) <- NULL
-    if(verbose) cat("----------------------------------------\n")
-    if(verbose) cat("The total number of combinations ==", accum, "\n")
+    if(verbose) message("----------------------------------------")
+    if(verbose) message(paste0("The total number of combinations ==", accum, ""))
     accum
     args_qty <- length(r)
     out <- list(total_qty=accum,idx=result, args_qty=args_qty)
 }
-
-if(0) {
-    zz <- getComboQty(r)
-    str(zz)
-    names(r[1])
-
-    zz
-
-}
-
 
 
 # TODO: replace 'cat' with message/warning/stop
@@ -132,13 +68,13 @@ get_leafs <- function(idx, start_branch_id=1, accum_leafs=c(),
 
     # rename internally for simplicity
     i <- start_branch_id
-    if(verbose) cat("_branch_id_ == ",i,"\n")
+    if(verbose) message(paste0("_branch_id_ == ",i,""))
 
     # get total 'leafs' on this branch
     leaf_qty <- idx[i,"qty"]
 
     for( j in 1:leaf_qty ) {
-        if(verbose) cat("_leaf_id_# == ",j,"\n")
+        if(verbose) message(paste0("_leaf_id_# == ",j,""))
 
         if(i+1<=branch_qty) {
             # jump to a branch "up" (with a higher id)
@@ -313,8 +249,8 @@ errorHandlingTest <- function(FUN,args)
 }
 
 
-
-performTesting <- function(arg_register, FUN)#, test_set_container)
+# TODO: bring out the environment out to be able to save it easily
+crashTest <- function(arg_register, FUN)#, test_set_container)
 {
 
     r=arg_register
@@ -339,15 +275,14 @@ performTesting <- function(arg_register, FUN)#, test_set_container)
         message("result #", result)
         
         cont.env$container_test_results[i] <- result
-        
+
     }
 
     cont.env$container_test_results
 }
 
 
-
-
+#------------------------------------------------------------------------------#
 
 # TESTS:
 if(0) {
@@ -401,7 +336,6 @@ if(0) {
 
 }
 
-
 # TESTS: get_leafs
 if(0) {
     test_idx <- get_next_branch(zz$idx, branch_id=1, accum_leafs=c())#, DEBUG=TRUE)
@@ -413,13 +347,92 @@ if(0) {
 
 #------------------------------------------------------------------------------#
 if(0) { # the main test
+
     
+    if(0) {
+        ## Title: Error tests for ES()
+        ## Description: tests ES() for producing errors based on all possible combinations of options
+        
+        ES(R = ,
+           p = 0.95,
+           # ... = ,
+           method           = c("modified", "gaussian", "historical"),
+           clean            = c("none", "boudt", "geltner"),
+           portfolio_method = c("single", "component"),
+           weights          = NULL,
+           mu               = NULL,
+           sigma            = NULL,
+           m3               = NULL,
+           m4               = NULL,
+           invert           = TRUE,
+           operational      = TRUE)
+        
+        
+        if(0){
+            errorHandlingTest("+",args = list(1,1))
+            errorHandlingTest("+",args = list(1,1,3))
+        }
+        
+        
+    }
+    
+    
+    
+    
+    ## set up test for a function
+    
+    # arguments:
+    # * set up argument register with all possible arg. value assignments
+    r <- list()
+    r$R                = list( pr ) # variable name as character string ?
+    r$p                = list( 0.95, "__MISSING__" )
+    r$method           = list( "modified", "gaussian", "historical", "__MISSING__" )
+    r$clean            = list( "none", "boudt", "geltner", "__MISSING__" )
+    r$portfolio_method = list( "single", "component", "__MISSING__" )
+    r$weights          = list( "NULL", c(1.0), "__MISSING__" )
+    r$mu               = list( "NULL", "__MISSING__" )
+    r$sigma            = list( "NULL", "__MISSING__" )
+    r$m3               = list( "NULL", "__MISSING__" )
+    r$m4               = list( "NULL", "__MISSING__" )
+    r$invert           = list( "TRUE", "FALSE", "__MISSING__" )
+    r$operational      = list( "TRUE", "FALSE", "__MISSING__" )
+    
+    str(r)
+    length(r)
+    r
+    
+    unlist(r$p[1]  )
+    
+
+    if(0) {
+        zz <- getComboQty(r)
+        str(zz)
+        names(r[1])
+        
+        zz
+        
+    }
+    
+    
+    
+    
+        
     require(PerformanceAnalytics)
     # 1. create register of possible options (values/missing) for each argument
-    # 2. zz <- getComboQty(r)
-    zz <- getComboQty(r)
-    # 3. performTesting
-    performTesting(arg_register = r,FUN=ES  )
+    # 
+    # 2. produce an index to the register
+    # zz <- getComboQty(r)
+    zz <- getComboQty(r) # creates an index
+    
+    # 3. create a container for the combos & results
+    #    
+    # 4. performTesting
+    crashTest(arg_register = r,FUN=ES  )
+    
+    
+    results <- .Last.value
+    save(list="results", file = "ES_test1-20160220-0118.RData")
+    getwd()
     
 }
 
