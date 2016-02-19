@@ -54,6 +54,7 @@ getComboQty <- function(register, verbose=TRUE)
     accum
     args_qty <- length(r)
     out <- list(total_qty=accum,idx=result, args_qty=args_qty)
+    out
 }
 
 
@@ -333,27 +334,22 @@ if(0) { # the main test
     r$invert           = list( "TRUE", "FALSE", "__MISSING__" )
     r$operational      = list( "TRUE", "FALSE", "__MISSING__" )
     
-    # str(r)
-    # length(r)
-    # r
-    # 
-    # unlist(r$p[1]  )
-    # names(r[1])
-    
+
 
     require(PerformanceAnalytics)
     # 1. create register of possible options (values/missing) for each argument
     # 
     # 2. produce an index to the register
     # zz <- getComboQty(r)
-    zz <- getComboQty(r) # creates an index
+    # zz <- getComboQty(r) # creates an index
     
-    # 3. create a container for the combos & results & fill it & provide a ref.
+    # 3. create an environment
+    #    as a container for the combos & results & fill it & provide a ref.
     cont.env <- getTestParamIds(register = r)
-    ls(envir = cont.env)
+    # ls(envir = cont.env)
 
         # 4. performTesting
-    crashTest(env=cont.env, FUN=ES)
+    results2 <- crashTest(env=cont.env, FUN=ES)
     
     
     results <- .Last.value
@@ -364,6 +360,14 @@ if(0) { # the main test
 
 
 #------------------------------------------------------------------------------#
+
+# str(r)
+# length(r)
+# r
+# 
+# unlist(r$p[1]  )
+# names(r[1])
+
 
 # TESTS:
 if(0) {
