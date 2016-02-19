@@ -1,4 +1,10 @@
-
+# Author: cloudcell
+# Description: a set of functions to verify that none of 
+#              the combinations of input arguments
+#              causes a function undergoing crash test (stress test)
+#              to produce an error
+# Date: 2016-02-19
+# License: GPL-3
 
 ## Title: Error tests for ES()
 ## Description: tests ES() for producing errors based on all possible combinations of options
