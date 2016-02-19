@@ -218,7 +218,7 @@ getTestParamIds <- function(register, verbose=FALSE, DEBUG=FALSE)
 
 
 
-prepareArgs <- function(arg_register, arg_selection_vector)
+prepareArgs <- function(arg_register, arg_selection_vector, verbose=FALSE)
 {
     # switch to more convenient (to me) internal variables
     r <- arg_register
@@ -228,21 +228,23 @@ prepareArgs <- function(arg_register, arg_selection_vector)
     final_arg <- list()
     final_arg
 
+    # suppressMessages(verbose==FALSE)
+    
     for(i in 1:length(r)) {
         # for(i in 2) {
-        message(rep("-",70))
-        message("Argument number: ", i)
+        if(verbose) message(rep("-",70))
+        if(verbose) message("Argument number: ", i)
 
         arg_name <- names(r[i])
-        message("Argument name: '", arg_name, "'" )
-        message("Option choice number for argument id ", i, ": ", arg_ids.vct[i])
+        if(verbose) message("Argument name: '", arg_name, "'" )
+        if(verbose) message("Option choice number for argument id ", i, ": ", arg_ids.vct[i])
 
         choice <- arg_ids.vct[i]
         arg_value <- r[[i]][[choice]]
         # tmp <-  r[i]
         # arg_value <- tmp[choice]
 
-        message("Argument value chosen: '", arg_value, "'")
+        if(verbose) message("Argument value chosen: '", arg_value, "'")
 
         # print(i)
         # print( r[[i]][choice] )
@@ -254,7 +256,7 @@ prepareArgs <- function(arg_register, arg_selection_vector)
         str(unlist(arg_value))
 
         # arg_value <- unlist(arg_value)
-        print(arg_value)
+        if(verbose) print(arg_value)
 
         # http://stackoverflow.com/questions/27491637/r-switch-statement-with-varying-outputs-throwing-error/27491753#27491753
         # choose b/n numeric vs character version
@@ -264,15 +266,15 @@ prepareArgs <- function(arg_register, arg_selection_vector)
 
         switch(switch_value,
                "NULL"={
-                   print("assigning NULL")
+                   if(verbose) print("assigning NULL")
                    final_arg[[arg_name]]=NULL
                },
                "TRUE"={
-                   print("assigning NULL")
+                   if(verbose) print("assigning NULL")
                    final_arg[[arg_name]]=TRUE
                },
                "FALSE"={
-                   print("assigning NULL")
+                   if(verbose) print("assigning NULL")
                    final_arg[[arg_name]]=FALSE
                },
                '__MISSING__'={
@@ -286,8 +288,8 @@ prepareArgs <- function(arg_register, arg_selection_vector)
                }
         )
         # if any is equal to "__MISSING__" then NULL them !!!
-        message("str(final_arg) after this iteration:")
-        print(str(final_arg))
+        if(verbose) message("str(final_arg) after this iteration:")
+        if(verbose) print(str(final_arg))
     }
     final_arg
     str(final_arg)
@@ -326,6 +328,7 @@ performTesting <- function(arg_register, FUN)#, test_set_container)
     # loop thru all the test arg. set
 
     for(i in 1:cont.env$result_slot_max) {
+        message("test #", i)
         arg_ids.vct <- cont.env$container_test_args[i,]
         
         # prepare arguments for testing
@@ -333,6 +336,7 @@ performTesting <- function(arg_register, FUN)#, test_set_container)
         
         # test error handling / crash
         result <- errorHandlingTest(FUN=FUN, args = final_arg)
+        message("result #", result)
         
         cont.env$container_test_results[i] <- result
         
@@ -408,9 +412,14 @@ if(0) {
 }
 
 #------------------------------------------------------------------------------#
+if(0) { # the main test
+    
+    require(PerformanceAnalytics)
+    # 1. create register of possible options (values/missing) for each argument
+    # 2. zz <- getComboQty(r)
+    zz <- getComboQty(r)
+    # 3. performTesting
+    performTesting(arg_register = r,FUN=ES  )
+    
+}
 
-# 1. create register of possible options (values/missing) for each argument
-# 2. zz <- getComboQty(r)
-zz <- getComboQty(r)
-# 3. performTesting
-performTesting(arg_register = r,FUN=ES  )
