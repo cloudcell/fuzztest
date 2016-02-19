@@ -1,0 +1,387 @@
+
+
+## Title: Error tests for ES()
+## Description: tests ES() for producing errors based on all possible combinations of options
+##
+ES(R = ,
+   p = 0.95,
+   # ... = ,
+   method           = c("modified", "gaussian", "historical"),
+   clean            = c("none", "boudt", "geltner"),
+   portfolio_method = c("single", "component"),
+   weights          = NULL,
+   mu               = NULL,
+   sigma            = NULL,
+   m3               = NULL,
+   m4               = NULL,
+   invert           = TRUE,
+   operational      = TRUE)
+
+
+combinations()
+
+
+
+
+
+errorHandlingTest("+",args = list(1,1))
+errorHandlingTest("+",args = list(1,1,3))
+
+## Towards a Higher Level Quality of R Code
+## Improving the Quality of R Code
+
+## set up test for a function
+
+# arguments:
+# * set up argument register with all possible arg. value assignments
+r <- list()
+r$R                = list( pr ) # variable name as character string ?
+r$p                = list( 0.95, "__MISSING__" )
+r$method           = list( "modified", "gaussian", "historical", "__MISSING__" )
+r$clean            = list( "none", "boudt", "geltner", "__MISSING__" )
+r$portfolio_method = list( "single", "component", "__MISSING__" )
+r$weights          = list( "NULL", c(1.0), "__MISSING__" )
+r$mu               = list( "NULL", "__MISSING__" )
+r$sigma            = list( "NULL", "__MISSING__" )
+r$m3               = list( "NULL", "__MISSING__" )
+r$m4               = list( "NULL", "__MISSING__" )
+r$invert           = list( "TRUE", "FALSE", "__MISSING__" )
+r$operational      = list( "TRUE", "FALSE", "__MISSING__" )
+
+str(r)
+length(r)
+
+unlist(r$p[1]  )
+
+getComboQty <- function(register, verbose=TRUE)
+{
+    # if(class(register) != "data.frame") stop ("Argument 'register' must be of 'data.frame' class.")
+    if(class(register) != "list") stop ("Argument 'register' must be of 'list' class.")
+    if(verbose) print(register)
+
+    if(verbose) cat("----------------------------------------\n")
+    if(verbose) cat("arg_id \t:  qty \t:       arg_name\n")
+    if(verbose) cat("----------------------------------------\n")
+
+    # use a handy variable name:
+    # no duplication in R unless the new variable is modified
+    r=register
+
+    result <- data.frame(arg_id=integer(),
+                         qty=integer(),
+                         row.names=NULL, stringsAsFactors = FALSE) # NULL
+    # names(result)
+    accum <- 0L
+    for(i in 1:length(r)){
+        if(verbose) cat("  ",i, "\t:   ", length(r[[i]]), "\t: ", names(r[i]),
+                        "\n", sep="")
+        current_length <- length(r[[i]])
+        if(i==1){
+            accum=current_length
+        } else {
+            accum=accum*current_length
+        }
+        # if(nrow(result)==0) {
+        #     result <- as.data.frame(arg_id=i,qty=length(r[[i]]))
+        # } else {
+        result <- rbind(result,list(arg_id=i,qty=length(r[[i]])), deparse.level=0 )
+        # }
+    }
+    # names(result) <- NULL
+    if(verbose) cat("----------------------------------------\n")
+    if(verbose) cat("The total number of combinations ==", accum, "\n")
+    accum
+    args_qty <- length(r)
+    out <- list(total_qty=accum,idx=result, args_qty=args_qty)
+}
+
+if(0) {
+    zz <- getComboQty(r)
+
+    zz
+    str(zz)
+
+    names(r[1])
+}
+
+
+
+# TODO: replace 'cat' with message/warning/stop
+get_leafs <- function(idx, start_branch_id=1, accum_leafs=c(),
+                      storage.env=NULL, verbose=FALSE, DEBUG=FALSE)
+{
+    browser(expr=DEBUG)
+    if(start_branch_id>nrow(idx)) stop("Wrong branch number: id out of range.")
+
+    # get the total quantity of 'branches'
+    branch_qty <- nrow(idx)
+
+    # rename internally for simplicity
+    i <- start_branch_id
+    if(verbose) cat("_branch_id_ == ",i,"\n")
+
+    # get total 'leafs' on this branch
+    leaf_qty <- idx[i,"qty"]
+
+    for( j in 1:leaf_qty ) {
+        if(verbose) cat("_leaf_id_# == ",j,"\n")
+
+        if(i+1<=branch_qty) {
+            # jump to a branch "up" (with a higher id)
+            # from every 'leaf' on this branch
+            get_leafs(idx, start_branch_id = i+1, accum_leafs=c(accum_leafs,j), storage.env = storage.env)
+        } else {
+            # spew out all the leafs
+            printable_leafs=c(accum_leafs,j)
+            if(verbose) print(printable_leafs) #TODO: use 'verbose' later
+
+            # TODO: store the leaf set in a specially prepared environment
+            # just use function's environment one level up (not 'frame' !!!)
+            if(!is.null(storage.env)) {
+                store_test_set(env = storage.env,test_set = printable_leafs)
+            }
+        }
+    }
+}
+
+
+store_test_set <- function(env=stop("storage environment must be provided"),
+                           test_set=stop("test set must be provided"))
+{
+    e <- env
+    ls(envir = e)
+
+    if( is.null(e$result_slot_next) )
+        stop("Data store does not have any more preallocated memory for storage.")
+
+    i <- e$result_slot_next
+    e$container_test_args[i,] <- test_set # TODO: check size !
+    e$result_slot_next= i+1
+
+    # mark the 'index' as unusable
+    if(e$result_slot_next>e$result_slot_max) { e$result_slot_next <- NULL }
+}
+
+# rename to prepareTestParamIds
+# (returns environment with test combos of args (their ids within the register))
+getTestParamIds <- function(register, verbose=FALSE, DEBUG=FALSE)
+{
+    # create a container
+    # with meta data explicitly stated:
+    # capacity (number of possible records)
+    # next available slot within the matrix
+
+    e <- new.env() # storage.env
+    # size <- getComboQty(register=idx, verbose=TRUE)
+    # size <- getComboQty(register=zz$idx, verbose=TRUE)
+    combos <- getComboQty(register=register, verbose=FALSE)
+    combos$args_qty
+    combos$total_qty
+
+    # reserve memory
+    e$container_test_args <- matrix(nrow=combos$total_qty, ncol = combos$args_qty)
+    e$container_test_results <- vector( length = combos$total_qty, mode = "character")
+
+    e$result_slot_next=1
+    e$result_slot_max=combos$total_qty
+
+    str(e$container_test_args)
+    str(e$container_test_results)
+    e$result_slot_next
+    e$result_slot_max
+
+    get_leafs(idx=zz$idx,storage.env = e)
+    if(!is.null(e$result_slot_next)) stop ("not all test combos have been generated.")
+
+    message("------------------------------")
+    message("Result: SUCCESS.")
+    message("Returning test combinations of arguments within an environment")
+    message("------------------------------")
+    print(ls(envir = e))
+    e
+}
+
+
+cont.env <- getTestParamIds(register = r)
+cont.env$container_test_args
+
+arg_ids.vct <- cont.env$container_test_args[10000,]
+arg_ids.vct <- cont.env$container_test_args[1,]
+
+str(r)
+i=2
+i=1
+
+# browser()
+
+prepareArgs <- function(arg_register, arg_selection_vector)
+{
+    # switch to more convenient (to me) internal variables
+    r <- arg_register
+    arg_ids.vct <- arg_selection_vector
+
+    ## Form args for running the 'error' test
+    final_arg <- list()
+    final_arg
+
+    for(i in 1:length(r)) {
+        # for(i in 2) {
+        message(rep("-",70))
+        message("Argument number: ", i)
+
+        arg_name <- names(r[i])
+        message("Argument name: '", arg_name, "'" )
+        message("Option choice number for argument id ", i, ": ", arg_ids.vct[i])
+
+        choice <- arg_ids.vct[i]
+        arg_value <- r[[i]][[choice]]
+        # tmp <-  r[i]
+        # arg_value <- tmp[choice]
+
+        message("Argument value chosen: '", arg_value, "'")
+
+        # print(i)
+        # print( r[[i]][choice] )
+        # print( arg_ids.vct[i] )
+
+        # final_arg[['test']] <- NULL # remove from the list
+        # final_arg[[arg_name]] <- arg_value # remove from the list
+        # final_arg[arg_name] <- arg_value # remove from the list
+        str(unlist(arg_value))
+
+        # arg_value <- unlist(arg_value)
+        print(arg_value)
+
+        # http://stackoverflow.com/questions/27491637/r-switch-statement-with-varying-outputs-throwing-error/27491753#27491753
+        # choose b/n numeric vs character version
+        switch_value <- arg_value
+        if(class(arg_value)!="character")
+            switch_value <- "DEFAULT" # the
+
+        switch(switch_value,
+               "NULL"={
+                   print("assigning NULL")
+                   final_arg[[arg_name]]=NULL
+               },
+               "TRUE"={
+                   print("assigning NULL")
+                   final_arg[[arg_name]]=TRUE
+               },
+               "FALSE"={
+                   print("assigning NULL")
+                   final_arg[[arg_name]]=FALSE
+               },
+               '__MISSING__'={
+                   # final_arg[[arg_name]] <- NULL
+               },
+               # DEFAULT:
+               # use get() or assign()
+               # final_arg[[arg_name]] <- unlist(arg_value)
+               {
+                   final_arg[[arg_name]] <- arg_value
+               }
+        )
+        # if any is equal to "__MISSING__" then NULL them !!!
+        message("str(final_arg) after this iteration:")
+        print(str(final_arg))
+    }
+    final_arg
+    str(final_arg)
+
+    # final_arg$R
+
+    final_arg
+}
+
+
+errorHandlingTest <- function(FUN,args)
+{
+    rc <- try(do.call(what = FUN,args=args))
+    if(inherits(x = rc,what = "try-error")) {
+        result <- "FAIL"
+    } else {
+        result <- "PASS"
+    }
+    result
+}
+
+
+
+performTesting <- function(arg_register, test_set_container)
+{
+
+
+    # loop thru all the test arg. set
+
+    final_arg <- prepareArgs(arg_register = r, arg_selection_vector = arg_ids.vct)
+
+    errorHandlingTest(FUN=ES, args = final_arg)
+
+}
+
+
+# TESTS:
+if(0) {
+
+
+    # get_next_branch(zz$idx, branch_id=1,accum_leafs=c(0))
+
+    getArg(zz$idx,10)
+
+    zz$idx[10,"qty"]
+
+    # for(i in 1:)
+
+    #
+    args <- list(1,2,3,NULL)
+    args
+    args[[1]] <- NULL
+
+
+    args
+    args[['test']]=TRUE
+    args
+    args[['test']] <- NULL # remove from the list
+    args[['test']] = NULL # remove from the list
+    args
+    args
+
+    args$invert=TRUE
+    args
+}
+
+# do.call() reference:
+if(0) {
+    # If quote is FALSE, the default, then the arguments are evaluated (in the
+    # calling environment, not in envir). If quote is TRUE then each argument is
+    # quoted (see quote) so that the effect of argument evaluation is to remove the
+    # quotes – leaving the original arguments unevaluated when the call is
+    # constructed.
+
+    do.call()
+
+    do.call
+    function (what, args, quote = FALSE, envir = parent.frame())
+    {
+        if (!is.list(args))
+            stop("second argument must be a list")
+        if (quote)
+            args <- lapply(args, enquote)
+        .Internal(do.call(what, args, envir))
+    }
+
+}
+
+
+# TESTS: get_leafs
+if(0) {
+    test_idx <- get_next_branch(zz$idx, branch_id=1, accum_leafs=c())#, DEBUG=TRUE)
+    get_next_branch(zz$idx, branch_id=8)#, DEBUG=TRUE)
+    get_next_branch(zz$idx)
+    get_next_branch(zz$idx, branch_id=11, accum_leafs=c())#, DEBUG=TRUE)
+    get_next_branch(zz$idx, branch_id=11, accum_leafs=c(), DEBUG=TRUE)
+}
+
+
+
+
