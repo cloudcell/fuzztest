@@ -2,15 +2,32 @@
 # Package: "crashtest"
 # Test functions aimed at improving the quality of R code
 #------------------------------------------------------------------------------#
-# Description: a set of functions to verify that none of 
+# Description: a set of functions to verify that none of
 #              the combinations of input arguments
 #              causes a function undergoing crash test (stress test)
 #              to produce an error
-# 
+#
 # Author: cloudcell
 # Date: 2016-02-19
 # License: GPL-3
+# Licensing Reference: http://choosealicense.com/
 #------------------------------------------------------------------------------#
+
+# TODOs (in the order of priority) ----
+# 0. create a dendrogram of input parameters for tests with the status == 'FAIL'
+# 1. consider using variable names as character strings and numeric values:
+#    variable names as strings could be displayed more easily
+#    during assignment phase, they could simply be stripped of technical tags
+#    to be used with 'assign()' i.e. __var.pr would mean that
+#    a variable 'pr' will be used during assignment
+#    At the same time, displaying analytics will be much easier as no special
+#    treatment will be required
+# 2. start using parfor() to speed up the test
+# 3. display results using this: http://www.milbo.org/rpart-plot/prp.pdf
+# 4. print structures such that indentation clearly represents nesting levels
+#    ref: http://stackoverflow.com/questions/1970653/generating-textual-representation-of-directory-contents
+# 5. try adjusting (nesting level) indentation within str.xts()
+# 6. consider this alternative: https://cran.r-project.org/web/packages/data.tree/vignettes/data.tree.html#tree-creation
 
 # makes an index and  calculates the product of all options
 getComboQty <- function(register, verbose=TRUE)
@@ -18,25 +35,25 @@ getComboQty <- function(register, verbose=TRUE)
     # if(class(register) != "data.frame") stop ("Argument 'register' must be of 'data.frame' class.")
     if(class(register) != "list") stop ("Argument 'register' must be of 'list' class.")
     if(verbose) print(register)
-    
+
     if(verbose) message("----------------------------------------\n")
     if(verbose) message(" arg_id\t:  qty \t:       arg_name\n")
     if(verbose) message("----------------------------------------\n")
-    
+
     # use a handy variable name:
     # no duplication in R unless the new variable is modified
     r=register
-    
+
     result <- data.frame(arg_id=integer(),
                          qty=integer(),
                          row.names=NULL, stringsAsFactors = FALSE) # NULL
     # names(result)
     accum <- 0L
     for(i in 1:length(r)){
-        if(verbose) 
+        if(verbose)
             message(paste0( "  ", i, "\t:   ", length(r[[i]]), "\t: ", names(r[i]) ) )
         current_length <- length(r[[i]])
-        
+
         if(i==1){
             accum=current_length
         } else {
@@ -58,11 +75,29 @@ getComboQty <- function(register, verbose=TRUE)
 }
 
 
+#------------------------------------------------------------------------------#
+#
+# -- generate.argset(arg_register)
+# ---- [output value typed 'argset']
+# [the output value (which is an environment which acts as a container)
+# has type "argset"]
+#
+# -- apply.argset()
+# ---- [input value typed 'argset']
+# [acts in the same manner as apply.paramset, distributing work and combining
+#  results using parfor]
+#------------------------------------------------------------------------------#
+
 # TODO: rename to prepareTestParamIds
-# or "setupTestContainer"
+# or "setupTestContainer" setupTestCombos generateArgSet argset.generate
 # (returns environment with test combos of args (their ids within the register))
+generate.argset <- # alias
 getTestParamIds <- function(register, verbose=FALSE, DEBUG=FALSE)
 {
+    message(rep("-",70))
+    message("Generating argset")
+    message(rep("-",70))
+
     # create a container
     # with meta data explicitly stated:
     # capacity (number of possible records)
@@ -90,10 +125,11 @@ getTestParamIds <- function(register, verbose=FALSE, DEBUG=FALSE)
     get_leafs(idx=zz$idx,storage.env = e)
     if(!is.null(e$result_slot_next)) stop ("not all test combos have been generated.")
 
-    message("------------------------------")
+    message("----------------------------------------------------------------------")
     message("Result: SUCCESS.")
     message("Returning test combinations of arguments within an environment")
-    message("------------------------------")
+    message("----------------------------------------------------------------------")
+    message("The following objects are available within the testing environment:")
     print(ls(envir = e))
     e
 }
@@ -158,8 +194,11 @@ store_test_set <- function(env=stop("storage environment must be provided"),
 
 
 # prepare a single combination of arguments
-prepareArgs <- function(arg_register, arg_selection_vector, verbose=FALSE)
+prepareArgs <- function(arg_register, arg_selection_vector, verbose=FALSE, DEBUG=FALSE)
 {
+    browser(expr = DEBUG)
+    if(DEBUG) { verbose = TRUE }
+
     # switch to more convenient (to me) internal variables
     r <- arg_register
     arg_ids.vct <- arg_selection_vector
@@ -169,7 +208,7 @@ prepareArgs <- function(arg_register, arg_selection_vector, verbose=FALSE)
     final_arg
 
     # suppressMessages(verbose==FALSE)
-    
+
     for(i in 1:length(r)) {
         # for(i in 2) {
         if(verbose) message(rep("-",70))
@@ -193,37 +232,70 @@ prepareArgs <- function(arg_register, arg_selection_vector, verbose=FALSE)
         # final_arg[['test']] <- NULL # remove from the list
         # final_arg[[arg_name]] <- arg_value # remove from the list
         # final_arg[arg_name] <- arg_value # remove from the list
-        str(unlist(arg_value))
+
+        # str(unlist(arg_value))
 
         # arg_value <- unlist(arg_value)
-        if(verbose) print(arg_value)
+        if(verbose) print("str(arg_value):")
+        if(verbose) print(str(arg_value))
 
         # http://stackoverflow.com/questions/27491637/r-switch-statement-with-varying-outputs-throwing-error/27491753#27491753
         # choose b/n numeric vs character version
         switch_value <- arg_value
-        if(class(arg_value)!="character")
-            switch_value <- "DEFAULT" # the
 
+        #----------------------------------------------------------------------#
+        # mode E {numeric, character, list, function}
+        # typeof -- usually the same info as -- mode(storage.mode)
+        #----------------------------------------------------------------------#
+        #        typeof returns the type of an R object
+        #        mode gives information about the mode of an object in the
+        #             sense of Becker, Chambers & Wilks (1988), and is more
+        #             compatible with other implementations of the S language
+        #----------------------------------------------------------------------#
+        # class {abstract type}
+        #----------------------------------------------------------------------#
+        # R types: http://stackoverflow.com/questions/6258004/r-types-and-classes-of-variables
+
+        if(mode(arg_value)!="character") {
+            # so numeric, list, and function are assigned as is
+            switch_value <- "DEFAULT" # the "AS IS" assignment
+        }
+
+        # dealing with character types (with the non-character mode objects
+        # fall through to the 'bottom':
         switch(switch_value,
+               #TODO: consider changing this to "__val.NULL__"
                "NULL"={
-                   if(verbose) print("assigning NULL")
-                   final_arg[[arg_name]]=NULL
+                   # ref: http://stackoverflow.com/questions/7944809/assigning-null-to-a-list-element-in-r
+                   if(verbose) print(paste0("Arg: ", arg_name," : assigning NULL") )
+                   # ATTENTION: using '[' and NOT '[[' !
+                   final_arg[arg_name]=list(NULL)
                },
+               #TODO: consider changing this to "__val.NA__"
+               # ref: http://stackoverflow.com/questions/7944809/assigning-null-to-a-list-element-in-r
+               "NA"={
+                   if(verbose) print(paste0("Arg: ", arg_name," : assigning NA") )
+                   final_arg[[arg_name]]=NA
+               },
+               #TODO: consider changing this to "__val.TRUE__"
                "TRUE"={
-                   if(verbose) print("assigning NULL")
+                   if(verbose) print(paste0("Arg: ", arg_name," : assigning TRUE") )
                    final_arg[[arg_name]]=TRUE
                },
+               #TODO: consider changing this to "__val.FALSE__"
                "FALSE"={
-                   if(verbose) print("assigning NULL")
+                   if(verbose) print(paste0("Arg: ", arg_name," : assigning FALSE") )
                    final_arg[[arg_name]]=FALSE
                },
                '__MISSING__'={
+                   if(verbose) print(paste0("Arg: ", arg_name," : skipping assigment") )
                    # final_arg[[arg_name]] <- NULL
                },
                # DEFAULT:
                # use get() or assign()
                # final_arg[[arg_name]] <- unlist(arg_value)
                {
+                   if(verbose) print(paste0("Arg: ", arg_name," : assigning value AS IS") )
                    final_arg[[arg_name]] <- arg_value
                }
         )
@@ -255,70 +327,63 @@ errorHandlingTest <- function(FUN,args)
 
 # TODO: bring out the environment out to be able to save it easily
 # crashTest <- function(env,arg_register, FUN, verbose=FALSE)#, test_set_container)
-crashTest <- function(env, FUN, verbose=FALSE)#, test_set_container)
+apply.argset <- # alias
+crashTest <- function(env, arg_register, FUN, verbose=FALSE, subset=NULL, DEBUG=FALSE)#, test_set_container)
 {
+    browser(expr = DEBUG)
+    if(DEBUG) { verbose = TRUE }
 
-    # r=arg_register
-    # 
+    r=arg_register # to be able to run function code "in the global env."
+    #
     # cont.env <- getTestParamIds(register = r)
     # ls(envir = cont.env)
     cont.env$container_test_args
-    
+
     # arg_ids.vct <- cont.env$container_test_args[10000,]
     # store_test_set(env = )
     # loop thru all the test arg. set
 
-    for(i in 1:cont.env$result_slot_max) {
-        message("test #", i)
-        arg_ids.vct <- cont.env$container_test_args[i,]
-        
-        # prepare arguments for testing
-        final_arg <- prepareArgs(arg_register = r, arg_selection_vector = arg_ids.vct)
-        
-        # test error handling / crash
-        result <- errorHandlingTest(FUN=FUN, args = final_arg)
-        message("result #", result)
-        
-        cont.env$container_test_results[i] <- result
-
+    if(is.null(subset)){
+        selected_argset <- 1:cont.env$result_slot_max
+    } else {
+        # TODO: assert that subset is a numeric integer vector
+        # TODO: make an  assertion function and create a 'compound' notion
+        #       of type that satisfy multiple notions {class, attributes,
+        #       size{vector, scalar}, etc.}
+        #       Make boilerplate assertion block at the beginning of
+        #       important functions. Pass all arguments to a special
+        #       environment in which type checking is performed
+        #       - OR -
+        #       use R6
+        selected_argset <- subset
     }
 
-    cont.env$container_test_results
+    message(rep("-",70))
+    for(i in selected_argset) {
+
+        message("CRASHTEST: Argument Combination ID ", i)
+        arg_ids.vct <- cont.env$container_test_args[i,]
+
+        # prepare a single set of arguments for testing
+        final_arg <- prepareArgs(arg_register = r, arg_selection_vector = arg_ids.vct, DEBUG=DEBUG)
+
+        # test error handling / crash
+        result <- errorHandlingTest(FUN=FUN, args = final_arg)
+        message("Result: ", result)
+        message(rep("-",70))
+
+        cont.env$container_test_results[i] <- result
+    }
+    cont.env$container_test_results # throw the results out (a la 'foreach')
 }
 
 
-#------------------------------------------------------------------------------#
+#---sandbox--------------------------------------------------------------------#
+
 if(0) { # the main test
 
-    if(0) {
-        ## Title: Error tests for ES()
-        ## Description: tests ES() for producing errors based on all possible combinations of options
-        
-        ES(R = ,
-           p = 0.95,
-           # ... = ,
-           method           = c("modified", "gaussian", "historical"),
-           clean            = c("none", "boudt", "geltner"),
-           portfolio_method = c("single", "component"),
-           weights          = NULL,
-           mu               = NULL,
-           sigma            = NULL,
-           m3               = NULL,
-           m4               = NULL,
-           invert           = TRUE,
-           operational      = TRUE)
-        
-        
-        if(0){
-            errorHandlingTest("+",args = list(1,1))
-            errorHandlingTest("+",args = list(1,1,3))
-        }
-        
-        
-    }
-    
     ## set up test for a function
-    
+
     # arguments:
     # * set up argument register with all possible arg. value assignments
     r <- list()
@@ -334,61 +399,113 @@ if(0) { # the main test
     r$m4               = list( "NULL", "__MISSING__" )
     r$invert           = list( "TRUE", "FALSE", "__MISSING__" )
     r$operational      = list( "TRUE", "FALSE", "__MISSING__" )
-    
+    str(r)
 
 
     require(PerformanceAnalytics)
+    cont.env <- generate.argset(register = r) # TODO: rename to setupTestContainer
+    results <- apply.argset(env=cont.env, arg_register = r,
+                            FUN=ES,
+                            subset=c(1,5,222,333,444,555,666,777,888,999,41472))
+
+    # create the following table:
+    #----------------------------------------------------------------
+    #   PASS   :   FAIL   :   ARG   :  OPTION  : Argument Name
+    #----------------------------------------------------------------
+    #   Qty    :   Qty    :    1    :    1     : R
+    #    %     :    %     :         :          :
+    #----------------------------------------------------------------
+    #   Qty    :   Qty    :    1    :    2     : R
+    #    %     :    %     :         :          :
+    #----------------------------------------------------------------
+
+    # build data necessary for a dendrogram
+
+    # make a table of cross-correlation
+    # for every combination of argument options
+    #
+    #
+
     # 1. create register of possible options (values/missing) for each argument
-    # 
+    #
     # 2. produce an index to the register
     # zz <- getComboQty(r)
     # zz <- getComboQty(r) # creates an index
-    
+
     # 3. create an environment
     #    as a container for the combos & results & fill it & provide a ref.
-    cont.env <- getTestParamIds(register = r) # TODO: rename to setupTestContainer
     # ls(envir = cont.env)
 
-        # 4. performTesting
-    results <- crashTest(env=cont.env, FUN=ES)
-    
+    # 4. apply.argset(argset_container.env, FUN)
+    # results <- apply.argset(env=cont.env, arg_register = r,  FUN=ES, subset=c(1), DEBUG=TRUE)
+
     plot(which(results=="PASS"))
-    
+
     #results <- .Last.value
-    save(list="results", file = "ES_test1-20160220-0235.RData")
+    save(list="results", file = "ES_test2-20160220-0900.RData")
     getwd()
-    
+
 }
 
 
-#------------------------------------------------------------------------------#
+#----junkyard------------------------------------------------------------------#
+if(0) {
 
 # str(r)
 # length(r)
 # r
-# 
+#
 # unlist(r$p[1]  )
 # names(r[1])
 
 
+
+if(0) {
+    ## Title: Error tests for ES()
+    ## Description: tests ES() for producing errors based on all possible combinations of options
+
+    ES(R = ,
+       p = 0.95,
+       # ... = ,
+       method           = c("modified", "gaussian", "historical"),
+       clean            = c("none", "boudt", "geltner"),
+       portfolio_method = c("single", "component"),
+       weights          = NULL,
+       mu               = NULL,
+       sigma            = NULL,
+       m3               = NULL,
+       m4               = NULL,
+       invert           = TRUE,
+       operational      = TRUE)
+
+
+    if(0){
+        errorHandlingTest("+",args = list(1,1))
+        errorHandlingTest("+",args = list(1,1,3))
+    }
+
+
+}
+
+
 # TESTS:
 if(0) {
-    
-    
+
+
     # get_next_branch(zz$idx, branch_id=1,accum_leafs=c(0))
-    
+
     getArg(zz$idx,10)
-    
+
     zz$idx[10,"qty"]
-    
+
     # for(i in 1:)
-    
+
     #
     args <- list(1,2,3,NULL)
     args
     args[[1]] <- NULL
-    
-    
+
+
     args
     args[['test']]=TRUE
     args
@@ -396,7 +513,7 @@ if(0) {
     args[['test']] = NULL # remove from the list
     args
     args
-    
+
     args$invert=TRUE
     args
 }
@@ -408,9 +525,9 @@ if(0) {
     # quoted (see quote) so that the effect of argument evaluation is to remove the
     # quotes – leaving the original arguments unevaluated when the call is
     # constructed.
-    
+
     do.call()
-    
+
     do.call
     function (what, args, quote = FALSE, envir = parent.frame())
     {
@@ -420,7 +537,7 @@ if(0) {
             args <- lapply(args, enquote)
         .Internal(do.call(what, args, envir))
     }
-    
+
 }
 
 # TESTS: get_leafs
@@ -432,6 +549,7 @@ if(0) {
     get_next_branch(zz$idx, branch_id=11, accum_leafs=c(), DEBUG=TRUE)
 }
 
+}
 #------------------------------------------------------------------------------#
 
 
