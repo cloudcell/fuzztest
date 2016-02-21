@@ -443,28 +443,21 @@ if(0) { # the main test
 test_summary <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
 {
     # create the following table:
-    #----------------------------------------------------------------
-    #   PASS   :   FAIL   :   ARG   :  OPTION  : Argument Name
-    #----------------------------------------------------------------
-    #   Qty    :   Qty    :    1    :    1     : R
-    #    %     :    %     :         :          :
-    #----------------------------------------------------------------
-    #   Qty    :   Qty    :    1    :    2     : R
-    #    %     :    %     :         :          :
-    #----------------------------------------------------------------
+    # ========================================================
+    #     ARG~OPT        Arg Name        PASS    FAIL    FAIL%
+    # --------------------------------------------------------
     
     bound_test_data <- (cbind(as.data.frame(cont.env$container_test_args),
                               results=cont.env$container_test_results))
     
     if(verbose) head(bound_test_data)
-    
     if(verbose) str(bound_test_data)
-    
     if(verbose) by(bound_test_data, bound_test_data[,"results"], summary)
-    
-    bound_test_data_pass <- bound_test_data[bound_test_data[,'results']=="PASS",-13]
-    bound_test_data_fail <- bound_test_data[bound_test_data[,'results']=="FAIL",-13]
-    
+    if(0) {   
+        field_to_remove_nbr <- length(r)
+        bound_test_data_pass <- bound_test_data[bound_test_data[,'results']=="PASS",-field_to_remove_nbr]
+        bound_test_data_fail <- bound_test_data[bound_test_data[,'results']=="FAIL",-field_to_remove_nbr]
+    }
     
     total_results_nbr <- cont.env$result_slot_max
     
@@ -478,7 +471,7 @@ test_summary <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
     }
     summary_full
     
-    str(summary_full[[1]])
+    if(verbose) str(summary_full[[1]])
     
     summary_ext <- list()
     summary_short <- list()
@@ -523,37 +516,42 @@ test_summary <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
     #----------------------------------------------------------------
     # i=3
     
-    table_width=70
-    txt_padding=2
+    pad_width=2
+    pad.txt <- rep(" ",pad_width)
     # browser()
-    head_p1="ARG ~ OPT"
-    head_last="PASS    FAIL    FAIL %"
-    head_p2 <- format(x=argName_title, justify='centre',width=txt_width + txt_padding*2)
-    message(head_p1, rep(" ",txt_padding), head_p2, head_last)
+    argOpt_title="ARG~OPT"
+    argOpt_title_width <- nchar(argOpt_title)
+    tail_title="PASS    FAIL    FAIL%"
+    head_p2 <- format(x=argName_title, justify='centre',width=txt_width + pad_width*2)
     
-    message(rep("=",70))
-    # message(paste0( "ARG:OPT", "Arg Name", ))
-    message(rep("-",70))
+    # TODO: calculate dynamically
+    table_width=56
+    
+    message(rep("=",table_width))
+    message(pad.txt, argOpt_title, 
+            pad.txt, head_p2, 
+            pad.txt, tail_title)
+    message(rep("-",table_width))
+    
     for(i in 1:length(r)) {
         for(j in 1:nrow(summary_ext[[i]])) {
-            # format(0.23423,digits = 1)
             message(
-                # paste0(
-                    format(x=i,width=3, justify='right'), 
-                    " ~", 
-                    format(x=j,width=2, justify='right'), 
-                    rep(" ",txt_padding),
-                    format(names(r[i]), width = txt_width),
-                    rep(" ",txt_padding),
-                    format(summary_ext[[i]][,"PASS"][j],width=6, justify='right'),
-                    rep(" ",txt_padding),
-                    format(summary_ext[[i]][,"FAIL"][j],width=6, justify='right'),
-                    rep(" ",txt_padding),
-                    format(summary_ext[[i]][,"fail_pct"][j],digits = 3, nsmall = 1)
-                # )
+                pad.txt,
+                format(x=i,width=2, justify='right'), 
+                " ~ ", 
+                format(x=j,width=2, justify='left'), 
+                pad.txt,
+                pad.txt,
+                format(names(r[i]), width = txt_width),
+                pad.txt,
+                format(summary_ext[[i]][,"PASS"][j],width=6, justify='right'),
+                pad.txt,
+                format(summary_ext[[i]][,"FAIL"][j],width=6, justify='right'),
+                pad.txt,
+                pad.txt,
+                format(summary_ext[[i]][,"fail_pct"][j],digits = 3, nsmall = 1)
             )
         }
-        # message(rep("-",70))
     }
     message(rep("=",table_width))
     message() # empty line
@@ -568,23 +566,22 @@ test_summary <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
     
     # ------------------------------------------------------------------------ #
     
-    # txt_padding <- 2
+    # pad_width <- 2
     bar_width <- 50
     bar_width_all <- bar_width + 2
     
+    # a field of the table displying the percentage (of FAILs) variability
     percentage_width <- 4
     
     # ------------------------------------------------------------------------ #
     
-    table_width <- txt_width + txt_padding*3 + bar_width_all + percentage_width
+    table_width <- txt_width + pad_width*3 + bar_width_all + percentage_width
+    
+    head_p1 <- format(x=argName_title, justify='centre',width=txt_width + pad_width*2)
+    head_p2_width <- percentage_width + pad_width*1 + bar_width_all 
+    head_p2 <- format(x="Failure Rate Contribution, % (Max - Min)", width=head_p2_width, justify='centre' )
     
     message(rep("=",table_width))
-    # message(" Failure Rate Contribution, (Max % - Min %)       | Argument Name")
-    head_p1 <- format(x=argName_title, justify='centre',width=txt_width + txt_padding*2)
-    head_p2_width <- percentage_width + txt_padding*1 + bar_width_all 
-    head_p2 <- format(x="Failure Rate Contribution, % (Max - Min)", width=head_p2_width, justify='centre' )
-    # head_p2 <- format(x="Failure Rate Contribution (Max % - Min %)",width=bar_width_all, justify='left' )
-    # head_p3 <- " % "
     message(head_p1, head_p2)
     message(rep("-", table_width))
     
@@ -596,14 +593,13 @@ test_summary <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
         txt_name <- names(r[i])
         txt_name <- format(x=txt_name, justify='right', width=txt_width)
         
-        message(rep(" ",txt_padding),
+        message(pad.txt, 
                 txt_name,
-                rep(" ",txt_padding),
+                pad.txt,
                 format(summary_short[[i]],digits = 3,justify = 'right',nsmall=1, width=percentage_width),
-                rep(" ",txt_padding),
-                c("'",bar_fill,bar_blank,"'"),
-                rep(" ",txt_padding)
-                )
+                pad.txt,
+                c("'",bar_fill,bar_blank,"'") #,
+        )
         
     }
     message(rep("=",table_width))
