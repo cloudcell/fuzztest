@@ -405,20 +405,13 @@ if(0) { # the main test
     require(PerformanceAnalytics)
     cont.env <- generate.argset(register = r) # TODO: rename to setupTestContainer
     results <- apply.argset(env=cont.env, arg_register = r,
-                            FUN=ES,
-                            subset=c(1,5,222,333,444,555,666,777,888,999,41472))
+                            FUN=ES
+                            # ,
+                            # subset=c(1,5,222,333,444,555,666,777,888,999,41472)
+                            )
 
-    # create the following table:
-    #----------------------------------------------------------------
-    #   PASS   :   FAIL   :   ARG   :  OPTION  : Argument Name
-    #----------------------------------------------------------------
-    #   Qty    :   Qty    :    1    :    1     : R
-    #    %     :    %     :         :          :
-    #----------------------------------------------------------------
-    #   Qty    :   Qty    :    1    :    2     : R
-    #    %     :    %     :         :          :
-    #----------------------------------------------------------------
-
+    test_summary()
+    
     # build data necessary for a dendrogram
 
     # make a table of cross-correlation
@@ -445,6 +438,176 @@ if(0) { # the main test
     save(list="results", file = "ES_test2-20160220-0900.RData")
     getwd()
 
+}
+
+test_summary <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
+{
+    # create the following table:
+    #----------------------------------------------------------------
+    #   PASS   :   FAIL   :   ARG   :  OPTION  : Argument Name
+    #----------------------------------------------------------------
+    #   Qty    :   Qty    :    1    :    1     : R
+    #    %     :    %     :         :          :
+    #----------------------------------------------------------------
+    #   Qty    :   Qty    :    1    :    2     : R
+    #    %     :    %     :         :          :
+    #----------------------------------------------------------------
+    
+    bound_test_data <- (cbind(as.data.frame(cont.env$container_test_args),
+                              results=cont.env$container_test_results))
+    
+    if(verbose) head(bound_test_data)
+    
+    if(verbose) str(bound_test_data)
+    
+    if(verbose) by(bound_test_data, bound_test_data[,"results"], summary)
+    
+    bound_test_data_pass <- bound_test_data[bound_test_data[,'results']=="PASS",-13]
+    bound_test_data_fail <- bound_test_data[bound_test_data[,'results']=="FAIL",-13]
+    
+    
+    total_results_nbr <- cont.env$result_slot_max
+    
+    summary_full <- list()
+    for(i in 1:length(r)) {
+        summary_full[[i]] <- 
+            tapply( X=bound_test_data[,i],
+                    INDEX=list(bound_test_data[,i],
+                               bound_test_data[,'results']),
+                    length)
+    }
+    summary_full
+    
+    str(summary_full[[1]])
+    
+    summary_ext <- list()
+    summary_short <- list()
+    for(i in 1:length(r)) {
+        
+        # calculate percentages of failure
+        pct_failed <- 100 * summary_full[[i]][,"FAIL"] / 
+            (summary_full[[i]][,"PASS"]+summary_full[[i]][,"FAIL"])
+        pct_failed_min <- min(pct_failed)
+        pct_failed_max <- max(pct_failed)
+        pct_failed_diff <- pct_failed_max - pct_failed_min
+        
+        
+        summary_ext[[i]] <- cbind(summary_full[[i]], fail_pct=pct_failed)
+        summary_short[[i]] <- pct_failed_diff
+    }
+    
+    
+    
+    # ------------------------------------------------------------------------ #
+    txt_width <- 0
+    for(i in 1:length(r)) {
+        tmp <- nchar(names(r[i]))
+        if(txt_width<tmp) txt_width <- tmp
+    }
+    
+    argName_title <- "Arg Name"
+    argName_title_width <- nchar(argName_title)
+    txt_width <- max(txt_width, argName_title_width)
+    # ------------------------------------------------------------------------ #
+    
+    
+    # create the following table:
+    #----------------------------------------------------------------
+    #   PASS   :   FAIL   :  FAIL % : ARG  :  OPTION  : Argument Name
+    #----------------------------------------------------------------
+    #   Qty    :   Qty    :    1    :  1     : R
+    #   Qty    :   Qty    :    1    :  1     : R
+    #   Qty    :   Qty    :    1    :  1     : R
+    #----------------------------------------------------------------
+    #   Qty    :   Qty    :    1    :    2     : R
+    #----------------------------------------------------------------
+    # i=3
+    
+    table_width=70
+    txt_padding=2
+    # browser()
+    head_p1="ARG ~ OPT"
+    head_last="PASS    FAIL    FAIL %"
+    head_p2 <- format(x=argName_title, justify='centre',width=txt_width + txt_padding*2)
+    message(head_p1, rep(" ",txt_padding), head_p2, head_last)
+    
+    message(rep("=",70))
+    # message(paste0( "ARG:OPT", "Arg Name", ))
+    message(rep("-",70))
+    for(i in 1:length(r)) {
+        for(j in 1:nrow(summary_ext[[i]])) {
+            # format(0.23423,digits = 1)
+            message(
+                # paste0(
+                    format(x=i,width=3, justify='right'), 
+                    " ~", 
+                    format(x=j,width=2, justify='right'), 
+                    rep(" ",txt_padding),
+                    format(names(r[i]), width = txt_width),
+                    rep(" ",txt_padding),
+                    format(summary_ext[[i]][,"PASS"][j],width=6, justify='right'),
+                    rep(" ",txt_padding),
+                    format(summary_ext[[i]][,"FAIL"][j],width=6, justify='right'),
+                    rep(" ",txt_padding),
+                    format(summary_ext[[i]][,"fail_pct"][j],digits = 3, nsmall = 1)
+                # )
+            )
+        }
+        # message(rep("-",70))
+    }
+    message(rep("=",table_width))
+    message() # empty line
+    
+    # ------------------------------------------------------------------------ #
+    # | Failure Rate Contribution, (Max % - Min %)       | Argument Name
+    # [***********************                           ] 
+    # [**************************************************] 
+    #  
+    summary_short
+    
+    
+    # ------------------------------------------------------------------------ #
+    
+    # txt_padding <- 2
+    bar_width <- 50
+    bar_width_all <- bar_width + 2
+    
+    percentage_width <- 4
+    
+    # ------------------------------------------------------------------------ #
+    
+    table_width <- txt_width + txt_padding*3 + bar_width_all + percentage_width
+    
+    message(rep("=",table_width))
+    # message(" Failure Rate Contribution, (Max % - Min %)       | Argument Name")
+    head_p1 <- format(x=argName_title, justify='centre',width=txt_width + txt_padding*2)
+    head_p2_width <- percentage_width + txt_padding*1 + bar_width_all 
+    head_p2 <- format(x="Failure Rate Contribution, % (Max - Min)", width=head_p2_width, justify='centre' )
+    # head_p2 <- format(x="Failure Rate Contribution (Max % - Min %)",width=bar_width_all, justify='left' )
+    # head_p3 <- " % "
+    message(head_p1, head_p2)
+    message(rep("-", table_width))
+    
+    for(i in 1:length(r)) {
+        
+        bar_fill <-  paste0(rep("*", round( bar_width/100 * summary_short[[i]], digits = 0)))
+        bar_blank <- paste0(rep(" ", bar_width - round( bar_width/100 * summary_short[[i]], digits = 0)))
+        
+        txt_name <- names(r[i])
+        txt_name <- format(x=txt_name, justify='right', width=txt_width)
+        
+        message(rep(" ",txt_padding),
+                txt_name,
+                rep(" ",txt_padding),
+                format(summary_short[[i]],digits = 3,justify = 'right',nsmall=1, width=percentage_width),
+                rep(" ",txt_padding),
+                c("'",bar_fill,bar_blank,"'"),
+                rep(" ",txt_padding)
+                )
+        
+    }
+    message(rep("=",table_width))
+    
 }
 
 
