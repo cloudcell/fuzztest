@@ -1,5 +1,5 @@
 
-
+# generates analytics for plotting
 generate.analytics <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE) 
 {
     # use this name to debug the function running its code outside the function
@@ -28,7 +28,7 @@ plot.tests <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
         generate.analytics(env=cont.env)
     }
      
-    message("Plotting failed combinations of argument options...")   
+    message("Plotting combinations of argument options...")   
     
     require(lattice)
     

@@ -1,10 +1,10 @@
 #------------------------------------------------------------------------------#
-# Package: "crashtest"
+# Package: "stresstest"
 # Test functions aimed at improving the quality of R code
 #------------------------------------------------------------------------------#
 # Description: a set of functions to verify that none of
 #              the combinations of input arguments
-#              causes a function undergoing crash test (stress test)
+#              causes a function undergoing stress test
 #              to produce an error
 #
 # Author: cloudcell
@@ -338,9 +338,9 @@ errorHandlingTest <- function(FUN,args)
 
 
 # TODO: bring out the environment out to be able to save it easily
-# crashTest <- function(env,arg_register, FUN, verbose=FALSE)#, test_set_container)
+# stressTest <- function(env,arg_register, FUN, verbose=FALSE)#, test_set_container)
 apply.argset <- # alias
-crashTest <- function(env, arg_register, FUN, verbose=FALSE, subset=NULL, DEBUG=FALSE)#, test_set_container)
+stressTest <- function(env, arg_register, FUN, verbose=FALSE, subset=NULL, DEBUG=FALSE)#, test_set_container)
 {
     browser(expr = DEBUG)
     if(DEBUG) { verbose = TRUE }
@@ -373,13 +373,13 @@ crashTest <- function(env, arg_register, FUN, verbose=FALSE, subset=NULL, DEBUG=
     message(rep("-",70))
     for(i in selected_argset) {
 
-        message("CRASHTEST: Argument Combination ID ", i)
+        message("STRESSTEST: Argument Combination ID ", i)
         arg_ids.vct <- cont.env$container_test_args[i,]
 
         # prepare a single set of arguments for testing
         final_arg <- prepareArgs(arg_register = r, arg_selection_vector = arg_ids.vct, DEBUG=DEBUG)
 
-        # test error handling / crash
+        # test error crash/handling
         result <- errorHandlingTest(FUN=FUN, args = final_arg)
         message("Result: ", result)
         message(rep("-",70))
