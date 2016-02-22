@@ -422,7 +422,7 @@ if(0) { # the main test
     levels(failure_map.fct$V2)
     
     failure_map <- as.matrix( cont.env$bound_test_data[
-            cont.env$bound_test_data[,'results']=="FAIL",2:4])
+            cont.env$bound_test_data[,'results']=="FAIL",1:4])
     factor(failure_map$V2)
     pairs(failure_map)
     pairs(failure_map.fct)
@@ -444,6 +444,33 @@ if(0) { # the main test
                #     cont.env$bound_test_data[cont.env$bound_test_data[,'results']=="FAIL",2:4]),
                # type=c('factor','factor','factor')
     ))
+    
+    require(lattice)
+    
+    parallelplot(failure_map.fct, horizontal.axis=FALSE)
+    parallelplot(failure_map, horizontal.axis=FALSE, col="#000000")
+    parallelplot(failure_map, horizontal.axis=FALSE, col=rainbow(16))
+    
+    nr <- nrow(failure_map)
+    failure_map_parplot <- failure_map
+    for(i in 1:nr){
+        for(j in 1:ncol(failure_map_parplot)) {
+            opt_nbr_max <- length(r[[j]])
+            
+            # the max value one can add and still avoid wrong association
+            # among adjacent argument option numbers is calculated as follows:
+            # jitter <- ((opt_nbr_max - .99999)/opt_nbr_max )/nr * i
+            # 
+            # the only necessary condition: ( jitter < 1 ), as factors/option 
+            # numbers are separated by a distance == 1
+            jitter <- (i / nr) # / opt_nbr_max
+            # add a band of 'white space'
+            jitter <- jitter / 2
+            failure_map_parplot[i,j] <- failure_map_parplot[i,j] + jitter # the max shift must depend on the max number of options per variable
+        }
+    }
+    failure_map_parplot
+    parallelplot(failure_map_parplot, horizontal.axis=FALSE, col=rainbow(nr))
     
     # TODO: build a dendrogram for small tests (much fewer than 40K records)
     # within failed tests only
