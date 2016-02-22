@@ -61,7 +61,8 @@ plot.tests <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
     
     # TODO: add arg. names as labels to the graph
     chart <- parallelplot(failure_map_parplot, horizontal.axis=FALSE, col=rainbow(nr),
-                 main="Argument-Option Combinations Correlated with Function Failure")
+                 main="Argument-Option Combinations Correlated with Function 'Error' Output")
+                 # main="Argument-Option Combinations Correlated with Function Failure")
     print(chart)
     # splom(failure_map_parplot, horizontal.axis=FALSE, col=rainbow(nr))
     message("Done.")       

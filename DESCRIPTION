@@ -1,0 +1,12 @@
+Package: stresstest
+Title: Simple Function Stress Testing
+Version: 0.0.1.0001
+Authors@R: person("cloudcello", "_", email = "ef256aff@opayq.com", role = c("aut", "cre"))
+Description: Utility function for stress testing functions and visualizing argument
+    options associated with error output 
+Depends:
+    lattice
+License: GPL-3
+LazyData: true
+Copyright: (c) 2015-16
+RoxygenNote: 5.0.1

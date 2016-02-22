@@ -151,7 +151,11 @@ generate.argset <- function(arg_register, cust.env=NULL, verbose=FALSE, DEBUG=FA
     message("----------------------------------------------------------------------")
     message("The following objects are available within the testing environment:")
     print(ls(envir = e))
-    e
+    
+    # create an environment only if no custom env. was provided
+    if(is.null(cust.env)) {
+        .GlobalEnv$cont.env <- e
+    }
 }
 
 
@@ -344,16 +348,28 @@ errorHandlingTest <- function(FUN,args)
     result
 }
 
-
+# produce results {PASS,FAIL} for every argument test set
+# function name must be supplied to THIS function as it allows developing
+# adjusted versions of functions and test them further
 # TODO: bring out the environment out to be able to save it easily
 # stressTest <- function(env,arg_register, FUN, verbose=FALSE)#, test_set_container)
 apply.argset <- # alias
-stressTest <- function(env=cont.env, arg_register=cont.env$arg_register, 
+stressTest <- function(env=NULL, arg_register=cont.env$arg_register, 
                        FUN, subset=NULL, verbose=FALSE, DEBUG=FALSE)
 {
     browser(expr = DEBUG)
     if(DEBUG) { verbose = TRUE }
 
+    if(mode(FUN)!="character") 
+        stop (paste0("Wrong argument FUN: please, provide a character ", 
+                     "string naming the function to be called"))
+    
+    if(is.null(env)) {
+        cont.env <- .GlobalEnv$cont.env
+    } else {
+        cont.env <- env
+    }
+        
     r=arg_register # to be able to run function code "in the global env."
     #
     # cont.env <- getTestParamIds(register = r)
@@ -400,6 +416,18 @@ stressTest <- function(env=cont.env, arg_register=cont.env$arg_register,
     print(ls(envir = cont.env))
     
     # cont.env$container_test_results # throw the results out (a la 'foreach')
+
+    
+    #--------------------------------------------------------------------------#
+    # TODO: use a variable for the name of a tested function
+    fname <- paste0("StressTest_", FUN, "_", gsub("[\\ :]","-",Sys.time()), ".RData")
+    # save(list="bound_test_data", envir = cont.env, file = fname)
+    # TODO: ASAP: rename cont.env() to .stress and create such an environment
+    # if any custom env. was used (rename within the function that saves data)
+    save(list="cont.env", envir = cont.env, file = fname)
+    message("Test 'results' data was saved in ",getwd(), " as ", fname)
+    
+        
 }
 
 
@@ -443,32 +471,22 @@ if(0) { # the main test
     }
 
     
-    
     require(PerformanceAnalytics)
     
     # TODO: prepare and store an argument test set in a separate environment
     # .stresstest.env or '.stress'
-    cont.env <- generate.argset(arg_register = r)
+    generate.argset(arg_register = r)
+
+    # produce results {PASS,FAIL} for every argument test set    
+    apply.argset(FUN="ES") # , subset=c(1,5,222,333,444,555,666,777,888,999,41472)
     
-    # produce results {PASS,FAIL} for every argument test set
-    # function name must be supplied to THIS function as it allows developing
-    # adjusted versions of functions and test them further
-    apply.argset(FUN=ES) # , subset=c(1,5,222,333,444,555,666,777,888,999,41472)
-    
+    # print test summary
     test_summary()
+    
     
     plot.tests()
     
 
-
-    # TODO: move the following into 'apply.argset()' as an external data saving
-    #       function, not to distract end user
-
-    # TODO: use a variable for the name of a tested function
-    fname <- paste0("StressTest_", "ES", "_", gsub("[\\ :]","-",Sys.time()), ".RData")
-    # save(list="bound_test_data", envir = cont.env, file = fname)
-    save(list="cont.env", envir = cont.env, file = fname)
-    message("Test 'results' data was saved in ",getwd(), " as ", fname)
 
 }
 
