@@ -425,7 +425,7 @@ stressTest <- function(env=NULL, arg_register=cont.env$arg_register,
     # TODO: ASAP: rename cont.env() to .stress and create such an environment
     # if any custom env. was used (rename within the function that saves data)
     save(list="cont.env", envir = cont.env, file = fname)
-    message("Test 'results' data was saved in ",getwd(), " as ", fname)
+    message("Test data was saved in ",getwd(), " as ", fname)
     
         
 }
@@ -440,17 +440,17 @@ if(0) { # the main test
     # set up an 'argument register' with all the required test values
     r <- list()
     r$R                = list( pr ) # TODO: variable name as character string ?
-    if(0)    r$p                = list( 0.95, "__MISSING__" )
+    # r$p                = list( 0.95, "__MISSING__" )
     r$method           = list( "modified", "gaussian", "historical", "__MISSING__" )
-    if(0)    r$clean            = list( "none", "boudt", "geltner", "__MISSING__" )
+    # r$clean            = list( "none", "boudt", "geltner", "__MISSING__" )
     r$portfolio_method = list( "single", "component", "__MISSING__" )
     r$weights          = list( "NULL", c(1.0), "__MISSING__" )
-    if(0)    r$mu               = list( "NULL", "__MISSING__" )
-    if(0)    r$sigma            = list( "NULL", "__MISSING__" )
-    if(0)    r$m3               = list( "NULL", "__MISSING__" )
-    if(0)    r$m4               = list( "NULL", "__MISSING__" )
-    if(0)    r$invert           = list( "TRUE", "FALSE", "__MISSING__" )
-    if(0)    r$operational      = list( "TRUE", "FALSE", "__MISSING__" )
+    # r$mu               = list( "NULL", "__MISSING__" )
+    # r$sigma            = list( "NULL", "__MISSING__" )
+    # r$m3               = list( "NULL", "__MISSING__" )
+    # r$m4               = list( "NULL", "__MISSING__" )
+    # r$invert           = list( "TRUE", "FALSE", "__MISSING__" )
+    # r$operational      = list( "TRUE", "FALSE", "__MISSING__" )
     str(r)
 
     if(0) {
@@ -472,6 +472,7 @@ if(0) { # the main test
 
     
     require(PerformanceAnalytics)
+    data(ES_test_data)
     
     # TODO: prepare and store an argument test set in a separate environment
     # .stresstest.env or '.stress'
