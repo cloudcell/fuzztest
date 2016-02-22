@@ -29,6 +29,18 @@
 # 5. try adjusting (nesting level) indentation within str.xts()
 # 6. consider this alternative: https://cran.r-project.org/web/packages/data.tree/vignettes/data.tree.html#tree-creation
 
+#------------------------------------------------------------------------------#
+## Raw description of the original plan - TODO: revise to reflect the current state
+# 1. create register of possible options (values/missing) for each argument
+# 2. produce an index to the register ( getComboQty() )
+# 3. create an environment as a container for the combos & results & fill it & provide a ref.
+# ls(envir = cont.env)
+# 4. apply.argset(argset_container.env, FUN)
+# results <- apply.argset(env=cont.env, arg_register = r,  FUN=ES, subset=c(1), DEBUG=TRUE)
+#------------------------------------------------------------------------------#
+
+
+
 # makes an index and  calculates the product of all options
 getComboQty <- function(register, verbose=TRUE)
 {
@@ -374,7 +386,11 @@ crashTest <- function(env, arg_register, FUN, verbose=FALSE, subset=NULL, DEBUG=
 
         cont.env$container_test_results[i] <- result
     }
-    cont.env$container_test_results # throw the results out (a la 'foreach')
+    
+    message("Test results were saved in the test environment in 'container_test_results'")
+    print(ls(envir = cont.env))
+    
+    # cont.env$container_test_results # throw the results out (a la 'foreach')
 }
 
 
@@ -403,93 +419,18 @@ if(0) { # the main test
 
     require(PerformanceAnalytics)
     
+    # prepare and store an argument test set in a separate environment
     cont.env <- generate.argset(register = r)
     
-    results <- apply.argset(env=cont.env, arg_register = r, FUN=ES 
-                            # , subset=c(1,5,222,333,444,555,666,777,888,999,41472)
-                            )
-
-    # test_summary(env = cont.env) #TODO: change default env to ".test.cont.env"
+    # produce results {PASS,FAIL} for every argument test set
+    # results <- 
+    apply.argset(env=cont.env, arg_register = r, FUN=ES )
+                 # , subset=c(1,5,222,333,444,555,666,777,888,999,41472)
+    
     test_summary()
     
-    clusters <- hclust(dist(cont.env$bound_test_data[ cont.env$bound_test_data['results']=='FAIL', 3:4]))
-    plot(clusters)
-
+    plot.tests()
     
-    failure_map <- ( cont.env$bound_test_data[
-            cont.env$bound_test_data[,'results']=="FAIL",2:4])
-    failure_map.fct <- data.frame(apply(failure_map,2,as.factor))
-    levels(failure_map.fct$V2)
-    
-    failure_map <- as.matrix( cont.env$bound_test_data[
-            cont.env$bound_test_data[,'results']=="FAIL",1:4])
-    factor(failure_map$V2)
-    pairs(failure_map)
-    pairs(failure_map.fct)
-    
-    require(cluster)
-    heatmap(
-        as.matrix(
-        daisy(failure_map.fct
-            # as.matrix(
-            #     cont.env$bound_test_data[cont.env$bound_test_data[,'results']=="FAIL",2:4]),
-            # type=c('factor','factor','factor')
-        )),
-        col=rainbow(n=4,start = 0.05)
-    )
-    dist(failure_map.fct) # wrong for factor class
-    
-    plot(daisy(failure_map.fct
-               # as.matrix(
-               #     cont.env$bound_test_data[cont.env$bound_test_data[,'results']=="FAIL",2:4]),
-               # type=c('factor','factor','factor')
-    ))
-    
-    require(lattice)
-    
-    parallelplot(failure_map.fct, horizontal.axis=FALSE)
-    parallelplot(failure_map, horizontal.axis=FALSE, col="#000000")
-    parallelplot(failure_map, horizontal.axis=FALSE, col=rainbow(16))
-    
-    nr <- nrow(failure_map)
-    failure_map_parplot <- failure_map
-    for(i in 1:nr){
-        for(j in 1:ncol(failure_map_parplot)) {
-            opt_nbr_max <- length(r[[j]])
-            
-            # the max value one can add and still avoid wrong association
-            # among adjacent argument option numbers is calculated as follows:
-            # jitter <- ((opt_nbr_max - .99999)/opt_nbr_max )/nr * i
-            # 
-            # the only necessary condition: ( jitter < 1 ), as factors/option 
-            # numbers are separated by a distance == 1
-            jitter <- (i / nr) # / opt_nbr_max
-            # add a band of 'white space'
-            jitter <- jitter / 2
-            failure_map_parplot[i,j] <- failure_map_parplot[i,j] + jitter # the max shift must depend on the max number of options per variable
-        }
-    }
-    failure_map_parplot
-    parallelplot(failure_map_parplot, horizontal.axis=FALSE, col=rainbow(nr))
-    
-    # TODO: build a dendrogram for small tests (much fewer than 40K records)
-    # within failed tests only
-
-    # TODO: make a table of correlations among combinations of argument options
-    # within failed tests only
-
-    
-    # 1. create register of possible options (values/missing) for each argument
-    #
-    # 2. produce an index to the register
-    # zz <- getComboQty(r) # creates an index
-
-    # 3. create an environment
-    #    as a container for the combos & results & fill it & provide a ref.
-    # ls(envir = cont.env)
-
-    # 4. apply.argset(argset_container.env, FUN)
-    # results <- apply.argset(env=cont.env, arg_register = r,  FUN=ES, subset=c(1), DEBUG=TRUE)
 
 
     #results <- .Last.value
@@ -499,113 +440,6 @@ if(0) { # the main test
     message("Test 'results' data was saved in ",getwd(), " as ", fname)
 
 }
-
-
-
-#----junkyard------------------------------------------------------------------#
-if(0) {
-
-# str(r)
-# length(r)
-# r
-#
-# unlist(r$p[1]  )
-# names(r[1])
-
-
-
-if(0) {
-    ## Title: Error tests for ES()
-    ## Description: tests ES() for producing errors based on all possible combinations of options
-
-    ES(R = ,
-       p = 0.95,
-       # ... = ,
-       method           = c("modified", "gaussian", "historical"),
-       clean            = c("none", "boudt", "geltner"),
-       portfolio_method = c("single", "component"),
-       weights          = NULL,
-       mu               = NULL,
-       sigma            = NULL,
-       m3               = NULL,
-       m4               = NULL,
-       invert           = TRUE,
-       operational      = TRUE)
-
-
-    if(0){
-        errorHandlingTest("+",args = list(1,1))
-        errorHandlingTest("+",args = list(1,1,3))
-    }
-
-
-}
-
-
-# TESTS:
-if(0) {
-
-
-    # get_next_branch(zz$idx, branch_id=1,accum_leafs=c(0))
-
-    getArg(zz$idx,10)
-
-    zz$idx[10,"qty"]
-
-    # for(i in 1:)
-
-    #
-    args <- list(1,2,3,NULL)
-    args
-    args[[1]] <- NULL
-
-
-    args
-    args[['test']]=TRUE
-    args
-    args[['test']] <- NULL # remove from the list
-    args[['test']] = NULL # remove from the list
-    args
-    args
-
-    args$invert=TRUE
-    args
-}
-
-# do.call() reference:
-if(0) {
-    # If quote is FALSE, the default, then the arguments are evaluated (in the
-    # calling environment, not in envir). If quote is TRUE then each argument is
-    # quoted (see quote) so that the effect of argument evaluation is to remove the
-    # quotes – leaving the original arguments unevaluated when the call is
-    # constructed.
-
-    do.call()
-
-    do.call
-    function (what, args, quote = FALSE, envir = parent.frame())
-    {
-        if (!is.list(args))
-            stop("second argument must be a list")
-        if (quote)
-            args <- lapply(args, enquote)
-        .Internal(do.call(what, args, envir))
-    }
-
-}
-
-# TESTS: get_leafs
-if(0) {
-    test_idx <- get_next_branch(zz$idx, branch_id=1, accum_leafs=c())#, DEBUG=TRUE)
-    get_next_branch(zz$idx, branch_id=8)#, DEBUG=TRUE)
-    get_next_branch(zz$idx)
-    get_next_branch(zz$idx, branch_id=11, accum_leafs=c())#, DEBUG=TRUE)
-    get_next_branch(zz$idx, branch_id=11, accum_leafs=c(), DEBUG=TRUE)
-}
-
-}
-#------------------------------------------------------------------------------#
-
 
 
 
