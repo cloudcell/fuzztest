@@ -31,6 +31,7 @@ generate.analytics <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
 plot.tests <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE) 
 {
 
+    cont.env=env
     # prepare data for plotting, if data does not yet exist
     if(is.null(cont.env$failure_map)) {
         message("Data for plotting has not yet been generaged. Generating data.")
@@ -40,6 +41,8 @@ plot.tests <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
     message("Plotting combinations of argument options...")   
     
     require(lattice)
+    
+    failure_map <- cont.env$failure_map
     
     nr <- nrow(failure_map)
     failure_map_parplot <- failure_map
