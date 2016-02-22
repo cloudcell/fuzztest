@@ -412,6 +412,38 @@ if(0) { # the main test
     # test_summary(env = cont.env) #TODO: change default env to ".test.cont.env"
     test_summary()
     
+    clusters <- hclust(dist(cont.env$bound_test_data[ cont.env$bound_test_data['results']=='FAIL', 3:4]))
+    plot(clusters)
+
+    
+    failure_map <- ( cont.env$bound_test_data[
+            cont.env$bound_test_data[,'results']=="FAIL",2:4])
+    failure_map.fct <- data.frame(apply(failure_map,2,as.factor))
+    levels(failure_map.fct$V2)
+    
+    failure_map <- as.matrix( cont.env$bound_test_data[
+            cont.env$bound_test_data[,'results']=="FAIL",2:4])
+    factor(failure_map$V2)
+    pairs(failure_map)
+    pairs(failure_map.fct)
+    
+    require(cluster)
+    heatmap(
+        as.matrix(
+        daisy(failure_map.fct
+            # as.matrix(
+            #     cont.env$bound_test_data[cont.env$bound_test_data[,'results']=="FAIL",2:4]),
+            # type=c('factor','factor','factor')
+        )),
+        col=rainbow(n=4,start = 0.05)
+    )
+    dist(failure_map.fct) # wrong for factor class
+    
+    plot(daisy(failure_map.fct
+               # as.matrix(
+               #     cont.env$bound_test_data[cont.env$bound_test_data[,'results']=="FAIL",2:4]),
+               # type=c('factor','factor','factor')
+    ))
     
     # TODO: build a dendrogram for small tests (much fewer than 40K records)
     # within failed tests only
