@@ -3,22 +3,29 @@
 
 test_summary <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
 {
-    # create the following table:
-    # ========================================================
-    #     ARG~OPT        Arg Name        PASS    FAIL    FAIL%
-    # --------------------------------------------------------
+    # prepare data for summary tables
+    cont.env=env
     
     bound_test_data <- (cbind(as.data.frame(cont.env$container_test_args),
                               results=cont.env$container_test_results))
     
+    # save in the environment
+    cont.env$bound_test_data <- bound_test_data
+    
     if(verbose) head(bound_test_data)
     if(verbose) str(bound_test_data)
     if(verbose) by(bound_test_data, bound_test_data[,"results"], summary)
+    
+    # ------------------------------------------------------------------------ #
+    field_to_remove_nbr <- length(r)+1 # the one last field with 'results' added later
+    
+    # needed for small size tests dendrogram 
+    bound_test_data_fail <- bound_test_data[bound_test_data[,'results']=="FAIL",-field_to_remove_nbr]
+
     if(0) {   
-        field_to_remove_nbr <- length(r)
         bound_test_data_pass <- bound_test_data[bound_test_data[,'results']=="PASS",-field_to_remove_nbr]
-        bound_test_data_fail <- bound_test_data[bound_test_data[,'results']=="FAIL",-field_to_remove_nbr]
     }
+    # ------------------------------------------------------------------------ #
     
     total_results_nbr <- cont.env$result_slot_max
     
@@ -30,7 +37,7 @@ test_summary <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
                                bound_test_data[,'results']),
                     length)
     }
-    summary_full
+    # summary_full
     
     if(verbose) str(summary_full[[1]])
     
@@ -51,7 +58,14 @@ test_summary <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
     }
     
     
+    # <<-- at this point, all the summary data has been prepared -->>
     
+    # save summaries in the environment
+    cont.env$summary_short <- summary_short
+    cont.env$summary_ext <- summary_ext
+    
+    # ######################################################################## #
+    # Prepare Common Parameters for the Two Summary Tables
     # ------------------------------------------------------------------------ #
     txt_width <- 0
     for(i in 1:length(r)) {
@@ -64,30 +78,30 @@ test_summary <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
     txt_width <- max(txt_width, argName_title_width)
     # ------------------------------------------------------------------------ #
     
-    
-    # create the following table:
-    #----------------------------------------------------------------
-    #   PASS   :   FAIL   :  FAIL % : ARG  :  OPTION  : Argument Name
-    #----------------------------------------------------------------
-    #   Qty    :   Qty    :    1    :  1     : R
-    #   Qty    :   Qty    :    1    :  1     : R
-    #   Qty    :   Qty    :    1    :  1     : R
-    #----------------------------------------------------------------
-    #   Qty    :   Qty    :    1    :    2     : R
-    #----------------------------------------------------------------
-    # i=3
+    message("Summary: Extended")
+    # ######################################################################## #
+    # Summary Table: Extended
+    # ======================================================== #
+    # ARG~OPT        Arg Name        PASS    FAIL    FAIL%
+    # -------------------------------------------------------- #
+    # browser()
     
     pad_width=2
     pad.txt <- rep(" ",pad_width)
-    # browser()
+    
     argOpt_title="ARG~OPT"
     argOpt_title_width <- nchar(argOpt_title)
+    
     tail_title="PASS    FAIL    FAIL%"
+    tail_title_width=nchar(tail_title)
+    
     head_p2 <- format(x=argName_title, justify='centre',width=txt_width + pad_width*2)
+    head_p2_width <- nchar(head_p2)
     
-    # TODO: calculate dynamically
-    table_width=56
+    table_width <- argOpt_title_width + head_p2_width + tail_title_width +
+                   pad_width    + pad_width      + pad_width*2 
     
+    # <-- start drawing -->
     message(rep("=",table_width))
     message(pad.txt, argOpt_title, 
             pad.txt, head_p2, 
@@ -117,15 +131,22 @@ test_summary <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
     message(rep("=",table_width))
     message() # empty line
     
-    # ------------------------------------------------------------------------ #
-    # | Failure Rate Contribution, (Max % - Min %)       | Argument Name
-    # [***********************                           ] 
-    # [**************************************************] 
-    #  
-    summary_short
+    # ############################################################################## #
+    # Summary Table: Short
+    # ============================================================================== #
+    #       Arg Name               Failure Rate Contribution, % (Max - Min)         
+    # ------------------------------------------------------------------------------ #
+    #                  R   0.0  '                                                  '
+    #                  p   0.0  '                                                  '
+    #             method  33.3  '*****************                                 '
+    #              clean   0.0  '                                                  '
+    #   portfolio_method  41.7  '*********************                             '
+    #            weights  66.7  '*********************************                 '
+    #            
+    # ------------------------------------------------------------------------------ #
+  
+    if(verbose) str(summary_short)
     
-    
-    # ------------------------------------------------------------------------ #
     
     # pad_width <- 2
     bar_width <- 50
@@ -142,6 +163,10 @@ test_summary <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
     head_p2_width <- percentage_width + pad_width*1 + bar_width_all 
     head_p2 <- format(x="Failure Rate Contribution, % (Max - Min)", width=head_p2_width, justify='centre' )
     
+    
+    message("Summary: Short")
+    
+    # <-- start drawing -->
     message(rep("=",table_width))
     message(head_p1, head_p2)
     message(rep("-", table_width))
@@ -157,14 +182,19 @@ test_summary <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
         message(pad.txt, 
                 txt_name,
                 pad.txt,
-                format(summary_short[[i]],digits = 3,justify = 'right',nsmall=1, width=percentage_width),
+                format(summary_short[[i]],digits = 3, justify = 'right', nsmall=1, width=percentage_width),
                 pad.txt,
                 c("'",bar_fill,bar_blank,"'") #,
         )
         
     }
     message(rep("=",table_width))
+    message() # blank line
     
+    if(verbose) message("summaries were saved in the testing environment as")
+    if(verbose) message("'summary_short' and 'summary_ext'")
+       
+    if(verbose) print(ls(envir = cont.env))
 }
 
 

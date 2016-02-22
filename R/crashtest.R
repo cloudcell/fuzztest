@@ -384,10 +384,9 @@ if(0) { # the main test
 
     ## set up test for a function
 
-    # arguments:
-    # * set up argument register with all possible arg. value assignments
+    # set up an 'argument register' with all the required test values
     r <- list()
-    r$R                = list( pr ) # variable name as character string ?
+    r$R                = list( pr ) # TODO: variable name as character string ?
     r$p                = list( 0.95, "__MISSING__" )
     r$method           = list( "modified", "gaussian", "historical", "__MISSING__" )
     r$clean            = list( "none", "boudt", "geltner", "__MISSING__" )
@@ -403,26 +402,27 @@ if(0) { # the main test
 
 
     require(PerformanceAnalytics)
-    cont.env <- generate.argset(register = r) # TODO: rename to setupTestContainer
-    results <- apply.argset(env=cont.env, arg_register = r,
-                            FUN=ES
-                            # ,
-                            # subset=c(1,5,222,333,444,555,666,777,888,999,41472)
+    
+    cont.env <- generate.argset(register = r)
+    
+    results <- apply.argset(env=cont.env, arg_register = r, FUN=ES 
+                            # , subset=c(1,5,222,333,444,555,666,777,888,999,41472)
                             )
 
+    # test_summary(env = cont.env) #TODO: change default env to ".test.cont.env"
     test_summary()
     
-    # build data necessary for a dendrogram
+    
+    # TODO: build a dendrogram for small tests (much fewer than 40K records)
+    # within failed tests only
 
-    # make a table of cross-correlation
-    # for every combination of argument options
-    #
-    #
+    # TODO: make a table of correlations among combinations of argument options
+    # within failed tests only
 
+    
     # 1. create register of possible options (values/missing) for each argument
     #
     # 2. produce an index to the register
-    # zz <- getComboQty(r)
     # zz <- getComboQty(r) # creates an index
 
     # 3. create an environment
@@ -432,11 +432,12 @@ if(0) { # the main test
     # 4. apply.argset(argset_container.env, FUN)
     # results <- apply.argset(env=cont.env, arg_register = r,  FUN=ES, subset=c(1), DEBUG=TRUE)
 
-    plot(which(results=="PASS"))
 
     #results <- .Last.value
-    save(list="results", file = "ES_test2-20160220-0900.RData")
-    getwd()
+    # TODO: use a variable for the name of a tested function
+    fname <- paste0("StressTest_", "ES", "_", gsub("[\\ :]","-",Sys.time()), ".RData")
+    save(list="bound_test_data", envir = cont.env, file = fname)
+    message("Test 'results' data was saved in ",getwd(), " as ", fname)
 
 }
 
