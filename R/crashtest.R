@@ -14,6 +14,7 @@
 #------------------------------------------------------------------------------#
 
 # TODOs (in the order of priority) ----
+# A. start using the default environment named '.stress' 
 # 0. create a dendrogram of input parameters for tests with the status == 'FAIL'
 # 1. consider using variable names as character strings and numeric values:
 #    variable names as strings could be displayed more easily
@@ -102,9 +103,8 @@ getComboQty <- function(register, verbose=TRUE)
 
 # TODO: rename to prepareTestParamIds
 # or "setupTestContainer" setupTestCombos generateArgSet argset.generate
-# (returns environment with test combos of args (their ids within the register))
-generate.argset <- # alias
-getTestParamIds <- function(register, verbose=FALSE, DEBUG=FALSE)
+# (returns the environment with test combos of args (their ids within the register))
+generate.argset <- function(arg_register, cust.env=NULL, verbose=FALSE, DEBUG=FALSE)
 {
     message(rep("-",70))
     message("Generating argset")
@@ -115,10 +115,18 @@ getTestParamIds <- function(register, verbose=FALSE, DEBUG=FALSE)
     # capacity (number of possible records)
     # next available slot within the matrix
 
-    e <- new.env() # storage.env
-    # size <- getComboQty(register=idx, verbose=TRUE)
-    # size <- getComboQty(register=zz$idx, verbose=TRUE)
-    combos <- getComboQty(register=register, verbose=FALSE)
+    if(!is.null(cust.env)){
+        if(!inherits(cust.env, what = "environment")) 
+            stop("Custom environment 'cust.env' must be of class 'environment'.")
+        e=cust.env # if a custom environment has been provided
+    } else {
+        e <- new.env() # storage.env
+    }
+
+    # save the register
+    e$arg_register <- arg_register
+    
+    combos <- getComboQty(register=arg_register, verbose=FALSE)
     combos$args_qty
     combos$total_qty
 
@@ -340,7 +348,8 @@ errorHandlingTest <- function(FUN,args)
 # TODO: bring out the environment out to be able to save it easily
 # stressTest <- function(env,arg_register, FUN, verbose=FALSE)#, test_set_container)
 apply.argset <- # alias
-stressTest <- function(env, arg_register, FUN, verbose=FALSE, subset=NULL, DEBUG=FALSE)#, test_set_container)
+stressTest <- function(env=cont.env, arg_register=cont.env$arg_register, 
+                       FUN, subset=NULL, verbose=FALSE, DEBUG=FALSE)
 {
     browser(expr = DEBUG)
     if(DEBUG) { verbose = TRUE }
@@ -416,16 +425,35 @@ if(0) { # the main test
     if(0)    r$operational      = list( "TRUE", "FALSE", "__MISSING__" )
     str(r)
 
+    if(0) {
+        r <- list()
+        r$R                = list( pr ) # TODO: variable name as character string ?
+        r$p                = list( 0.95, "__MISSING__" )
+        r$method           = list( "modified", "gaussian", "historical", "__MISSING__" )
+        r$clean            = list( "none", "boudt", "geltner", "__MISSING__" )
+        r$portfolio_method = list( "single", "component", "__MISSING__" )
+        r$weights          = list( "NULL", c(1.0), "__MISSING__" )
+        r$mu               = list( "NULL", "__MISSING__" )
+        r$sigma            = list( "NULL", "__MISSING__" )
+        r$m3               = list( "NULL", "__MISSING__" )
+        r$m4               = list( "NULL", "__MISSING__" )
+        r$invert           = list( "TRUE", "FALSE", "__MISSING__" )
+        r$operational      = list( "TRUE", "FALSE", "__MISSING__" )
+        str(r)
+    }
 
+    
+    
     require(PerformanceAnalytics)
     
-    # prepare and store an argument test set in a separate environment
-    cont.env <- generate.argset(register = r)
+    # TODO: prepare and store an argument test set in a separate environment
+    # .stresstest.env or '.stress'
+    cont.env <- generate.argset(arg_register = r)
     
     # produce results {PASS,FAIL} for every argument test set
-    # results <- 
-    apply.argset(env=cont.env, arg_register = r, FUN=ES )
-                 # , subset=c(1,5,222,333,444,555,666,777,888,999,41472)
+    # function name must be supplied to THIS function as it allows developing
+    # adjusted versions of functions and test them further
+    apply.argset(FUN=ES) # , subset=c(1,5,222,333,444,555,666,777,888,999,41472)
     
     test_summary()
     
@@ -433,10 +461,13 @@ if(0) { # the main test
     
 
 
-    #results <- .Last.value
+    # TODO: move the following into 'apply.argset()' as an external data saving
+    #       function, not to distract end user
+
     # TODO: use a variable for the name of a tested function
     fname <- paste0("StressTest_", "ES", "_", gsub("[\\ :]","-",Sys.time()), ".RData")
-    save(list="bound_test_data", envir = cont.env, file = fname)
+    # save(list="bound_test_data", envir = cont.env, file = fname)
+    save(list="cont.env", envir = cont.env, file = fname)
     message("Test 'results' data was saved in ",getwd(), " as ", fname)
 
 }

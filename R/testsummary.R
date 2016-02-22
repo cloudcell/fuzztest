@@ -78,7 +78,7 @@ test_summary <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
     txt_width <- max(txt_width, argName_title_width)
     # ------------------------------------------------------------------------ #
     
-    message("Summary: Extended")
+    message("Stresstest: Argument-Option Combination Results")
     # ######################################################################## #
     # Summary Table: Extended
     # ======================================================== #
@@ -164,7 +164,7 @@ test_summary <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
     head_p2 <- format(x="Failure Rate Contribution, % (Max - Min)", width=head_p2_width, justify='centre' )
     
     
-    message("Summary: Short")
+    message("Stresstest: Summary")
     
     # <-- start drawing -->
     message(rep("=",table_width))
