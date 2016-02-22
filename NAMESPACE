@@ -1,0 +1,4 @@
+export(generate.argset)
+export(apply.argset)
+export(test_summary)
+export(plot.tests)
