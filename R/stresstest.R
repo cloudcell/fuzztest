@@ -425,7 +425,7 @@ stressTest <- function(env=NULL, arg_register=cont.env$arg_register,
     # TODO: ASAP: rename cont.env() to .stress and create such an environment
     # if any custom env. was used (rename within the function that saves data)
     save(list="cont.env", envir = cont.env, file = fname)
-    message("Test data was saved in ",getwd(), " as ", fname)
+    message("Test data was saved in the work directory ", getwd(), " as ", fname)
     
         
 }
@@ -470,7 +470,7 @@ if(0) { # the main test
         str(r)
     }
 
-    
+
     require(PerformanceAnalytics)
     data(ES_test_data)
     
