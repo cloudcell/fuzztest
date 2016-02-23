@@ -3,6 +3,8 @@
 
 test_summary <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
 {
+    if(DEBUG) browser()
+    
     # prepare data for summary tables
     cont.env=env
     
@@ -29,7 +31,7 @@ test_summary <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
         bound_test_data_pass <- bound_test_data[bound_test_data[,'results']=="PASS",-field_to_remove_nbr]
     }
     # ------------------------------------------------------------------------ #
-    
+
     total_results_nbr <- cont.env$result_slot_max
     
     summary_full <- list()
@@ -39,9 +41,13 @@ test_summary <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
                     INDEX=list(bound_test_data[,i],
                                bound_test_data[,'results']),
                     length)
+        
+        # replacing NA with zeros
+        summary_full[[i]][is.na(summary_full[[i]])]<-0
+        if(verbose) print(summary_full[[i]])
     }
-    # summary_full
     
+    # summary_full
     if(verbose) str(summary_full[[1]])
     
     summary_ext <- list()
@@ -176,8 +182,9 @@ test_summary <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
     
     for(i in 1:length(r)) {
         
-        bar_fill <-  paste0(rep("*", round( bar_width/100 * summary_short[[i]], digits = 0)))
-        bar_blank <- paste0(rep(" ", bar_width - round( bar_width/100 * summary_short[[i]], digits = 0)))
+        bar_fill_size <- as.integer( round( bar_width/100 * summary_short[[i]], digits = 0) )
+        bar_fill <-  paste0(rep("*", bar_fill_size))
+        bar_blank <- paste0(rep(" ", bar_width - bar_fill_size))
         
         txt_name <- names(r[i])
         txt_name <- format(x=txt_name, justify='right', width=txt_width)
