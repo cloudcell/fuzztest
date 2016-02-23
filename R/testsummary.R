@@ -7,7 +7,7 @@ test_summary <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
     cont.env=env
     
     # to simplify handling of the register
-    r <- cont.env$r
+    r <- cont.env$arg_register
     
     bound_test_data <- (cbind(as.data.frame(cont.env$container_test_args),
                               results=cont.env$container_test_results))

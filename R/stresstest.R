@@ -424,23 +424,8 @@ stressTest <- function(env=NULL, arg_register=cont.env$arg_register,
 if(0) { # the main test
 
     ## set up test for a function
-
+    
     # set up an 'argument register' with all the required test values
-    r <- list()
-    r$R                = list( pr ) # TODO: variable name as character string ?
-    # r$p                = list( 0.95, "__MISSING__" )
-    r$method           = list( "modified", "gaussian", "historical", "__MISSING__" )
-    # r$clean            = list( "none", "boudt", "geltner", "__MISSING__" )
-    r$portfolio_method = list( "single", "component", "__MISSING__" )
-    r$weights          = list( "NULL", c(1.0), "__MISSING__" )
-    # r$mu               = list( "NULL", "__MISSING__" )
-    # r$sigma            = list( "NULL", "__MISSING__" )
-    # r$m3               = list( "NULL", "__MISSING__" )
-    # r$m4               = list( "NULL", "__MISSING__" )
-    # r$invert           = list( "TRUE", "FALSE", "__MISSING__" )
-    # r$operational      = list( "TRUE", "FALSE", "__MISSING__" )
-    str(r)
-
     if(0) {
         r <- list()
         r$R                = list( pr ) # TODO: variable name as character string ?
@@ -458,6 +443,25 @@ if(0) { # the main test
         str(r)
     }
 
+
+    # set up an 'argument register' with all the required test values
+    r <- list()
+    r$R                = list( pr ) # TODO: variable name as character string ?
+    # r$p                = list( 0.95, "__MISSING__" )
+    r$method           = list( "modified", "gaussian", "historical", "__MISSING__" )
+    # r$clean            = list( "none", "boudt", "geltner", "__MISSING__" )
+    r$portfolio_method = list( "single", "component", "__MISSING__" )
+    r$weights          = list( "NULL", c(1.0), "__MISSING__" )
+    # r$mu               = list( "NULL", "__MISSING__" )
+    # r$sigma            = list( "NULL", "__MISSING__" )
+    # r$m3               = list( "NULL", "__MISSING__" )
+    # r$m4               = list( "NULL", "__MISSING__" )
+    # r$invert           = list( "TRUE", "FALSE", "__MISSING__" )
+    # r$operational      = list( "TRUE", "FALSE", "__MISSING__" )
+    str(r)
+
+    # for an alternative test:
+    # r$weights          = list( "NULL", c(1.0), c(1.0,2.0), c(1.0,2.0,3.0), "__MISSING__" )
 
     require(PerformanceAnalytics)
     data(ES_test_data)
