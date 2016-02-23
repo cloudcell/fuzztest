@@ -6,6 +6,9 @@ test_summary <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
     # prepare data for summary tables
     cont.env=env
     
+    # to simplify handling of the register
+    r <- cont.env$r
+    
     bound_test_data <- (cbind(as.data.frame(cont.env$container_test_args),
                               results=cont.env$container_test_results))
     

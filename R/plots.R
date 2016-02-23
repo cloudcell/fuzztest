@@ -32,6 +32,8 @@ plot.tests <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
 {
 
     cont.env=env
+    r <- cont.env$r
+    
     # prepare data for plotting, if data does not yet exist
     if(is.null(cont.env$failure_map)) {
         message("Data for plotting has not yet been generated. Generating data.")
@@ -47,13 +49,16 @@ plot.tests <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
     nr <- nrow(failure_map)
     failure_map_parplot <- failure_map
     for(i in 1:nr){
-        # The max value one can add and still avoid wrong association among
-        # adjacent argument option numbers is 1: the only necessary condition is
-        # ( jitter < 1 ) as factors/option numbers are separated by a distance 1
-        jitter <- (i / nr) / 5 # also shrink by 3
-        # The max shift must NOT depend on the max number of options per
-        # variable as the scaling is done by the plot function itself !
-        failure_map_parplot[i,] <- failure_map_parplot[i,] + jitter 
+        for(j in 1:ncol(failure_map_parplot)) {
+            opt_nbr_max <- length(r[[j]])
+            # The max value one can add and still avoid wrong association among
+            # adjacent argument option numbers is 1: the only necessary condition is
+            # ( jitter < 1 ) as factors/option numbers are separated by a distance 1
+            jitter <- (i / nr) / (opt_nbr_max + 1) #5 # also shrink by 3
+            # The max shift must NOT depend on the max number of options per
+            # variable as the scaling is done by the plot function itself !
+            failure_map_parplot[i,] <- failure_map_parplot[i,] + jitter 
+        }
     }
     failure_map_parplot
     

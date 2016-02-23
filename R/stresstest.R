@@ -358,6 +358,9 @@ stressTest <- function(env=NULL, arg_register=cont.env$arg_register,
     }
         
     r=arg_register # to be able to run function code "in the global env."
+    
+    # store the register in the test container environment
+    cont.env$r <- arg_register
     #
     # cont.env <- getTestParamIds(register = r)
     # ls(envir = cont.env)
