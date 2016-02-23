@@ -15,7 +15,10 @@
 
 # TODOs (in the order of priority) ----
 # A. start using the default environment named '.stress' 
-# 0. create a dendrogram of input parameters for tests with the status == 'FAIL'
+# B. allow a test to run as a separate process (so the main process is not 
+#    affected by crashes)
+# C. start using foreach() to speed up the test
+# 
 # 1. consider using variable names as character strings and numeric values:
 #    variable names as strings could be displayed more easily
 #    during assignment phase, they could simply be stripped of technical tags
@@ -23,23 +26,11 @@
 #    a variable 'pr' will be used during assignment
 #    At the same time, displaying analytics will be much easier as no special
 #    treatment will be required
-# 2. start using parfor() to speed up the test
 # 3. display results using this: http://www.milbo.org/rpart-plot/prp.pdf
 # 4. print structures such that indentation clearly represents nesting levels
 #    ref: http://stackoverflow.com/questions/1970653/generating-textual-representation-of-directory-contents
 # 5. try adjusting (nesting level) indentation within str.xts()
 # 6. consider this alternative: https://cran.r-project.org/web/packages/data.tree/vignettes/data.tree.html#tree-creation
-
-#------------------------------------------------------------------------------#
-## Raw description of the original plan - TODO: revise to reflect the current state
-# 1. create register of possible options (values/missing) for each argument
-# 2. produce an index to the register ( getComboQty() )
-# 3. create an environment as a container for the combos & results & fill it & provide a ref.
-# ls(envir = cont.env)
-# 4. apply.argset(argset_container.env, FUN)
-# results <- apply.argset(env=cont.env, arg_register = r,  FUN=ES, subset=c(1), DEBUG=TRUE)
-#------------------------------------------------------------------------------#
-
 
 
 # makes an index and  calculates the product of all options
@@ -101,9 +92,7 @@ getComboQty <- function(register, verbose=TRUE)
 #  results using parfor]
 #------------------------------------------------------------------------------#
 
-# TODO: rename to prepareTestParamIds
-# or "setupTestContainer" setupTestCombos generateArgSet argset.generate
-# (returns the environment with test combos of args (their ids within the register))
+# generates argset and stores it in a default environment (if custom not given)
 generate.argset <- function(arg_register, cust.env=NULL, verbose=FALSE, DEBUG=FALSE)
 {
     message(rep("-",70))
@@ -351,8 +340,6 @@ errorHandlingTest <- function(FUN,args)
 # produce results {PASS,FAIL} for every argument test set
 # function name must be supplied to THIS function as it allows developing
 # adjusted versions of functions and test them further
-# TODO: bring out the environment out to be able to save it easily
-# stressTest <- function(env,arg_register, FUN, verbose=FALSE)#, test_set_container)
 apply.argset <- # alias
 stressTest <- function(env=NULL, arg_register=cont.env$arg_register, 
                        FUN, subset=NULL, verbose=FALSE, DEBUG=FALSE)
@@ -416,7 +403,6 @@ stressTest <- function(env=NULL, arg_register=cont.env$arg_register,
     print(ls(envir = cont.env))
     
     # cont.env$container_test_results # throw the results out (a la 'foreach')
-
     
     #--------------------------------------------------------------------------#
     # TODO: use a variable for the name of a tested function
@@ -426,7 +412,6 @@ stressTest <- function(env=NULL, arg_register=cont.env$arg_register,
     # if any custom env. was used (rename within the function that saves data)
     save(list="cont.env", envir = cont.env, file = fname)
     message("Test data was saved in the work directory ", getwd(), " as ", fname)
-    
         
 }
 
