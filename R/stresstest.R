@@ -446,12 +446,13 @@ if(0) { # the main test
 
     # set up an 'argument register' with all the required test values
     r <- list()
-    r$R                = list( pr ) # TODO: variable name as character string ?
+    r$R                = list( pr2 ) # TODO: variable name as character string ?
     # r$p                = list( 0.95, "__MISSING__" )
     r$method           = list( "modified", "gaussian", "historical", "kernel", "__MISSING__" )
     # r$clean            = list( "none", "boudt", "geltner", "__MISSING__" )
     r$portfolio_method = list( "single", "component", "__MISSING__" )
     r$weights          = list( "NULL", c(1.0), "__MISSING__" )
+    r$weights          = list( "NULL", c(0.5,0.5), "__MISSING__" )
     # r$mu               = list( "NULL", "__MISSING__" )
     # r$sigma            = list( "NULL", "__MISSING__" )
     # r$m3               = list( "NULL", "__MISSING__" )
