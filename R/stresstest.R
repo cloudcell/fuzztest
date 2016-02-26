@@ -328,7 +328,9 @@ prepareArgs <- function(arg_register, arg_selection_vector, verbose=FALSE, DEBUG
     final_arg
 }
 
-
+## Function Description:
+## tweak this function to produce PASS/FAIL result based on any condition
+#
 # the actual testing function (handles FUN and args) and catches exceptions
 errorHandlingTest <- function(FUN,args)
 {

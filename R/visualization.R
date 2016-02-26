@@ -175,12 +175,12 @@ plot.tests <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
 
     if(verbose) message("drawing 'success map'")
     # draw 'success' parallelplot to properly set the scale for all axes
-    if(1) {
+    if(0) {
     # par(new = TRUE)
         chart_success <-
             parallelplot(success_map_parplot, horizontal.axis=FALSE, col=rainbow(nr_s))
+        print(chart_success)
     }
-    print(chart_success)
 
     if(verbose) message("drawing 'failure map'")
     # TODO: add arg. names as labels to the graph
@@ -191,7 +191,7 @@ plot.tests <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
     # print(chart_success)
     # par(new = TRUE)
     # plot(chart)
-    # print(chart)
+    print(chart)
 
     # splom(failure_map_parplot, horizontal.axis=FALSE, col=rainbow(nr))
     message("Done.")       

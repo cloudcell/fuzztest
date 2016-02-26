@@ -42,11 +42,13 @@ exfun <- function(operation, output_type, data1, data2)
 }
 
 
+if(0) {
+    exfun("mult","data.frame",c(1,2,3),c(4,5,6))
+    exfun("add","list",c(1,2,3),c(4,5,6))
+    exfun("add","data.frame",c(1,2,3),c(4,5,6))
+}
 
-exfun("mult","data.frame",c(1,2,3),c(4,5,6))
-exfun("add","list",c(1,2,3),c(4,5,6))
-exfun("add","data.frame",c(1,2,3),c(4,5,6))
-
+    
 
 # take the last item of a vector and
 
@@ -192,15 +194,18 @@ if(0) { # test for the Wiki
 
 if(0) { # test for testing the package itself
 
+    ## ATTENTION: do not use 'lists' in the top level if possible
     set.seed(0)
     r <- list()
-    r$x <- runif(2)
-    r$y <- runif(2)
-    r$option <- c("a","b")
+    r$x <- runif(5)
+    r$y <- runif(5)
+    r$option <- c("a","b", "c", "d", "e", "f")
+    # r$option <- c("a","b","c","d")
     # r$option <- c("break","breako")
-    # r$suboption <- list(c("a","b","c","d"))
-    r$suboption <- c("c","d")
-    # r$suboption <- list(c("break", "break"))
+    # r$suboption <- c("a","b","c","d")
+    r$syboption <- c("a","b","c","d")
+    # r$suboption <- c("c","d")
+    # r$suboption <- c("break", "break")
 
     # TODO: prepare and store an argument test set in a separate environment
     # .stresstest.env or '.stress'
@@ -210,7 +215,7 @@ if(0) { # test for testing the package itself
     apply.argset(FUN="demofunc") # , subset=c(1,5,222,333,444,555,666,777,888,999,41472)
 
     # print test summary
-    test_summary(DEBUG = FALSE)
+    test_summary(DEBUG = FALSE, verbose=TRUE)
 
     # plot.tests(DEBUG=TRUE,verbose=TRUE)
     # plot.tests(DEBUG=TRUE)
