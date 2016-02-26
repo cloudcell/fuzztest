@@ -13,6 +13,9 @@
 # Licensing Reference: http://choosealicense.com/
 #------------------------------------------------------------------------------#
 
+# TODO: use my assertion code templates to assure argument register is valid 
+#       before processing it ! (or drawing anything based on it) 
+
 # TODOs (in the order of priority) ----
 # A. start using the default environment named '.stress' 
 # B. allow a test to run as a separate process (so the main process is not 
@@ -92,6 +95,7 @@ getComboQty <- function(register, verbose=TRUE)
 #  results using parfor]
 #------------------------------------------------------------------------------#
 
+# TODO: assert that inputs are of the correct type (on the first level)
 # generates argset and stores it in a default environment (if custom not given)
 generate.argset <- function(arg_register, cust.env=NULL, verbose=FALSE, DEBUG=FALSE)
 {
@@ -350,7 +354,14 @@ stressTest <- function(env=NULL, arg_register=cont.env$arg_register,
     if(mode(FUN)!="character") 
         stop (paste0("Wrong argument FUN: please, provide a character ", 
                      "string naming the function to be called"))
-    
+
+    if(!exists(FUN)) stop("Function ",FUN," does not exist")
+
+    if(!is.function(get(FUN))) {
+        stop("Supplied function name \"", FUN,
+             "\" does not correspond to an existing function.")
+    }
+
     if(is.null(env)) {
         cont.env <- .GlobalEnv$cont.env
     } else {

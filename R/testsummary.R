@@ -53,10 +53,31 @@ test_summary <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
     summary_ext <- list()
     summary_short <- list()
     for(i in 1:length(r)) {
-        
+
+
+        # make sure both PASS and FAIL columns are present
+        # NB! in no particular order
+        if( "PASS" %in% colnames(summary_full[[i]])) {
+            summary_passed <- summary_full[[i]][,"PASS"]
+        } else {
+            summary_full[[i]] <- cbind(summary_full[[i]],PASS=0)
+            # summary_passed <- 0 # will be recycled!
+        }
+
+        if( "FAIL" %in% colnames(summary_full[[i]])) {
+            summary_failed <- summary_full[[i]][,"FAIL"]
+        } else {
+            summary_full[[i]] <- cbind(summary_full[[i]],FAIL=0)
+            # summary_failed <- 0 # will be recycled!
+        }
+
+
         # calculate percentages of failure
         pct_failed <- 100 * summary_full[[i]][,"FAIL"] / 
             (summary_full[[i]][,"PASS"]+summary_full[[i]][,"FAIL"])
+
+        # pct_failed <- 100 * summary_failed / (summary_failed + summary_passed)
+
         pct_failed_min <- min(pct_failed)
         pct_failed_max <- max(pct_failed)
         pct_failed_diff <- pct_failed_max - pct_failed_min
