@@ -1,4 +1,4 @@
-# stresstest
+# fuzztest
 
 **The purpose of the package:** To isolate errors through identifying groups of parameter combinations that cause them.
 
