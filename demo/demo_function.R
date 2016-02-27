@@ -70,7 +70,7 @@ demofunc <- function(x, y, option, suboption)
                switch(suboption,
                       "a"={           },
                       "b"={           },
-                      "c"={     stop("demo bug")      },
+                      "c"={ stop("demo bug")      },
                       "d"={           },
                       { stop("Wrong suboption") }
                )
@@ -197,14 +197,14 @@ if(0) { # test for testing the package itself
     ## ATTENTION: do not use 'lists' in the top level if possible
     set.seed(0)
     r <- list()
-    r$x <- runif(5)
-    r$y <- runif(5)
-    r$option <- c("a","b", "c", "d", "e", "f")
+    r$x <- runif(10)
+    r$y <- runif(10)
+    r$option <- c("a","b") #, "c", "d", "e", "f")
     # r$option <- c("a","b","c","d")
     # r$option <- c("break","breako")
     # r$suboption <- c("a","b","c","d")
-    r$syboption <- c("a","b","c","d")
-    # r$suboption <- c("c","d")
+    # r$syboption <- c("a","b","c","d")
+    r$suboption <- c("c","d")
     # r$suboption <- c("break", "break")
 
     # TODO: prepare and store an argument test set in a separate environment
@@ -219,7 +219,8 @@ if(0) { # test for testing the package itself
 
     # plot.tests(DEBUG=TRUE,verbose=TRUE)
     # plot.tests(DEBUG=TRUE)
-    plot.tests(DEBUG=FALSE,verbose=TRUE)
+    # plot.tests(DEBUG=FALSE,verbose=TRUE)
+    plot.tests()#DEBUG=FALSE,verbose=TRUE)
 
     # demofunc(x=0,y=10,"a","break")
 }

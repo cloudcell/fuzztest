@@ -1,12 +1,17 @@
 
 # References:
 # 
+# TODO: add viridis colormap
+#       http://matplotlib.org/users/colormaps.html
 # 
 # TODO: consider using prp() plot from rpart package
 #       http://www.milbo.org/rpart-plot/prp.pdf
 
 # TODO: plot all the 'PASS' tests with a transparent ink so that the vertical
 #       scale of the axes correctly corresponds to the category ordered position
+
+# TODO: use this for shuffling columns & other neat stuff !
+#       https://syntagmatic.github.io/parallel-coordinates/
 
 # generates analytics for plotting
 generate.analytics <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE) 
@@ -102,7 +107,7 @@ plot.tests <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
             # ( jitter < 1 ) as factors/option numbers are separated by a distance 1
             
             # jitter <- (i / nr) / (9 - opt_nbr_max) #5 # also shrink by 3
-            jitter <- (i / nr_f) / 4 # also shrink by 3
+            jitter <- ((i-1) / nr_f) / 4 # also shrink by 3 ( beginning with 0!)
 
             # The max shift must NOT depend on the max number of options per
             # variable as the scaling is done by the plot function itself !
@@ -110,7 +115,8 @@ plot.tests <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
             failure_map_parplot[i,] <- failure_map_parplot[i,] + jitter 
         # }
     }
-    failure_map_parplot
+    str(failure_map_parplot)
+    failure_map_parplot <- as.data.frame(failure_map_parplot)
     #--------------------------------------------------------------------------#
     #--------------------------------------------------------------------------#
     if(verbose) message("preparing to draw 'success map'")
@@ -130,7 +136,7 @@ plot.tests <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
         # ( jitter < 1 ) as factors/option numbers are separated by a distance 1
 
         # jitter <- (i / nr) / (9 - opt_nbr_max) #5 # also shrink by 3
-        jitter <- (i / nr_s) / 4 # also shrink by 3
+        jitter <- ((i-1) / nr_s) / 4 # also shrink by 3 ( beginning with 0!)
 
         # The max shift must NOT depend on the max number of options per
         # variable as the scaling is done by the plot function itself !
@@ -138,7 +144,8 @@ plot.tests <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
         success_map_parplot[i,] <- success_map_parplot[i,] + jitter
         # }
     }
-    success_map_parplot
+    str(success_map_parplot)
+    success_map_parplot <- as.data.frame(success_map_parplot)
     #--------------------------------------------------------------------------#
 
 
@@ -146,6 +153,7 @@ plot.tests <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
     
     # setnames(data, old=c() new=c()) in library(data.table)
     colnames(failure_map_parplot) <- xlab.str
+    colnames(success_map_parplot) <- xlab.str
 
     # TODO: print everything on the same chart:
     # reference: http://stackoverflow.com/questions/6853204/plotting-multiple-curves-same-graph-and-same-scale
@@ -172,27 +180,55 @@ plot.tests <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
     #    | with dfferent colors or symbols for different values of a           |
     #    #---------------------------------------------------------------------#
     #
-
+if(0) {
     if(verbose) message("drawing 'success map'")
     # draw 'success' parallelplot to properly set the scale for all axes
-    if(0) {
+    if(1) {
     # par(new = TRUE)
         chart_success <-
-            parallelplot(success_map_parplot, horizontal.axis=FALSE, col=rainbow(nr_s))
-        print(chart_success)
+            parallelplot(success_map_parplot, horizontal.axis=FALSE, col="grey",
+                         main="Argument-Option Combinations Correlated with Test Result 'PASS'", #(nr_s)
+                         drop.unused.levels=FALSE)
+        # print(chart_success)
+        print(chart_success, more=TRUE)
     }
 
     if(verbose) message("drawing 'failure map'")
     # TODO: add arg. names as labels to the graph
     chart <- parallelplot(failure_map_parplot, horizontal.axis=FALSE, col=rainbow(nr_f),
-                 main="Argument-Option Combinations Correlated with Function 'Error' Output",
-                 scales=list(cex=1))
+                 main="Argument-Option Combinations Correlated with Test Result 'FAIL'",
+                 drop.unused.levels=FALSE)
+                 # ,                 scales=list(cex=1))
                  # main="Argument-Option Combinations Correlated with Function Failure")
-    # print(chart_success)
     # par(new = TRUE)
     # plot(chart)
-    print(chart)
-
+    print(chart)#, more=TRUE) # finalize printing
+    print(chart_success)#, more=TRUE)
+}
+    if(verbose) message("drawing 'full test map'")
+    # it is important to have this 'stacked' pass/fail approach so PASS always
+    # appearth underneath the FAIL. i.e. so that FAIL lines are never 
+    # occluded by PASS lines on the graph.
+    color_pass <- as.character("#10222222")
+    pss <- cbind(success_map_parplot,fld="PASS", color=color_pass, stringsAsFactors=FALSE) # grey
+    
+    # subrange: red = 0, yellow = 1/6, green = 2/6, cyan = 3/6, blue = 4/6 and magenta = 5/6.
+    color_fail <- rainbow(nrow(failure_map_parplot), start = 5/6, end = 4/6)
+    fal <- cbind(failure_map_parplot,fld="FAIL", color=color_fail, stringsAsFactors=FALSE)
+    all <- rbind(pss,fal)
+    str(all)
+    tail(all)
+    # color <- rainbow(nrow(all))
+    # color <- rainbow(0)
+    # color[which(all[,'fld']=="PASS")] <- "#10222222" # grey
+    # str(all)
+    
+    chart_all <- parallelplot(~all[1:4], horizontal.axis=FALSE, col=all[,'color'],
+                              main="Argument Combinations vs Test Results ('FAIL' in color)",
+                              drop.unused.levels=FALSE)
+    # chart_all <- parallelplot(all, horizontal.axis=FALSE, col=rainbow(10))
+    print(chart_all)
+    
     # splom(failure_map_parplot, horizontal.axis=FALSE, col=rainbow(nr))
     message("Done.")       
 }
