@@ -1,80 +1,18 @@
-exfun <- function(operation, output_type, data1, data2)
-{
 
-    switch(operation,
-           "add"={
-
-               result <- data1 + data2
-
-               switch(output_type,
-                      "list"={
-                          result <- as.list(result)
-                      },
-                      "data.frame"={
-                          result <- as.data.frame(result)
-                      },
-                      {
-                          stop("Wrong output type")
-                      }
-               )
-           },
-           "mult"={
-
-               result <- data1 * data2
-
-               switch(output_type,
-                      "list"={
-                          result <- as.list(result)
-                      },
-                      "data.frame"={
-                          result <- as.data.frame(result)
-                      },
-                      {
-                          stop("Wrong output type")
-                      }
-               )
-           },
-           {
-               stop("Wrong setting")
-           }
-    )
-    result
-}
-
-
-if(0) {
-    exfun("mult","data.frame",c(1,2,3),c(4,5,6))
-    exfun("add","list",c(1,2,3),c(4,5,6))
-    exfun("add","data.frame",c(1,2,3),c(4,5,6))
-}
-
-    
-
-# take the last item of a vector and
-
-demosubf <- function(x,y)
-{
-    # imitation of some illegal parameters to some arbitrary function
-    if(abs(x-y)<0.001) stop("demo bug")
-    result <- x^2+y*2
-    result
-}
-
-# options: a,b,c,d,e,f,g,h,i
+# options: a,b,c,d,e,f
 # suboptions: a,b,c,d
 demofunc <- function(x, y, option, suboption)
 {
-
     switch(option,
            "a"={
                switch(suboption,
                       "a"={           },
                       "b"={           },
-                      "c"={ stop("demo bug")      },
+                      "c"={ stop("demo bug") },
                       "d"={           },
                       { stop("Wrong suboption") }
                )
-
+               if(abs(x-y)<0.1) stop("demo bug")
            },
            "b"={
                switch(suboption,
@@ -84,7 +22,8 @@ demofunc <- function(x, y, option, suboption)
                       "d"={           },
                       { stop("Wrong suboption") }
                )
-               },
+               if(abs(x-y/2)<0.1) stop("demo bug")
+           },
            "c"={
                switch(suboption,
                       "a"={           },
@@ -93,69 +32,48 @@ demofunc <- function(x, y, option, suboption)
                       "d"={           },
                       { stop("Wrong suboption") }
                )
-               },
+               if(abs(x-y/x^2)<0.01) stop("demo bug")
+           },
            "d"={
                switch(suboption,
                       "a"={           },
                       "b"={           },
                       "c"={           },
-                      "d"={           },
+                      "d"={ x <- x+1  },
                       { stop("Wrong suboption") }
                )
-               },
+               if(abs(x-y/x^0.5)<0.01) stop("demo bug")
+           },
            "e"={
                x <- 1
                switch(suboption,
-                      "a"={           },
-                      "b"={     x <- x+1      },
+                      "a"={ x <- x*1.5 },
+                      "b"={           },
                       "c"={           },
-                      "d"={     y <- 1      },
+                      "d"={ y <- 1    },
                       { stop("Wrong suboption") }
                )
-               },
+               if(abs(x %% 5 - y)<0.01) stop("demo bug")
+           },
            "f"={
                switch(suboption,
-                      "a"={           },
-                      "b"={           },
-                      "c"={     stop("demo bug")       },
-                      "d"={           },
-                      { stop("Wrong suboption") }
-               )
-               },
-           "g"={
-               switch(suboption,
-                      "a"={     y <- y+2      },
+                      "a"={ stop("demo bug") },
                       "b"={           },
                       "c"={           },
                       "d"={           },
                       { stop("Wrong suboption") }
                )
-               x <- x^2
-               },
-           "h"={
-               switch(suboption,
-                      "a"={           },
-                      "b"={     stop("demo bug")       },
-                      "c"={           },
-                      "d"={           },
-                      { stop("Wrong suboption") }
-               )
-               y <- y^2
-               },
-           "i"={
-               switch(suboption,
-                      "a"={           },
-                      "b"={           },
-                      "c"={           },
-                      "d"={           },
-                      { stop("Wrong suboption") }
-               )
-               },
+               if(abs(x %/% 5 - y)<0.01) stop("demo bug")
+           },
            { stop("Wrong option") }
     )
-    result <- demosubf(x,y)
-
-    result
+    
+    if(abs(x-y*2)<0.1) stop("demo bug")
+    if(abs(x-y*3)<0.1) stop("demo bug")
+    if(abs(x-y*4)<0.1) stop("demo bug")
+    if(abs(x-y*5)<0.1) stop("demo bug")
+    
+    0 # all ok
 }
 
 
@@ -256,21 +174,14 @@ if(0) {
 }
 
 if(0) {
-    # using runif() for this type of a chart might be not such a good idea
-    # as the cardinal number associated with the parameter value have 
-    # correlation. 
-    # 
-    # A better approach would be to cover some specified range assigning
-    # values to x and y in an ascending order along with the cardinal
-    # number of the argument option. Here's the code:
-    
+
     ## ATTENTION: do not use 'lists' in the top level if possible
     set.seed(0)
     r <- list()
-    r$x <- c(1:4) # c(seq(from=0, to=1, length.out = 50))
-    r$y <- c(1:4) # c(seq(from=0, to=1, length.out = 50))
-    r$option <- c("a")
-    r$suboption <- c("d")
+    r$x <- c(1,2,3,4) # c(seq(from=0, to=1, length.out = 50))
+    r$y <- c(1,2,3,4)#,5,6) # c(seq(from=0, to=1, length.out = 50))
+    r$option <- c("a","d","f")
+    r$suboption <- c("c","d")
     
     generate.argset(arg_register = r, display_progress=TRUE) #, DEBUG = T)
     
@@ -280,5 +191,78 @@ if(0) {
     
 }
 
+# TEXT: the key to clarity is to arrange axes the right way
 
+if(0) {
+
+    ## ATTENTION: do not use 'lists' in the top level if possible
+    set.seed(0)
+    r <- list()
+    r$x <- c(1,2,3,4) # c(seq(from=0, to=1, length.out = 50))
+    r$y <- c(1,2,3,4)#,5,6) # c(seq(from=0, to=1, length.out = 50))
+    r$option <- c("b") # might be rearranged (shifted down or up)
+    r$suboption <- c("a", "b", "c", "d")
+    
+    generate.argset(arg_register = r, display_progress=TRUE) #, DEBUG = T)
+    
+    apply.argset(FUN="demofunc") # , subset=c(1,5,222,333,444,555,666,777,888,999,41472)
+    test_summary()
+    plot.tests()
+    
+}
+
+if(0) {
+
+    # Now, suppose we fixed the bug with 'suboption b', what are the rest?
+    # 
+    set.seed(0)
+    r <- list()
+    r$x <- c(1,2,3,4) # c(seq(from=0, to=1, length.out = 50))
+    r$y <- c(1,2,3,4)#,5,6) # c(seq(from=0, to=1, length.out = 50))
+    r$option <- c("b")
+    r$suboption <- c("a", "c", "d")
+    
+    generate.argset(arg_register = r, display_progress=TRUE) #, DEBUG = T)
+    
+    apply.argset(FUN="demofunc") # , subset=c(1,5,222,333,444,555,666,777,888,999,41472)
+    test_summary()
+    plot.tests()
+    
+    # so the chart shows that option and suboption do not really matter,
+    # then let's try using multiple combinations of x and y while using
+    # only one option/suboption pair next
+}
+
+if(0) {
+    
+    ## demo_fuzz_05_scan_numeric_params.png
+    set.seed(0)
+    r <- list()
+    r$x <- c(seq(from=0, to=1, length.out = 50))
+    r$y <- c(seq(from=0, to=1, length.out = 50))
+    r$option <- c("b")
+    r$suboption <- c("a")
+    
+    generate.argset(arg_register = r, display_progress=TRUE) #, DEBUG = T)
+    
+    apply.argset(FUN="demofunc") # , subset=c(1,5,222,333,444,555,666,777,888,999,41472)
+    test_summary()
+    plot.tests()
+    
+}
+
+# Notes:
+# 
+# Vertical axes are equally split among options; in case there is only one
+# option occupies the axis "test lines" will be evenly spread from the bottom
+# to the top of the chart.
+# 
+# The chart is drawn as follows.
+# First, all test lines for those tests that returned the PASS status. They
+# Second, all the test lines for FAIL tests.
+# All the test lines are drawn in such a way so that when the lines intersect
+# axes, no line occludes another line. I.e. each test line must be visible
+# at such junction points with FAIL test lines occupying the lower portion
+# of the range allocated for each 'option' on an axis.
+# 
 
