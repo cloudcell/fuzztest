@@ -88,10 +88,15 @@ plot.tests <- function(env=cont.env, suppress_pass=FALSE, DEBUG=FALSE, verbose=F
     require(lattice)
 
     #--------------------------------------------------------------------------#
-    if(verbose) message("preparing to draw 'failure map'")
+    if(verbose) message("preparing 'preliminaries'")
     failure_map <- cont.env$failure_map
-
     nr_f <- nrow(failure_map)
+
+    success_map <- cont.env$success_map
+    nr_s <- nrow(success_map)
+    
+    #--------------------------------------------------------------------------#
+    if(verbose) message("preparing 'failure map'")
     failure_map_parplot <- failure_map
     if(verbose) message(str(failure_map))
 
@@ -105,7 +110,7 @@ plot.tests <- function(env=cont.env, suppress_pass=FALSE, DEBUG=FALSE, verbose=F
             # ( jitter < 1 ) as factors/option numbers are separated by a distance 1
 
             # jitter <- (i / nr) / (9 - opt_nbr_max) #5 # also shrink by 3
-            jitter <- ((i-1) / nr_f) / 4 # also shrink by 3 ( beginning with 0!)
+            jitter <- ((i-1) / (nr_s+nr_f)) / 3 # also shrink by 3 ( beginning with 0!)
 
             # The max shift must NOT depend on the max number of options per
             # variable as the scaling is done by the plot function itself !
@@ -119,10 +124,7 @@ plot.tests <- function(env=cont.env, suppress_pass=FALSE, DEBUG=FALSE, verbose=F
 
     #--------------------------------------------------------------------------#
     #--------------------------------------------------------------------------#
-    if(verbose) message("preparing to draw 'success map'")
-    success_map <- cont.env$success_map
-
-    nr_s <- nrow(success_map)
+    if(verbose) message("preparing 'success map'")
     success_map_parplot <- success_map
     if(verbose) message(str(success_map))
 
@@ -136,13 +138,15 @@ plot.tests <- function(env=cont.env, suppress_pass=FALSE, DEBUG=FALSE, verbose=F
         # ( jitter < 1 ) as factors/option numbers are separated by a distance 1
 
         # jitter <- (i / nr) / (9 - opt_nbr_max) #5 # also shrink by 3
-        jitter <- ((nr_s - (i - 1) / nr_s) / 4 # also shrink by 3 
+        # jitter <- (nr_s - (i - 1) / nr_s) / 4 # also shrink by 3 
+        jitter <- ((nr_f+i - 1 ) / (nr_s+nr_f)) / 3 # also shrink by 3
         # shifted up a bit 
 
         # The max shift must NOT depend on the max number of options per
         # variable as the scaling is done by the plot function itself !
         # failure_map_parplot[i,j] <- failure_map_parplot[i,j] + jitter
-        success_map_parplot[i,] <- success_map_parplot[i,] - jitter
+        # success_map_parplot[i,] <- success_map_parplot[i,] + jitter
+        success_map_parplot[i,] <- success_map_parplot[i,] + jitter
         # }
     }
     if(verbose) str(success_map_parplot)
@@ -249,7 +253,8 @@ plot.tests <- function(env=cont.env, suppress_pass=FALSE, DEBUG=FALSE, verbose=F
     col_qty <- length(xlab.str)
     chart_all <- parallelplot(~all[1:col_qty], horizontal.axis=FALSE, col=all[,'color'],
                               main="Argument Combinations vs Test Results (PASS - grey, FAIL - color)",
-                              drop.unused.levels=FALSE)
+                              drop.unused.levels=TRUE)
+                              # drop.unused.levels=FALSE)
     # chart_all <- parallelplot(all, horizontal.axis=FALSE, col=rainbow(10))
     print(chart_all)
     } else {
