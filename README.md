@@ -7,4 +7,6 @@ to produce test statistics and graphs.
 
 Below is a demo test graph showing parameter setting (as _cardinal_numbers_) leading to function
 failures (in color) and _cardinal_numbers_ of values leading to passing tests (in grey).  
-![demo](http://i.imgur.com/a4bHt4M.png)
+![demo](http://i.imgur.com/P9vt78Y.png)
+
+If anyone is willing to add some ergonomics to this "parallel-coordinate" presentation, the best tool for analysis I found is here: https://syntagmatic.github.io/parallel-coordinates/
