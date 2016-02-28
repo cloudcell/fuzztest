@@ -97,11 +97,14 @@ getComboQty <- function(register, verbose=TRUE)
 
 # TODO: assert that inputs are of the correct type (on the first level)
 # generates argset and stores it in a default environment (if custom not given)
-generate.argset <- function(arg_register, cust.env=NULL, verbose=FALSE, DEBUG=FALSE)
+generate.argset <- function(arg_register, cust.env=NULL, verbose=FALSE, 
+                            DEBUG=FALSE, display_progress=FALSE)
 {
+    browser(expr = DEBUG)
+    
     message(rep("-",70))
     message("Generating argset")
-    message(rep("-",70))
+    # message(rep("-",70))
 
     # create a container
     # with meta data explicitly stated:
@@ -130,18 +133,20 @@ generate.argset <- function(arg_register, cust.env=NULL, verbose=FALSE, DEBUG=FA
     e$result_slot_next=1
     e$result_slot_max=combos$total_qty
 
-    str(e$container_test_args)
-    str(e$container_test_results)
+    if(verbose) str(e$container_test_args)
+    if(verbose) str(e$container_test_results)
     e$result_slot_next
     e$result_slot_max
 
+    # for use when actual param combos are put into the container environment
+    e$display_progress <- display_progress
     get_leafs(idx=combos$idx,storage.env = e)
     if(!is.null(e$result_slot_next)) stop ("not all test combos have been generated.")
 
-    message("----------------------------------------------------------------------")
+    # message(rep("-",70))
     message("Result: SUCCESS.")
     message("Returning test combinations of arguments within an environment")
-    message("----------------------------------------------------------------------")
+    message(rep("-",70))
     message("The following objects are available within the testing environment:")
     print(ls(envir = e))
     
@@ -184,7 +189,7 @@ get_leafs <- function(idx, start_branch_id=1, accum_leafs=c(),
             # TODO: store the leaf set in a specially prepared environment
             # just use function's environment one level up (not 'frame' !!!)
             if(!is.null(storage.env)) {
-                store_test_set(env = storage.env,test_set = printable_leafs)
+                store_test_set(env = storage.env,test_set = printable_leafs, display_progress = storage.env$display_progress)
             }
         }
     }
@@ -193,7 +198,8 @@ get_leafs <- function(idx, start_branch_id=1, accum_leafs=c(),
 # store an indivisual test set (one argument set for one test)
 # (service function)
 store_test_set <- function(env=stop("storage environment must be provided"),
-                           test_set=stop("test set must be provided"))
+                           test_set=stop("test set must be provided"),
+                           display_progress=FALSE)
 {
     e <- env
     ls(envir = e)
@@ -205,13 +211,16 @@ store_test_set <- function(env=stop("storage environment must be provided"),
     e$container_test_args[i,] <- test_set # TODO: check size !
     e$result_slot_next= i+1
 
+    if(display_progress) cat(".")
+    # cat(".")
+        
     # mark the 'index' as unusable
     if(e$result_slot_next>e$result_slot_max) { e$result_slot_next <- NULL }
 }
 
 
 # prepare a single combination of arguments
-prepareArgs <- function(arg_register, arg_selection_vector, verbose=FALSE, DEBUG=FALSE)
+prepareArgs <- function(arg_register, arg_selection_vector, verbose=FALSE, DEBUG=FALSE) 
 {
     browser(expr = DEBUG)
     if(DEBUG) { verbose = TRUE }

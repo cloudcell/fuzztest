@@ -120,7 +120,7 @@ test_summary <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
     pad.txt <- rep(" ",pad_width)
     
     argOpt_title="ARG~OPT"
-    argOpt_title_width <- nchar(argOpt_title)
+    argOpt_title_width <- nchar(argOpt_title)+2
     
     tail_title="PASS    FAIL    FAIL%"
     tail_title_width=nchar(tail_title)
@@ -133,7 +133,8 @@ test_summary <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
     
     # <-- start drawing -->
     message(rep("=",table_width))
-    message(pad.txt, argOpt_title, 
+    message(pad.txt, 
+            format(x=argOpt_title,width=argOpt_title_width, justify='centre'), 
             pad.txt, head_p2, 
             pad.txt, tail_title)
     message(rep("-",table_width))
@@ -144,7 +145,7 @@ test_summary <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
                 pad.txt,
                 format(x=i,width=2, justify='right'), 
                 " ~ ", 
-                format(x=j,width=2, justify='left'), 
+                format(x=j,width=4, justify='left'), 
                 pad.txt,
                 pad.txt,
                 format(names(r[i]), width = txt_width),
@@ -154,7 +155,7 @@ test_summary <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
                 format(summary_ext[[i]][,"FAIL"][j],width=6, justify='right'),
                 pad.txt,
                 pad.txt,
-                format(summary_ext[[i]][,"fail_pct"][j],digits = 3, nsmall = 1)
+                format(summary_ext[[i]][,"fail_pct"][j],digits = 3, nsmall = 1, width=5, justify='left')
             )
         }
     }
@@ -183,7 +184,7 @@ test_summary <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
     bar_width_all <- bar_width + 2
     
     # a field of the table displying the percentage (of FAILs) variability
-    percentage_width <- 4
+    percentage_width <- 5 # to accommodate "100.0"
     
     # ------------------------------------------------------------------------ #
     

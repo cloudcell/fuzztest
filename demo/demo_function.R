@@ -197,31 +197,36 @@ if(0) { # test for testing the package itself
     ## ATTENTION: do not use 'lists' in the top level if possible
     set.seed(0)
     r <- list()
-    r$x <- runif(10)
-    r$y <- runif(10)
-    r$option <- c("a","b") #, "c", "d", "e", "f")
+    r$x <- c(runif(100),0)
+    r$y <- c(runif(100),0)
+    r$option <- c("a")
+    r$suboption <- c("d")
+    # r$option <- c("a", "b", "c", "d", "e", "f")
     # r$option <- c("a","b","c","d")
     # r$option <- c("break","breako")
     # r$suboption <- c("a","b","c","d")
-    # r$syboption <- c("a","b","c","d")
-    r$suboption <- c("c","d")
+    # r$suboption <- c("c")
+    # r$suboption <- c("c","d")
     # r$suboption <- c("break", "break")
 
     # TODO: prepare and store an argument test set in a separate environment
     # .stresstest.env or '.stress'
-    generate.argset(arg_register = r)
+    # creates a new "cont.env" environment
+    generate.argset(arg_register = r, display_progress=TRUE) #, DEBUG = T)
 
     # produce results {PASS,FAIL} for every argument test set
     apply.argset(FUN="demofunc") # , subset=c(1,5,222,333,444,555,666,777,888,999,41472)
 
     # print test summary
-    test_summary(DEBUG = FALSE, verbose=TRUE)
+    test_summary(DEBUG = FALSE)#, verbose=TRUE)
 
     # plot.tests(DEBUG=TRUE,verbose=TRUE)
-    # plot.tests(DEBUG=TRUE)
     # plot.tests(DEBUG=FALSE,verbose=TRUE)
     plot.tests()#DEBUG=FALSE,verbose=TRUE)
 
+    
+    
+    # plot.tests(DEBUG=TRUE)
     # demofunc(x=0,y=10,"a","break")
 }
 

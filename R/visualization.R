@@ -44,7 +44,7 @@ generate.analytics <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
 
     #--------------------------------------------------------------------------#
     # done
-    message("Transformed test results saved in the test environment")
+    if(verbose) message("Transformed test results saved in the test environment")
 }
 
 
@@ -73,17 +73,17 @@ plot.tests <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
     # prepare data for plotting, if data does not yet exist
     # if(is.null(cont.env$failure_map)) {
         # message("Data for plotting has not yet been generated. Generating data.")
-        message("Generating data for plotting.")
+    if(verbose) message("Generating data for plotting.")
         generate.analytics(env=cont.env)
     # }
 
     # if(is.null(cont.env$success_map)) {
         # message("Data for plotting has not yet been generated. Generating data.")
-        message("Generating data for plotting.")
+        if(verbose) message("Generating data for plotting.")
         generate.analytics(env=cont.env)
     # }
 
-    message("Plotting combinations of argument options...")
+        if(verbose) message("Plotting combinations of argument options...")
     
     require(lattice)
 
@@ -94,8 +94,6 @@ plot.tests <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
     nr_f <- nrow(failure_map)
     failure_map_parplot <- failure_map
     if(verbose) message(str(failure_map))
-
-    browser(expr=DEBUG)
 
     i=0; while (i<nr_f) { i=i+1;
     # for(i in seq_along(nr)){
@@ -115,7 +113,7 @@ plot.tests <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
             failure_map_parplot[i,] <- failure_map_parplot[i,] + jitter 
         # }
     }
-    str(failure_map_parplot)
+    if(verbose) str(failure_map_parplot)
     failure_map_parplot <- as.data.frame(failure_map_parplot)
     #--------------------------------------------------------------------------#
     #--------------------------------------------------------------------------#
@@ -136,7 +134,7 @@ plot.tests <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
         # ( jitter < 1 ) as factors/option numbers are separated by a distance 1
 
         # jitter <- (i / nr) / (9 - opt_nbr_max) #5 # also shrink by 3
-        jitter <- ((i-1) / nr_s) / 4 # also shrink by 3 ( beginning with 0!)
+        jitter <- ((i) / nr_s) / 4 # also shrink by 3 ( beginning with 1 for passed tests; otherwise they won't print for cases with just 2 tests!)
 
         # The max shift must NOT depend on the max number of options per
         # variable as the scaling is done by the plot function itself !
@@ -144,7 +142,7 @@ plot.tests <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
         success_map_parplot[i,] <- success_map_parplot[i,] + jitter
         # }
     }
-    str(success_map_parplot)
+    if(verbose) str(success_map_parplot)
     success_map_parplot <- as.data.frame(success_map_parplot)
     #--------------------------------------------------------------------------#
 
@@ -209,28 +207,54 @@ if(0) {
     # it is important to have this 'stacked' pass/fail approach so PASS always
     # appearth underneath the FAIL. i.e. so that FAIL lines are never 
     # occluded by PASS lines on the graph.
-    color_pass <- as.character("#10222222")
-    pss <- cbind(success_map_parplot,fld="PASS", color=color_pass, stringsAsFactors=FALSE) # grey
+    if(nr_s>0) {
+        color_pass <- as.character("#10222222")
+        pss <- cbind(success_map_parplot,fld="PASS", 
+                     color=color_pass, stringsAsFactors=FALSE) # grey
+    }
     
-    # subrange: red = 0, yellow = 1/6, green = 2/6, cyan = 3/6, blue = 4/6 and magenta = 5/6.
-    color_fail <- rainbow(nrow(failure_map_parplot), start = 5/6, end = 4/6)
-    fal <- cbind(failure_map_parplot,fld="FAIL", color=color_fail, stringsAsFactors=FALSE)
-    all <- rbind(pss,fal)
-    str(all)
-    tail(all)
+    if(nr_f>0) {
+        # subrange: red = 0, yellow = 1/6, green = 2/6, cyan = 3/6, blue = 4/6 and magenta = 5/6.
+        color_fail <- rainbow(nrow(failure_map_parplot), start = 5/6, end = 4/6)
+        fal <- cbind(failure_map_parplot,fld="FAIL", 
+                     color=color_fail, stringsAsFactors=FALSE)
+    }
+    
+    if( nr_s>0 && nr_f>0 ) {
+        all <- rbind(pss,fal)
+    } else if (nr_f>0) {
+        all <- fal
+    } else if (nr_s>0) {
+        all <- pss
+    } else {
+        stop("No test results are available for graphing.")
+    }
+    
+    nr_all <- nr_s + nr_f
+        
+    if(verbose) message( str(all) )
+    if(verbose) message( tail(all) )
     # color <- rainbow(nrow(all))
     # color <- rainbow(0)
     # color[which(all[,'fld']=="PASS")] <- "#10222222" # grey
     # str(all)
-    
-    chart_all <- parallelplot(~all[1:4], horizontal.axis=FALSE, col=all[,'color'],
-                              main="Argument Combinations vs Test Results ('FAIL' in color)",
+
+    browser(expr=DEBUG)
+        
+    if(nr_all>1) {
+    col_qty <- length(xlab.str)
+    chart_all <- parallelplot(~all[1:col_qty], horizontal.axis=FALSE, col=all[,'color'],
+                              main="Argument Combinations vs Test Results (PASS - grey, FAIL - color)",
                               drop.unused.levels=FALSE)
     # chart_all <- parallelplot(all, horizontal.axis=FALSE, col=rainbow(10))
     print(chart_all)
+    } else {
+        message("Not enough data: two or more test results are required.")
+        # warning("Two or more tests are required for the graph.")
+    }
     
     # splom(failure_map_parplot, horizontal.axis=FALSE, col=rainbow(nr))
-    message("Done.")       
+    if(verbose) message("Done.")       
 }
 
 
