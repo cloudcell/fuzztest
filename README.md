@@ -5,6 +5,10 @@
 **What this package does:** Tests all possible combinations of argument values for any function 
 to produce test statistics and graphs.
 
-Below is a demo test graph showing parameter setting (as _cardinal_numbers_) leading to function
-failures (in color) and _cardinal_numbers_ of values leading to passing tests (in grey).  
+Below are a couple of demo test graphs showing parameter setting leading to function
+failures. Axes are used only to group tests by _cardinal_numbers_ of argument parameters.  
+  
+
+![demo](http://i.imgur.com/z5Ivxw0.png)
+
 ![demo](http://i.imgur.com/a4bHt4M.png)

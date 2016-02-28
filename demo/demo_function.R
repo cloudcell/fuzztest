@@ -265,4 +265,8 @@ if(0) {
 # at such junction points with FAIL test lines occupying the lower portion
 # of the range allocated for each 'option' on an axis.
 # 
+# 
+# Ref on Multi-D Datamining: 
+# * http://web.cs.ucdavis.edu/~ma/ECS289H/papers/Inselberg1997.pdf
+# * https://syntagmatic.github.io/parallel-coordinates/examples/table.html
 
