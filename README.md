@@ -12,7 +12,5 @@ _cardinal_numbers_ of argument parameters.
 
 ![demo](http://i.imgur.com/z5Ivxw0.png)
 
-![demo](http://i.imgur.com/a4bHt4M.png)
- 
 ![demo](http://i.imgur.com/P9vt78Y.png)
 
