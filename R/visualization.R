@@ -1,9 +1,9 @@
 
 # References:
-# 
+#
 # TODO: add viridis colormap
 #       http://matplotlib.org/users/colormaps.html
-# 
+#
 # TODO: consider using prp() plot from rpart package
 #       http://www.milbo.org/rpart-plot/prp.pdf
 
@@ -14,7 +14,7 @@
 #       https://syntagmatic.github.io/parallel-coordinates/
 
 # generates analytics for plotting
-generate.analytics <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE) 
+generate.analytics <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
 {
     # use this name to debug the function running its code outside the function
     cont.env=env
@@ -26,7 +26,7 @@ generate.analytics <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
     failure_map <- as.matrix( cont.env$bound_test_data[
         cont.env$bound_test_data[,'results']=="FAIL",-ncol(cont.env$bound_test_data)])
     cont.env$failure_map <- failure_map
-    
+
     # for categorical analysis
     failure_map.fct <- data.frame(apply(failure_map,2,as.factor))
     cont.env$failure_map.fct <- failure_map.fct
@@ -62,29 +62,29 @@ generate.analytics <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
 
 # uses parallelplot with added 'jitter' to diplay better view of combinations of
 # argument options that lead to failure of a function
-# TODO: allow to save as a *.PDF file for further analysis 
+# TODO: allow to save as a *.PDF file for further analysis
 # (pdf allows for increased magnification)
-plot.tests <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE) 
+plot.tests <- function(env=cont.env, suppress_pass=FALSE, DEBUG=FALSE, verbose=FALSE)
 {
 
     cont.env=env
     r <- cont.env$arg_register
-    
+
     # prepare data for plotting, if data does not yet exist
     # if(is.null(cont.env$failure_map)) {
-        # message("Data for plotting has not yet been generated. Generating data.")
+    # message("Data for plotting has not yet been generated. Generating data.")
     if(verbose) message("Generating data for plotting.")
-        generate.analytics(env=cont.env)
+    generate.analytics(env=cont.env)
     # }
 
     # if(is.null(cont.env$success_map)) {
-        # message("Data for plotting has not yet been generated. Generating data.")
-        if(verbose) message("Generating data for plotting.")
-        generate.analytics(env=cont.env)
+    # message("Data for plotting has not yet been generated. Generating data.")
+    if(verbose) message("Generating data for plotting.")
+    generate.analytics(env=cont.env)
     # }
 
-        if(verbose) message("Plotting combinations of argument options...")
-    
+    if(verbose) message("Plotting combinations of argument options...")
+
     require(lattice)
 
     #--------------------------------------------------------------------------#
@@ -103,18 +103,20 @@ plot.tests <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
             # The max value one can add and still avoid wrong association among
             # adjacent argument option numbers is 1: the only necessary condition is
             # ( jitter < 1 ) as factors/option numbers are separated by a distance 1
-            
+
             # jitter <- (i / nr) / (9 - opt_nbr_max) #5 # also shrink by 3
             jitter <- ((i-1) / nr_f) / 4 # also shrink by 3 ( beginning with 0!)
 
             # The max shift must NOT depend on the max number of options per
             # variable as the scaling is done by the plot function itself !
-            # failure_map_parplot[i,j] <- failure_map_parplot[i,j] + jitter 
-            failure_map_parplot[i,] <- failure_map_parplot[i,] + jitter 
+            # failure_map_parplot[i,j] <- failure_map_parplot[i,j] + jitter
+            failure_map_parplot[i,] <- failure_map_parplot[i,] + jitter
         # }
     }
     if(verbose) str(failure_map_parplot)
     failure_map_parplot <- as.data.frame(failure_map_parplot)
+    cont.env$failure_map_parplot <- failure_map_parplot # TODO delete later (debug only)
+
     #--------------------------------------------------------------------------#
     #--------------------------------------------------------------------------#
     if(verbose) message("preparing to draw 'success map'")
@@ -134,16 +136,18 @@ plot.tests <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
         # ( jitter < 1 ) as factors/option numbers are separated by a distance 1
 
         # jitter <- (i / nr) / (9 - opt_nbr_max) #5 # also shrink by 3
-        jitter <- ((i) / nr_s) / 4 # also shrink by 3 ( beginning with 1 for passed tests; otherwise they won't print for cases with just 2 tests!)
+        jitter <- ((nr_s - (i - 1) / nr_s) / 4 # also shrink by 3 
+        # shifted up a bit 
 
         # The max shift must NOT depend on the max number of options per
         # variable as the scaling is done by the plot function itself !
         # failure_map_parplot[i,j] <- failure_map_parplot[i,j] + jitter
-        success_map_parplot[i,] <- success_map_parplot[i,] + jitter
+        success_map_parplot[i,] <- success_map_parplot[i,] - jitter
         # }
     }
     if(verbose) str(success_map_parplot)
     success_map_parplot <- as.data.frame(success_map_parplot)
+    cont.env$success_map_parplot <- success_map_parplot # TODO delete later (debug only)
     #--------------------------------------------------------------------------#
 
 
@@ -178,31 +182,31 @@ plot.tests <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
     #    | with dfferent colors or symbols for different values of a           |
     #    #---------------------------------------------------------------------#
     #
-if(0) {
-    if(verbose) message("drawing 'success map'")
-    # draw 'success' parallelplot to properly set the scale for all axes
-    if(1) {
-    # par(new = TRUE)
-        chart_success <-
-            parallelplot(success_map_parplot, horizontal.axis=FALSE, col="grey",
-                         main="Argument-Option Combinations Correlated with Test Result 'PASS'", #(nr_s)
-                         drop.unused.levels=FALSE)
-        # print(chart_success)
-        print(chart_success, more=TRUE)
-    }
-
-    if(verbose) message("drawing 'failure map'")
-    # TODO: add arg. names as labels to the graph
-    chart <- parallelplot(failure_map_parplot, horizontal.axis=FALSE, col=rainbow(nr_f),
-                 main="Argument-Option Combinations Correlated with Test Result 'FAIL'",
-                 drop.unused.levels=FALSE)
-                 # ,                 scales=list(cex=1))
-                 # main="Argument-Option Combinations Correlated with Function Failure")
-    # par(new = TRUE)
-    # plot(chart)
-    print(chart)#, more=TRUE) # finalize printing
-    print(chart_success)#, more=TRUE)
-}
+# if(0) {
+#     if(verbose) message("drawing 'success map'")
+#     # draw 'success' parallelplot to properly set the scale for all axes
+#     if(1) {
+#     # par(new = TRUE)
+#         chart_success <-
+#             parallelplot(success_map_parplot, horizontal.axis=FALSE, col="grey",
+#                          main="Argument-Option Combinations Correlated with Test Result 'PASS'", #(nr_s)
+#                          drop.unused.levels=FALSE)
+#         # print(chart_success)
+#         print(chart_success, more=TRUE)
+#     }
+# 
+#     if(verbose) message("drawing 'failure map'")
+#     # TODO: add arg. names as labels to the graph
+#     chart <- parallelplot(failure_map_parplot, horizontal.axis=FALSE, col=rainbow(nr_f),
+#                  main="Argument-Option Combinations Correlated with Test Result 'FAIL'",
+#                  drop.unused.levels=FALSE)
+#                  # ,                 scales=list(cex=1))
+#                  # main="Argument-Option Combinations Correlated with Function Failure")
+#     # par(new = TRUE)
+#     # plot(chart)
+#     print(chart)#, more=TRUE) # finalize printing
+#     print(chart_success)#, more=TRUE)
+# }
     if(verbose) message("drawing 'full test map'")
     # it is important to have this 'stacked' pass/fail approach so PASS always
     # appearth underneath the FAIL. i.e. so that FAIL lines are never 

@@ -230,7 +230,55 @@ if(0) { # test for testing the package itself
     # demofunc(x=0,y=10,"a","break")
 }
 
+if(0) {
+    # using runif() for this type of a chart might be not such a good idea
+    # as the cardinal number associated with the parameter value have 
+    # correlation. 
+    # 
+    # A better approach would be to cover some specified range assigning
+    # values to x and y in an ascending order along with the cardinal
+    # number of the argument option. Here's the code:
+    
+    ## ATTENTION: do not use 'lists' in the top level if possible
+    set.seed(0)
+    r <- list()
+    r$x <- c(seq(from=0, to=1, length.out = 50))
+    r$y <- c(seq(from=0, to=1, length.out = 50))
+    r$option <- c("a")
+    r$suboption <- c("d")
+    
+    generate.argset(arg_register = r, display_progress=TRUE) #, DEBUG = T)
+    
+    apply.argset(FUN="demofunc") # , subset=c(1,5,222,333,444,555,666,777,888,999,41472)
+    test_summary()
+    plot.tests()
+    
+}
 
+if(0) {
+    # using runif() for this type of a chart might be not such a good idea
+    # as the cardinal number associated with the parameter value have 
+    # correlation. 
+    # 
+    # A better approach would be to cover some specified range assigning
+    # values to x and y in an ascending order along with the cardinal
+    # number of the argument option. Here's the code:
+    
+    ## ATTENTION: do not use 'lists' in the top level if possible
+    set.seed(0)
+    r <- list()
+    r$x <- c(1:4) # c(seq(from=0, to=1, length.out = 50))
+    r$y <- c(1:4) # c(seq(from=0, to=1, length.out = 50))
+    r$option <- c("a")
+    r$suboption <- c("d")
+    
+    generate.argset(arg_register = r, display_progress=TRUE) #, DEBUG = T)
+    
+    apply.argset(FUN="demofunc") # , subset=c(1,5,222,333,444,555,666,777,888,999,41472)
+    test_summary()
+    plot.tests()
+    
+}
 
 
 
