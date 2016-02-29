@@ -247,7 +247,12 @@ if(0) {
     
     apply.argset(FUN="demofunc") # , subset=c(1,5,222,333,444,555,666,777,888,999,41472)
     test_summary()
+    plot.tests(pass = FALSE, fail = FALSE)
+    plot.tests(pass = FALSE)
+    plot.tests(fail = FALSE)
+    plot.tests(pass = FALSE, fail = FALSE, DEBUG = TRUE)
     plot.tests()
+    plot.tests(DEBUG = T)
     
 }
 

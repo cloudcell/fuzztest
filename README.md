@@ -13,4 +13,10 @@ _cardinal_numbers_ of argument parameters.
 ![demo](http://i.imgur.com/z5Ivxw0.png)
 
 ![demo](http://i.imgur.com/P9vt78Y.png)
+  
+PASS only:  
+![demo](http://i.imgur.com/vUrh2y0.png)
+  
+FAIL only:  
+![demo](http://i.imgur.com/Cr73DJL.png)
 

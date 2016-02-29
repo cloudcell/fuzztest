@@ -64,7 +64,21 @@ generate.analytics <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
 # argument options that lead to failure of a function
 # TODO: allow to save as a *.PDF file for further analysis
 # (pdf allows for increased magnification)
-plot.tests <- function(env=cont.env, suppress_pass=FALSE, DEBUG=FALSE, verbose=FALSE)
+#' @param full determines whether the chart includes the full test set data.
+#'             I.e. whether all of the 'PASS' tests are included (default is 
+#'             TRUE). If set to FALSE, all the PASS data will not be drawn, 
+#'             which sometimes might speed up the drawing process.)
+#' @param pass determines whether the chart includes the full test set data.
+#'             I.e. whether all of the 'PASS' tests are included (default is 
+#'             TRUE). If set to FALSE, all the PASS data will not be drawn, 
+#'             which sometimes might speed up the drawing process.)
+#' @param fail determines whether the chart includes the full test set data.
+#'             I.e. whether all of the 'PASS' tests are included (default is 
+#'             TRUE). If set to FALSE, all the PASS data will not be drawn, 
+#'             which sometimes might speed up the drawing process.)
+#' @export             
+plot.tests <- function(env=cont.env, suppress_pass=FALSE, 
+                       DEBUG=FALSE, verbose=FALSE, pass=TRUE, fail=TRUE)
 {
 
     cont.env=env
@@ -118,6 +132,8 @@ plot.tests <- function(env=cont.env, suppress_pass=FALSE, DEBUG=FALSE, verbose=F
             failure_map_parplot[i,] <- failure_map_parplot[i,] + jitter
         # }
     }
+    parplot_boundary_f <- failure_map_parplot[i,]
+    
     if(verbose) str(failure_map_parplot)
     failure_map_parplot <- as.data.frame(failure_map_parplot)
     cont.env$failure_map_parplot <- failure_map_parplot # TODO delete later (debug only)
@@ -149,6 +165,8 @@ plot.tests <- function(env=cont.env, suppress_pass=FALSE, DEBUG=FALSE, verbose=F
         success_map_parplot[i,] <- success_map_parplot[i,] + jitter
         # }
     }
+    parplot_boundary_p <- success_map_parplot[i,]
+    
     if(verbose) str(success_map_parplot)
     success_map_parplot <- as.data.frame(success_map_parplot)
     cont.env$success_map_parplot <- success_map_parplot # TODO delete later (debug only)
@@ -211,7 +229,39 @@ plot.tests <- function(env=cont.env, suppress_pass=FALSE, DEBUG=FALSE, verbose=F
 #     print(chart)#, more=TRUE) # finalize printing
 #     print(chart_success)#, more=TRUE)
 # }
+    
     if(verbose) message("drawing 'full test map'")
+    
+    browser(expr=DEBUG)
+    # determine the two 'line coordinates' for the boundary (top & bottom):
+    # TODO: factor out this to an external function
+    parplot_boundary_p
+    parplot_boundary_f
+    tmp <- rbind(parplot_boundary_p,parplot_boundary_f)
+    parplot_boundary_max <- apply(X = tmp, MARGIN = 2, FUN = max)
+    # str(parplot_boundary_max)
+    parplot_boundary_max <- t(parplot_boundary_max)
+    
+    # parplot_boundary_max <- t(as.matrix(parplot_boundary_max))
+    parplot_boundary_max <- as.data.frame(parplot_boundary_max, row.names = "0")
+    colnames(parplot_boundary_max) <- xlab.str
+    parplot_boundary_min <- parplot_boundary_max
+    
+    # make them the minimum group "coordinate representation of a group number)
+    parplot_boundary_min[1,] <- 1 
+
+    
+    parplot_boundaries <- rbind(parplot_boundary_max, parplot_boundary_min)
+    
+    # color_technical <- as.character("#FF0000FF") # TODO: change to all 'F' - this is for debugging only
+    color_technical <- as.character("#11111105") # TODO: change to all 'F' - this is for debugging only
+                                                 # TODO: find out what the first #XX stands for, alpha ???
+    tech <- cbind(parplot_boundaries, fld="TECH", 
+                 color=color_technical, stringsAsFactors=FALSE) # grey
+        
+    ## add 2 col's - status(pass/fail/'TECH'-nical) & color
+    
+    
     # it is important to have this 'stacked' pass/fail approach so PASS always
     # appearth underneath the FAIL. i.e. so that FAIL lines are never 
     # occluded by PASS lines on the graph.
@@ -229,16 +279,40 @@ plot.tests <- function(env=cont.env, suppress_pass=FALSE, DEBUG=FALSE, verbose=F
     }
     
     if( nr_s>0 && nr_f>0 ) {
-        all <- rbind(pss,fal)
+        if(pass && fail) {
+            all <- rbind(tech, pss, fal)
+        } else if (pass) {
+            all <- rbind(tech, pss)
+        } else if (fail) {
+            all <- rbind(tech, fal)
+        } else {
+            all <- rbind(tech)
+        }
     } else if (nr_f>0) {
-        all <- fal
+        if(pass && fail) {
+            all <- rbind(tech, fal)
+        } else if (pass) {
+            all <- tech
+        } else if (fail) {
+            all <- rbind(tech, fal)
+        } else {
+            all <- rbind(tech)
+        }
     } else if (nr_s>0) {
-        all <- pss
+        if(pass && fail) {
+            all <- rbind(tech, pss)
+        } else if (pass) {
+            all <- rbind(tech, pss)
+        } else if (fail) {
+            all <- tech
+        } else {
+            all <- rbind(tech)
+        }
     } else {
         stop("No test results are available for graphing.")
     }
     
-    nr_all <- nr_s + nr_f
+    nr_all <- nr_s + nr_f + 2 # 2 == rn_boundary
         
     if(verbose) message( str(all) )
     if(verbose) message( tail(all) )
@@ -247,9 +321,9 @@ plot.tests <- function(env=cont.env, suppress_pass=FALSE, DEBUG=FALSE, verbose=F
     # color[which(all[,'fld']=="PASS")] <- "#10222222" # grey
     # str(all)
 
-    browser(expr=DEBUG)
+    
         
-    if(nr_all>1) {
+    if(nr_all>1) { # TODO consider removing !!! due to added boundaries (min/max)
     col_qty <- length(xlab.str)
     chart_all <- parallelplot(~all[1:col_qty], horizontal.axis=FALSE, col=all[,'color'],
                               main="Argument Combinations vs Test Results (PASS - grey, FAIL - color)",
