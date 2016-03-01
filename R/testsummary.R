@@ -1,7 +1,32 @@
 
 
 
-test_summary <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
+
+
+
+
+
+#' Aggregates all the test results by argument 'state' and provides statistics
+#' 
+#' The Function splits statistics into detailed and short summaries.
+#' The 'detailed statistics': PASS/FAIL count, percentage of failed tests.
+#' The short summary contains only key data for determining a degree to which 
+#' some argument 'state' is associated with whether a function completes
+#' its operations with a 'PASS' or 'FAIL' state. Use this statistics to isolate
+#' those arguments analyze how code 'misbehaves' by looking up a more detailed
+#' output from the first 'detailed statistics' table.
+#' 
+#' @param env work environment, set only if default environment is not used
+#' @param verbose provides additional text output during processing
+#' @param DEBUG enters the debug mode on function entry
+#' 
+#' @aliases test_summary, summary.fuzz
+#' @author cloudcello
+#' 
+#' @export
+#TODO: make sure all functions have DEBUG listed as the _last_ argument
+summary.fuzz <- # alias
+test_summary <- function(env=cont.env, verbose=FALSE, DEBUG=FALSE) 
 {
     if(DEBUG) browser()
     

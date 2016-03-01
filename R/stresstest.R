@@ -13,15 +13,15 @@
 # Licensing Reference: http://choosealicense.com/
 #------------------------------------------------------------------------------#
 
-# TODO: use my assertion code templates to assure argument register is valid 
-#       before processing it ! (or drawing anything based on it) 
+# TODO: use my assertion code templates to assure argument register is valid
+#       before processing it ! (or drawing anything based on it)
 
 # TODOs (in the order of priority) ----
-# A. start using the default environment named '.stress' 
-# B. allow a test to run as a separate process (so the main process is not 
+# A. start using the default environment named '.stress'
+# B. allow a test to run as a separate process (so the main process is not
 #    affected by crashes)
 # C. start using foreach() to speed up the test
-# 
+#
 # 1. consider using variable names as character strings and numeric values:
 #    variable names as strings could be displayed more easily
 #    during assignment phase, they could simply be stripped of technical tags
@@ -95,13 +95,32 @@ getComboQty <- function(register, verbose=TRUE)
 #  results using parfor]
 #------------------------------------------------------------------------------#
 
-# TODO: assert that inputs are of the correct type (on the first level)
-# generates argset and stores it in a default environment (if custom not given)
-generate.argset <- function(arg_register, cust.env=NULL, verbose=FALSE, 
+#' Generates a set of all the combinations of arguments (argset) to be used
+#' to test a selected function
+#' 
+#' This function uses an argument 'register' created earlier and generates all
+#' possible combiations of arguments, including argument 'states', such as
+#' 'missing' specified as '__MISSING__' in the register. The result is stored
+#' in the work environment.
+#' 
+#' @param arg_register an argument register that contains all argument 
+#'                     'states' required to be tested (while combined with 
+#'                     'states' of other arguments)
+#' @param cust.env custom work environment
+#' @param verbose provides additional text output during processing
+#' @param DEBUG enters the debug mode on function entry
+#' @param display_progress prints "." on each iteration in the standard output
+#' 
+#' @author cloudcello
+#' 
+#' @export
+generate.argset <- function(arg_register, cust.env=NULL, verbose=FALSE,
                             DEBUG=FALSE, display_progress=FALSE)
 {
+    # TODO: assert that inputs are of the correct type (on the first level)
+    # 
     browser(expr = DEBUG)
-    
+
     message(rep("-",70))
     message("Generating argset")
     # message(rep("-",70))
@@ -112,7 +131,7 @@ generate.argset <- function(arg_register, cust.env=NULL, verbose=FALSE,
     # next available slot within the matrix
 
     if(!is.null(cust.env)){
-        if(!inherits(cust.env, what = "environment")) 
+        if(!inherits(cust.env, what = "environment"))
             stop("Custom environment 'cust.env' must be of class 'environment'.")
         e=cust.env # if a custom environment has been provided
     } else {
@@ -121,7 +140,7 @@ generate.argset <- function(arg_register, cust.env=NULL, verbose=FALSE,
 
     # save the register
     e$arg_register <- arg_register
-    
+
     combos <- getComboQty(register=arg_register, verbose=FALSE)
     combos$args_qty
     combos$total_qty
@@ -149,7 +168,7 @@ generate.argset <- function(arg_register, cust.env=NULL, verbose=FALSE,
     message(rep("-",70))
     message("The following objects are available within the testing environment:")
     print(ls(envir = e))
-    
+
     # create an environment only if no custom env. was provided
     if(is.null(cust.env)) {
         .GlobalEnv$cont.env <- e
@@ -213,14 +232,14 @@ store_test_set <- function(env=stop("storage environment must be provided"),
 
     if(display_progress) cat(".")
     # cat(".")
-        
+
     # mark the 'index' as unusable
     if(e$result_slot_next>e$result_slot_max) { e$result_slot_next <- NULL }
 }
 
 
 # prepare a single combination of arguments
-prepareArgs <- function(arg_register, arg_selection_vector, verbose=FALSE, DEBUG=FALSE) 
+prepareArgs <- function(arg_register, arg_selection_vector, verbose=FALSE, DEBUG=FALSE)
 {
     browser(expr = DEBUG)
     if(DEBUG) { verbose = TRUE }
@@ -352,18 +371,29 @@ errorHandlingTest <- function(FUN,args)
     result
 }
 
-# produce results {PASS,FAIL} for every argument test set
-# function name must be supplied to THIS function as it allows developing
-# adjusted versions of functions and test them further
-apply.argset <- # alias
-stressTest <- function(env=NULL, arg_register=cont.env$arg_register, 
-                       FUN, subset=NULL, verbose=FALSE, DEBUG=FALSE)
+
+#' produce results {PASS,FAIL} for every argument test set 
+#' 
+#' function name must be supplied to THIS function as it allows developing
+#' adjusted versions of functions and test them further
+#' 
+#' @param env work environment (if NULL, uses the default)
+#' @param arg_register an argument register that contains all argument 'states' 
+#' @param FUN a name of the function to be tested (only as a character string)
+#' @param subset a vector with numbers of argsets to be applied to the function
+#' @param verbose provides additional text output during processing
+#' @param DEBUG enters the debug mode on function entry
+#' 
+#' @author cloudcello
+#' @export
+apply.argset <- function(env=NULL, arg_register=cont.env$arg_register,
+                         FUN, subset=NULL, verbose=FALSE, DEBUG=FALSE)
 {
     browser(expr = DEBUG)
     if(DEBUG) { verbose = TRUE }
 
-    if(mode(FUN)!="character") 
-        stop (paste0("Wrong argument FUN: please, provide a character ", 
+    if(mode(FUN)!="character")
+        stop (paste0("Wrong argument FUN: please, provide a character ",
                      "string naming the function to be called"))
 
     if(!exists(FUN)) stop("Function ",FUN," does not exist")
@@ -378,9 +408,9 @@ stressTest <- function(env=NULL, arg_register=cont.env$arg_register,
     } else {
         cont.env <- env
     }
-        
+
     r=arg_register # to be able to run function code "in the global env."
-    
+
     # store the register in the test container environment
     cont.env$r <- arg_register
     #
@@ -423,12 +453,12 @@ stressTest <- function(env=NULL, arg_register=cont.env$arg_register,
 
         cont.env$container_test_results[i] <- result
     }
-    
+
     message("Test results were saved in the test environment in 'container_test_results'")
     print(ls(envir = cont.env))
-    
+
     # cont.env$container_test_results # throw the results out (a la 'foreach')
-    
+
     #--------------------------------------------------------------------------#
     # TODO: use a variable for the name of a tested function
     fname <- paste0("StressTest_", FUN, "_", gsub("[\\ :]","-",Sys.time()), ".RData")
@@ -437,7 +467,7 @@ stressTest <- function(env=NULL, arg_register=cont.env$arg_register,
     # if any custom env. was used (rename within the function that saves data)
     save(list="cont.env", envir = cont.env, file = fname)
     message("Test data was saved in the work directory ", getwd(), " as ", fname)
-        
+
 }
 
 
@@ -446,7 +476,7 @@ stressTest <- function(env=NULL, arg_register=cont.env$arg_register,
 if(0) { # the main test
 
     ## set up test for a function
-    
+
     # set up an 'argument register' with all the required test values
     if(0) {
         r <- list()
@@ -487,20 +517,20 @@ if(0) { # the main test
 
     require(PerformanceAnalytics)
     data(ES_test_data)
-    
+
     # TODO: prepare and store an argument test set in a separate environment
     # .stresstest.env or '.stress'
     generate.argset(arg_register = r)
 
-    # produce results {PASS,FAIL} for every argument test set    
+    # produce results {PASS,FAIL} for every argument test set
     apply.argset(FUN="ES") # , subset=c(1,5,222,333,444,555,666,777,888,999,41472)
-    
+
     # print test summary
     test_summary()
-    
-    
+
+
     plot.tests()
-    
+
 
 
 }

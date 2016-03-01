@@ -64,10 +64,8 @@ generate.analytics <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
 # argument options that lead to failure of a function
 # TODO: allow to save as a *.PDF file for further analysis
 # (pdf allows for increased magnification)
-#' @param full determines whether the chart includes the full test set data.
-#'             I.e. whether all of the 'PASS' tests are included (default is 
-#'             TRUE). If set to FALSE, all the PASS data will not be drawn, 
-#'             which sometimes might speed up the drawing process.)
+# 
+#' @param env work environment, set only if default environment is not used
 #' @param pass determines whether the chart includes the full test set data.
 #'             I.e. whether all of the 'PASS' tests are included (default is 
 #'             TRUE). If set to FALSE, all the PASS data will not be drawn, 
@@ -76,9 +74,14 @@ generate.analytics <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
 #'             I.e. whether all of the 'PASS' tests are included (default is 
 #'             TRUE). If set to FALSE, all the PASS data will not be drawn, 
 #'             which sometimes might speed up the drawing process.)
+#' @param verbose provides additional text output during processing
+#' @param DEBUG enters the debug mode on function entry
+#' 
+#' @author cloudcello
+#' 
 #' @export             
-plot.tests <- function(env=cont.env, suppress_pass=FALSE, 
-                       DEBUG=FALSE, verbose=FALSE, pass=TRUE, fail=TRUE)
+plot.tests <- function(env=cont.env, pass=TRUE, fail=TRUE, 
+                       verbose=FALSE, DEBUG=FALSE)
 {
 
     cont.env=env
