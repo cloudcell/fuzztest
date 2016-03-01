@@ -14,7 +14,7 @@ internal test function so it reports "PASS" or "FAIL" based on previously record
 Having done the test, one may present test results in textual and convenient visual formats, which
 may provide a more wholistic view of of the problem that caused a function to fail and help fix it 
 quicker than using traditional unit tests. 
-(For now, this feature is on TODO list -- to make it work without any changes to the code by saving
+(For now, this feature is on a TODO list -- to make it work without any changes to the code by saving
 output data along with the PASS/FAIL results.) 
   
   
