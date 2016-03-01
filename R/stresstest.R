@@ -381,10 +381,12 @@ errorHandlingTest <- function(FUN,args)
 #' @param arg_register an argument register that contains all argument 'states' 
 #' @param FUN a name of the function to be tested (only as a character string)
 #' @param subset a vector with numbers of argsets to be applied to the function
+#'        (i.e. only combinations with those numbers will be tested)
 #' @param verbose provides additional text output during processing
 #' @param DEBUG enters the debug mode on function entry
 #' 
 #' @author cloudcello
+#' 
 #' @export
 apply.argset <- function(env=NULL, arg_register=cont.env$arg_register,
                          FUN, subset=NULL, verbose=FALSE, DEBUG=FALSE)

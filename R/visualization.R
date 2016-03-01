@@ -14,7 +14,7 @@
 #       https://syntagmatic.github.io/parallel-coordinates/
 
 # generates analytics for plotting
-generate.analytics <- function(env=cont.env, DEBUG=FALSE, verbose=FALSE)
+generate.analytics <- function(env=cont.env, verbose=FALSE, DEBUG=FALSE)
 {
     # use this name to debug the function running its code outside the function
     cont.env=env
