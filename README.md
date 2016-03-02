@@ -1,26 +1,30 @@
 # fuzztest
 
 ### Purpose 
-To isolate errors through identifying groups of parameter combinations that cause them.  
+To isolate errors through identifying groups of parameter combinations 
+that cause them.  
 
 ### What the Package Does
-Tests all possible combinations of argument values for any function to produce test 
-statistics and graphs to help identify and fix defects faster than by using 
-more traditional approaches. The key feature of the package is its ability to
-present multiple test results in a very compact form. 
+Tests all possible combinations of argument values for any function 
+to produce test statistics and graphs to help identify and fix defects 
+faster than by using more traditional approaches. The key feature of 
+the package is its ability to present multiple test results 
+in a very compact form. 
     
 ### Alternative Use 
-**_Automatically_** create unit tests: simply compare saved "reference" results 
-against the ongoing development results. For now, one can check them by loading 
-data files with test results and checking whether results are identical.
+Every run **_automatically_ creates data for unit testing.** Simply compare 
+saved "reference" results against the ongoing development results. For now, 
+one can check them by loading data files with test results and checking 
+whether exit status is identical for all combinations of input parameters. 
 (Timestamped data is saved in a current work directory after every test.)                            
 
 ### Roadmap
-1. To save a function output value along with an exit status ("PASS/FAIL") 
-for use in unit tests and enable automatic comparison and visualization
-of current test results against reference results. 
-2. To report "incremental" "PASS/FAIL" i.e. only differences between the current 
-test and previously recorded reference data.
+1. To save a function output value along with an exit status ("PASS/FAIL")
+for use in unit tests 
+2. To enable automatic comparison and visualization of a current test against
+saved reference data. 
+2. To report "incremental" "PASS/FAIL" i.e. only differences between the 
+current test and previously recorded reference data.
 3. To enable saving test log in a separate log file. 
            
 ***
