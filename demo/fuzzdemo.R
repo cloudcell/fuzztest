@@ -2,6 +2,7 @@
 # Description: A Demo of the Package fuzztest (a work in progress)
 # Author: cloudcello 
 # Date: 2016-02-29
+# License: GPL-3
 ################################################################################
 
 ################################################################################
@@ -35,6 +36,8 @@ if(1) {
     apply.argset(FUN="fuzzdemofunc")
     test_summary()
     plot.tests()
+    plot.tests(pass = F)
+    plot.tests(fail = F)
 }
 
 message("The summary shows that the argument 'option' explains the most ") 
@@ -86,9 +89,9 @@ if(0) {
     generate.argset(arg_register = r, display_progress=TRUE)
     apply.argset(FUN="fuzzdemofunc")
     test_summary()
+    plot.tests(pass = F)
     plot.tests()
     plot.tests(fail = F)
-    plot.tests(pass = F)
 }
 
 message("    Now one can clearly see two linear relationships between ")
