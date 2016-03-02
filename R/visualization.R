@@ -1,10 +1,10 @@
 #------------------------------------------------------------------------------#
 # Description: a visualization function that uses parallel coordinates 
 #              to plot argument options as levels along each axis. 
-#              The function plots combinations that are associated with 
-#              successful ('PASS') tests first with failing tests afterwards
-#              so failing test settings (i.e. their graph representation) 
-#              are never overlapped by successful test settings.
+#              The function plots argument value combinations that are 
+#              associated with successful ('PASS') tests first with failing 
+#              tests afterwards so failing test settings (i.e. their graph 
+#              representation) are never overlapped by successful test settings.
 #              It is possible to plot either 'PASS' or 'FAIL' settings alone
 #              (see the description of the plot.test() function).
 #              
@@ -95,12 +95,13 @@ generate.analytics <- function(env=cont.env, verbose=FALSE, DEBUG=FALSE)
 #'             without overlapping adjacent lines at the point of intersection
 #'             with the axis. Distance of 0 makes no gap (with only a 
 #'             regular distance separating any two adjacent lines at a point
-#'             of intersection with the vertical axis). The value of dist must 
-#'             be greater than -1.
+#'             of intersection with the vertical axis). A dist of -0.9999 
+#'             creates almost complete overlap with an adjacent group.
+#'             The value of dist must be greater than -1. 
 #' @param verbose provides additional text output during processing
 #' @param DEBUG enters the debug mode on function entry
 #' 
-#' @author cloudcello
+#' @author cloudcell
 #' 
 #' @export             
 plot.tests <- function(env=cont.env, pass=TRUE, fail=TRUE, dist=1.0,
@@ -198,7 +199,6 @@ plot.tests <- function(env=cont.env, pass=TRUE, fail=TRUE, dist=1.0,
             gap <- ( 1 / max_levels ) / (1 + dist) # TODO get it out of the loop!
             
             # message("col j = ", j, " row i= ", i, " total gap = ", graph_shift[[j]][level])
-            
             
             # plotting starts from with no additional gap at all
             graph_shift[[j]][level] <- graph_shift[[j]][level] + gap
@@ -362,7 +362,7 @@ plot.tests <- function(env=cont.env, pass=TRUE, fail=TRUE, dist=1.0,
     if(nr_all>1) { # TODO consider removing !!! due to added boundaries (min/max)
     col_qty <- length(xlab.str)
     chart_all <- parallelplot(~all[1:col_qty], horizontal.axis=FALSE, col=all[,'color'],
-                              main="Argument Combinations vs Test Results (PASS - grey, FAIL - color)",
+                              main="parameter combinations vs test results: grey=pass, colored=fail",
                               drop.unused.levels=FALSE) # lvls of factors
     # chart_all <- parallelplot(all, horizontal.axis=FALSE, col=rainbow(10))
     print(chart_all)

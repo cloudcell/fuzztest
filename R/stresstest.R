@@ -101,7 +101,20 @@ getComboQty <- function(register, verbose=TRUE)
 #' This function uses an argument 'register' created earlier and generates all
 #' possible combiations of arguments, including argument 'states', such as
 #' 'missing' specified as '__MISSING__' in the register. The result is stored
-#' in the work environment.
+#' in the work environment. There is no special function to create an
+#' argument register to be used with 'generate.argset()' as a register is
+#' simply a list. Please see file 'fuzzdemo.R' for an example. 
+#' At the moment the following character strings are interchangeable when
+#' setting up the test (the argument register):
+#' "__val.NULL__" and "NULL"
+#' "__val.NA__" and "NA"
+#' "__val.TRUE__" and  "TRUE"
+#' "__val.FALSE__" and "FALSE"
+#' '__MISSING__'
+#' If you would like to actually assign character strings such as "NULL", "NA",
+#' "TRUE", "FALSE", simply override the function "prepareArgs" with your
+#' modified version.
+#' 
 #' 
 #' @param arg_register an argument register that contains all argument 
 #'                     'states' required to be tested (while combined with 
@@ -111,7 +124,7 @@ getComboQty <- function(register, verbose=TRUE)
 #' @param DEBUG enters the debug mode on function entry
 #' @param display_progress prints "." on each iteration in the standard output
 #' 
-#' @author cloudcello
+#' @author cloudcell
 #' 
 #' @export
 generate.argset <- function(arg_register, cust.env=NULL, verbose=FALSE,
@@ -146,8 +159,11 @@ generate.argset <- function(arg_register, cust.env=NULL, verbose=FALSE,
     combos$total_qty
 
     # reserve memory
-    e$container_test_args <- matrix(nrow=combos$total_qty, ncol = combos$args_qty)
-    e$container_test_results <- vector( length = combos$total_qty, mode = "character")
+    e$container_test_args <- matrix(nrow=combos$total_qty, 
+                                    ncol = combos$args_qty)
+    
+    e$container_test_results <- vector( length = combos$total_qty, 
+                                        mode = "character")
 
     e$result_slot_next=1
     e$result_slot_max=combos$total_qty
@@ -199,7 +215,8 @@ get_leafs <- function(idx, start_branch_id=1, accum_leafs=c(),
         if(i+1<=branch_qty) {
             # jump to a branch "up" (with a higher id)
             # from every 'leaf' on this branch
-            get_leafs(idx, start_branch_id = i+1, accum_leafs=c(accum_leafs,j), storage.env = storage.env)
+            get_leafs(idx, start_branch_id = i+1, accum_leafs=c(accum_leafs,j), 
+                      storage.env = storage.env)
         } else {
             # spew out all the leafs
             printable_leafs=c(accum_leafs,j)
@@ -208,7 +225,8 @@ get_leafs <- function(idx, start_branch_id=1, accum_leafs=c(),
             # TODO: store the leaf set in a specially prepared environment
             # just use function's environment one level up (not 'frame' !!!)
             if(!is.null(storage.env)) {
-                store_test_set(env = storage.env,test_set = printable_leafs, display_progress = storage.env$display_progress)
+                store_test_set(env = storage.env,test_set = printable_leafs, 
+                               display_progress = storage.env$display_progress)
             }
         }
     }
@@ -255,7 +273,7 @@ prepareArgs <- function(arg_register, arg_selection_vector, verbose=FALSE, DEBUG
     # suppressMessages(verbose==FALSE)
 
     for(i in 1:length(r)) {
-        # for(i in 2) {
+        
         if(verbose) message(rep("-",70))
         if(verbose) message("Argument number: ", i)
 
@@ -265,22 +283,8 @@ prepareArgs <- function(arg_register, arg_selection_vector, verbose=FALSE, DEBUG
 
         choice <- arg_ids.vct[i]
         arg_value <- r[[i]][[choice]]
-        # tmp <-  r[i]
-        # arg_value <- tmp[choice]
 
         if(verbose) message("Argument value chosen: '", arg_value, "'")
-
-        # print(i)
-        # print( r[[i]][choice] )
-        # print( arg_ids.vct[i] )
-
-        # final_arg[['test']] <- NULL # remove from the list
-        # final_arg[[arg_name]] <- arg_value # remove from the list
-        # final_arg[arg_name] <- arg_value # remove from the list
-
-        # str(unlist(arg_value))
-
-        # arg_value <- unlist(arg_value)
         if(verbose) print("str(arg_value):")
         if(verbose) print(str(arg_value))
 
@@ -289,17 +293,19 @@ prepareArgs <- function(arg_register, arg_selection_vector, verbose=FALSE, DEBUG
         switch_value <- arg_value
 
         #----------------------------------------------------------------------#
-        # mode E {numeric, character, list, function}
-        # typeof -- usually the same info as -- mode(storage.mode)
+        # R types 
         #----------------------------------------------------------------------#
-        #        typeof returns the type of an R object
-        #        mode gives information about the mode of an object in the
-        #             sense of Becker, Chambers & Wilks (1988), and is more
-        #             compatible with other implementations of the S language
+        # 'mode' E {numeric, character, list, function}
+        # 'typeof' -- usually the same info as 'mode(storage.mode)'
+        # 'class' E {abstract type}
         #----------------------------------------------------------------------#
-        # class {abstract type}
+        # 'typeof' returns the type of an R object
+        # 'mode'   returns the type of an S object
+        #          i.e. gives information about the mode of an object in the
+        #          sense of Becker, Chambers & Wilks (1988), and is more
+        #          compatible with other implementations of the S language
+        # Source: http://stackoverflow.com/questions/6258004/r-types-and-classes-of-variables
         #----------------------------------------------------------------------#
-        # R types: http://stackoverflow.com/questions/6258004/r-types-and-classes-of-variables
 
         if(mode(arg_value)!="character") {
             # so numeric, list, and function are assigned as is
@@ -309,25 +315,28 @@ prepareArgs <- function(arg_register, arg_selection_vector, verbose=FALSE, DEBUG
         # dealing with character types (with the non-character mode objects
         # fall through to the 'bottom':
         switch(switch_value,
-               #TODO: consider changing this to "__val.NULL__"
+               #TODO: consider deprecating the use of "NULL" to mean NULL
+               "__val.NULL__"=,
                "NULL"={
                    # ref: http://stackoverflow.com/questions/7944809/assigning-null-to-a-list-element-in-r
                    if(verbose) print(paste0("Arg: ", arg_name," : assigning NULL") )
                    # ATTENTION: using '[' and NOT '[[' !
-                   final_arg[arg_name]=list(NULL)
+                   final_arg[arg_name]=list(NULL) 
                },
-               #TODO: consider changing this to "__val.NA__"
-               # ref: http://stackoverflow.com/questions/7944809/assigning-null-to-a-list-element-in-r
+               #TODO: consider deprecating the use of "NA" to mean NA
+               "__val.NA__"=,
                "NA"={
                    if(verbose) print(paste0("Arg: ", arg_name," : assigning NA") )
                    final_arg[[arg_name]]=NA
                },
-               #TODO: consider changing this to "__val.TRUE__"
+               #TODO: consider using only "__val.TRUE__" (deprecate the other)
+               "__val.TRUE__"=,
                "TRUE"={
                    if(verbose) print(paste0("Arg: ", arg_name," : assigning TRUE") )
                    final_arg[[arg_name]]=TRUE
                },
-               #TODO: consider changing this to "__val.FALSE__"
+               #TODO: consider using only "__val.FALSE__" (deprecate the other)
+               "__val.FALSE__"=,
                "FALSE"={
                    if(verbose) print(paste0("Arg: ", arg_name," : assigning FALSE") )
                    final_arg[[arg_name]]=FALSE
@@ -344,14 +353,11 @@ prepareArgs <- function(arg_register, arg_selection_vector, verbose=FALSE, DEBUG
                    final_arg[[arg_name]] <- arg_value
                }
         )
-        # if any is equal to "__MISSING__" then NULL them !!!
+        # if any is equal to "__MISSING__" then NULL it !
         if(verbose) message("str(final_arg) after this iteration:")
         if(verbose) print(str(final_arg))
     }
-    final_arg
     str(final_arg)
-
-    # final_arg$R
 
     final_arg
 }
@@ -372,10 +378,12 @@ errorHandlingTest <- function(FUN,args)
 }
 
 
-#' produce results {PASS,FAIL} for every argument test set 
+#' tests a function provided to the argument FUN with argument value sets
+#' prepared earlier and stored in the default work environment and returns 
+#' a vector with {PASS|FAIL} for every argument value combination.
 #' 
-#' function name must be supplied to THIS function as it allows developing
-#' adjusted versions of functions and test them further
+#' An alternative work environment may be supplied in the future 
+#' (not tested yet)
 #' 
 #' @param env work environment (if NULL, uses the default)
 #' @param arg_register an argument register that contains all argument 'states' 
@@ -385,7 +393,7 @@ errorHandlingTest <- function(FUN,args)
 #' @param verbose provides additional text output during processing
 #' @param DEBUG enters the debug mode on function entry
 #' 
-#' @author cloudcello
+#' @author cloudcell
 #' 
 #' @export
 apply.argset <- function(env=NULL, arg_register=cont.env$arg_register,

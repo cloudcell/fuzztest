@@ -4,9 +4,6 @@
 # License: GPL-3
 #------------------------------------------------------------------------------#
 
-
-
-
 #' Aggregates all the test results by argument 'state' and provides statistics
 #' 
 #' The Function splits statistics into detailed and short summaries.
@@ -22,11 +19,11 @@
 #' @param DEBUG enters the debug mode on function entry
 #' 
 #' @aliases test_summary, summary.fuzz
-#' @author cloudcello
+#' @author cloudcell
 #' 
 #' @export
 #TODO: make sure all functions have DEBUG listed as the _last_ argument
-summary.fuzz <- # alias
+summary.fuzztest <- # alias
 test_summary <- function(env=cont.env, verbose=FALSE, DEBUG=FALSE) 
 {
     if(DEBUG) browser()
@@ -51,10 +48,12 @@ test_summary <- function(env=cont.env, verbose=FALSE, DEBUG=FALSE)
     field_to_remove_nbr <- length(r)+1 # the one last field with 'results' added later
     
     # needed for small size tests dendrogram 
-    bound_test_data_fail <- bound_test_data[bound_test_data[,'results']=="FAIL",-field_to_remove_nbr]
+    bound_test_data_fail <- 
+        bound_test_data[bound_test_data[,'results']=="FAIL",-field_to_remove_nbr]
 
     if(0) {   
-        bound_test_data_pass <- bound_test_data[bound_test_data[,'results']=="PASS",-field_to_remove_nbr]
+        bound_test_data_pass <- 
+            bound_test_data[bound_test_data[,'results']=="PASS",-field_to_remove_nbr]
     }
     # ------------------------------------------------------------------------ #
 
@@ -151,7 +150,8 @@ test_summary <- function(env=cont.env, verbose=FALSE, DEBUG=FALSE)
     tail_title="PASS    FAIL    FAIL%"
     tail_title_width=nchar(tail_title)
     
-    head_p2 <- format(x=argName_title, justify='centre',width=txt_width + pad_width*2)
+    head_p2 <- format(x=argName_title, justify='centre',
+                      width=txt_width + pad_width*2)
     head_p2_width <- nchar(head_p2)
     
     table_width <- argOpt_title_width + head_p2_width + tail_title_width +
@@ -181,7 +181,8 @@ test_summary <- function(env=cont.env, verbose=FALSE, DEBUG=FALSE)
                 format(summary_ext[[i]][,"FAIL"][j],width=6, justify='right'),
                 pad.txt,
                 pad.txt,
-                format(summary_ext[[i]][,"fail_pct"][j],digits = 3, nsmall = 1, width=5, justify='left')
+                format(summary_ext[[i]][,"fail_pct"][j],digits = 3, 
+                       nsmall = 1, width=5, justify='left')
             )
         }
     }
@@ -216,9 +217,11 @@ test_summary <- function(env=cont.env, verbose=FALSE, DEBUG=FALSE)
     
     table_width <- txt_width + pad_width*3 + bar_width_all + percentage_width
     
-    head_p1 <- format(x=argName_title, justify='centre',width=txt_width + pad_width*2)
+    head_p1 <- format(x=argName_title, justify='centre',
+                      width=txt_width + pad_width*2)
     head_p2_width <- percentage_width + pad_width*1 + bar_width_all 
-    head_p2 <- format(x="Failure Rate Contribution, % (Max - Min)", width=head_p2_width, justify='centre' )
+    head_p2 <- format(x="Failure Rate Contribution, % (Max - Min)", 
+                      width=head_p2_width, justify='centre' )
     
     
     message("Fuzztest: Summary")
@@ -230,7 +233,8 @@ test_summary <- function(env=cont.env, verbose=FALSE, DEBUG=FALSE)
     
     for(i in 1:length(r)) {
         
-        bar_fill_size <- as.integer( round( bar_width/100 * summary_short[[i]], digits = 0) )
+        bar_fill_size <- as.integer( round( bar_width/100 * summary_short[[i]], 
+                                            digits = 0) )
         bar_fill <-  paste0(rep("*", bar_fill_size))
         bar_blank <- paste0(rep(" ", bar_width - bar_fill_size))
         
@@ -240,7 +244,8 @@ test_summary <- function(env=cont.env, verbose=FALSE, DEBUG=FALSE)
         message(pad.txt, 
                 txt_name,
                 pad.txt,
-                format(summary_short[[i]],digits = 3, justify = 'right', nsmall=1, width=percentage_width),
+                format(summary_short[[i]],digits = 3, justify = 'right', 
+                       nsmall=1, width=percentage_width),
                 pad.txt,
                 c("'",bar_fill,bar_blank,"'") #,
         )

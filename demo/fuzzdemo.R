@@ -1,21 +1,8 @@
 ################################################################################
-# Description: A Demo of the Package fuzztest (a work in progress)
-# Author: cloudcello 
+# Description: A Demo of the Package fuzztest (a Work in Progress)
+# Author: cloudcell
 # Date: 2016-02-29
 # License: GPL-3
-################################################################################
-
-################################################################################
-# Description of the block of code below the function: 
-# This is my initial attempt to build a demo for the package. This will be 
-# rebuilt in another file as follows:                                           
-#
-# 1. Do a simple scan of the demo function with only a few options for
-#    each argument
-# 2. When an error is identified, simply stop including that combination
-#    of argument values in further tests until most 'demo faults' are discovered 
-#    There are 10 'demonstration faults' introduced into the demo function
-#    
 ################################################################################
 
 # options: a,b,c
@@ -27,8 +14,8 @@
 if(1) {
     set.seed(0)
     r <- list()
-    r$x <- c(0)#:5) #c(0)
-    r$y <- c(0)#:5) #c(0)
+    r$x <- c(0)
+    r$y <- c(0)
     r$option <- c("a", "b", "c")
     r$suboption <- c("a", "b", "c","d")
     
@@ -36,8 +23,8 @@ if(1) {
     apply.argset(FUN="fuzzdemofunc")
     test_summary()
     plot.tests()
-    plot.tests(pass = F)
-    plot.tests(fail = F)
+    # plot.tests(pass = F)
+    # plot.tests(fail = F)
 }
 
 message("The summary shows that the argument 'option' explains the most ") 
@@ -77,7 +64,6 @@ message("    will be easier as it will be easier to deduce the dependence ")
 message("    of failures on a range of input values from 'x'. ")
 
 
-
 if(0) { 
     set.seed(0)
     r <- list()
@@ -89,9 +75,9 @@ if(0) {
     generate.argset(arg_register = r, display_progress=TRUE)
     apply.argset(FUN="fuzzdemofunc")
     test_summary()
-    plot.tests(pass = F)
     plot.tests()
-    plot.tests(fail = F)
+    # plot.tests(pass = F)
+    # plot.tests(fail = F)
 }
 
 message("    Now one can clearly see two linear relationships between ")
@@ -102,9 +88,9 @@ message("    'x' and 'y'. These correspond to 'numeric bugs' #1NC and 4NC")
 ################################################################################
 # Notes:
 # 
-# Vertical axes are equally split among options; in case there is only one
-# option occupies the axis "test lines" will be evenly spread from the bottom
-# to the top of the chart.
+# Parameter sets are evenly spread along vertical axes. If only one parameter
+# option occupies the axis "test graph lines" will be evenly spread from 
+# the bottom to the top of the chart.
 # 
 # The chart is drawn as follows.
 # First, all test lines for those tests that returned the PASS status. They

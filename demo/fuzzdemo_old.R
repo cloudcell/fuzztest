@@ -4,18 +4,6 @@
 # Date: 2016-02-29
 ################################################################################
 
-################################################################################
-# Description of the block of code below the function: 
-# This is my initial attempt to build a demo for the package. This will be 
-# rebuilt in another file as follows:                                           
-#
-# 1. Do a simple scan of the demo function with only a few options for
-#    each argument
-# 2. When an error is identified, simply stop including that combination
-#    of argument values in further tests until most 'demo faults' are discovered 
-#    There are 10 'demonstration faults' introduced into the demo function
-#    
-################################################################################
 
 # options: a,b,c,d,e,f
 # suboptions: a,b,c,d
