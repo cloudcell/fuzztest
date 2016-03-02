@@ -46,7 +46,7 @@ if(0) { # test for the Wiki
     generate.argset(arg_register = r)
     
     # produce results {PASS,FAIL} for every argument test set
-    apply.argset(FUN="demofunc") # , subset=c(1,5,222,333,444,555,666,777,888,999,41472)
+    apply.argset(FUN="fuzzdemofunc") # , subset=c(1,5,222,333,444,555,666,777,888,999,41472)
     
     # print test summary
     test_summary()
@@ -77,7 +77,7 @@ if(0) { # test for testing the package itself
     generate.argset(arg_register = r, display_progress=TRUE) #, DEBUG = T)
     
     # produce results {PASS,FAIL} for every argument test set
-    apply.argset(FUN="demofunc") # , subset=c(1,5,222,333,444,555,666,777,888,999,41472)
+    apply.argset(FUN="fuzzdemofunc") # , subset=c(1,5,222,333,444,555,666,777,888,999,41472)
     
     # print test summary
     test_summary(DEBUG = FALSE)#, verbose=TRUE)
@@ -89,7 +89,7 @@ if(0) { # test for testing the package itself
     
     
     # plot.tests(DEBUG=TRUE)
-    # demofunc(x=0,y=10,"a","break")
+    # fuzzdemofunc(x=0,y=10,"a","break")
 }
 
 if(0) {
@@ -111,7 +111,7 @@ if(0) {
     
     generate.argset(arg_register = r, display_progress=TRUE) #, DEBUG = T)
     
-    apply.argset(FUN="demofunc") # , subset=c(1,5,222,333,444,555,666,777,888,999,41472)
+    apply.argset(FUN="fuzzdemofunc") # , subset=c(1,5,222,333,444,555,666,777,888,999,41472)
     test_summary()
     plot.tests()
     
@@ -129,7 +129,7 @@ if(0) {
     
     generate.argset(arg_register = r, display_progress=TRUE) #, DEBUG = T)
     
-    apply.argset(FUN="demofunc") # , subset=c(1,5,222,333,444,555,666,777,888,999,41472)
+    apply.argset(FUN="fuzzdemofunc") # , subset=c(1,5,222,333,444,555,666,777,888,999,41472)
     test_summary()
     plot.tests()
     
@@ -149,7 +149,7 @@ if(0) {
     
     generate.argset(arg_register = r, display_progress=TRUE) #, DEBUG = T)
     
-    apply.argset(FUN="demofunc") # , subset=c(1,5,222,333,444,555,666,777,888,999,41472)
+    apply.argset(FUN="fuzzdemofunc") # , subset=c(1,5,222,333,444,555,666,777,888,999,41472)
     test_summary()
     plot.tests()
     
@@ -163,12 +163,12 @@ if(0) {
     r <- list()
     r$x <- c(1,2,3,4) # c(seq(from=0, to=1, length.out = 50))
     r$y <- c(1,2,3,4)#,5,6) # c(seq(from=0, to=1, length.out = 50))
-    r$option <- c("b")
     r$suboption <- c("a", "c", "d")
+    r$option <- c("b")
     
     generate.argset(arg_register = r, display_progress=TRUE) #, DEBUG = T)
     
-    apply.argset(FUN="demofunc") # , subset=c(1,5,222,333,444,555,666,777,888,999,41472)
+    apply.argset(FUN="fuzzdemofunc") # , subset=c(1,5,222,333,444,555,666,777,888,999,41472)
     test_summary()
     plot.tests()
     
@@ -189,7 +189,7 @@ if(0) {
     
     generate.argset(arg_register = r, display_progress=TRUE) #, DEBUG = T)
     
-    apply.argset(FUN="demofunc") # , subset=c(1,5,222,333,444,555,666,777,888,999,41472)
+    apply.argset(FUN="fuzzdemofunc") # , subset=c(1,5,222,333,444,555,666,777,888,999,41472)
     test_summary()
     plot.tests(pass = FALSE, fail = FALSE)
     plot.tests(pass = FALSE)
