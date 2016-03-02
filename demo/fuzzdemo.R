@@ -37,18 +37,18 @@ if(1) {
     plot.tests()
 }
 
-message("The summary shows that the argument 'option' explains the most ", 
-        "variability in the outcome. So let's concentrate on that.")
-message("If we go to the detailed test result table, we will see that the ",
-        "failure occurs when option value #3 is selected. If we read the log ", 
-        "we will see that the types of errors are mixed. But for now, let's ",
-        "think that we fix the ones related to control flow first. ")
+message("The summary shows that the argument 'option' explains the most ") 
+message("variability in the outcome. So let's concentrate on that.")
+message("If we go to the detailed test result table, we will see that most")
+message("failures occur when option value #3 is selected. If we read the log ") 
+message("we will see that the types of errors are mixed. But for now, let's ")
+message("think that we fix the ones related to control flow first. ")
 message("...")
-message("Let's assume we fixed all the control flow related bugs without ",
-        "actually going and changing anything in the code. For that ",
-        "assumption to work, we will choose a combination of options ", 
-        "that resulted in the 'PASS' outcome. Such a combination ",
-        "could be, for example, {x=0, y=0, option='a', suboption='a'}. ")
+message("Let's assume we fixed all the control flow related bugs without ")
+message("actually going and changing anything in the code. For that ")
+message("assumption to work, we will choose a combination of options ")
+message("that resulted in the 'PASS' outcome. Such a combination ")
+message("could be, for example, {x=0, y=0, option='a', suboption='a'}.")
 
 # waitForUserInput()
 
@@ -87,12 +87,12 @@ if(0) {
     apply.argset(FUN="fuzzdemofunc")
     test_summary()
     plot.tests()
+    plot.tests(fail = F)
+    plot.tests(pass = F)
 }
 
 message("    Now one can clearly see two linear relationships between ")
-message("    'x' and 'y': ")
-message("    1) when y exceeds x by 1 and  ")
-message("    2) when y exceeds x by 1 and  ")
+message("    'x' and 'y'. These correspond to 'numeric bugs' #1NC and 4NC")
 
 
 
