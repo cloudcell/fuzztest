@@ -112,7 +112,12 @@ plot.tests <- function(env=cont.env, pass=TRUE, fail=TRUE,
     success_map <- cont.env$success_map
     nr_s <- nrow(success_map)
     
+    # col. names
+    xlab.str <- names(cont.env$arg_register)
+    
     #--------------------------------------------------------------------------#
+    # preparing data related to exit status 'FAIL'
+
     if(verbose) message("preparing 'failure map'")
     failure_map_parplot <- failure_map
     if(verbose) message(str(failure_map))
@@ -141,8 +146,12 @@ plot.tests <- function(env=cont.env, pass=TRUE, fail=TRUE,
     failure_map_parplot <- as.data.frame(failure_map_parplot)
     cont.env$failure_map_parplot <- failure_map_parplot # TODO delete later (debug only)
 
+    colnames(failure_map_parplot) <- xlab.str
+    
+    
     #--------------------------------------------------------------------------#
-    #--------------------------------------------------------------------------#
+    # preparing data related to exit status 'PASS'
+
     if(verbose) message("preparing 'success map'")
     success_map_parplot <- success_map
     if(verbose) message(str(success_map))
@@ -168,19 +177,18 @@ plot.tests <- function(env=cont.env, pass=TRUE, fail=TRUE,
         success_map_parplot[i,] <- success_map_parplot[i,] + jitter
         # }
     }
-    parplot_boundary_p <- success_map_parplot[i,]
+    parplot_boundary_p <- success_map_parplot[i,] # 'p' == 'pass'
     
     if(verbose) str(success_map_parplot)
     success_map_parplot <- as.data.frame(success_map_parplot)
     cont.env$success_map_parplot <- success_map_parplot # TODO delete later (debug only)
+
+    colnames(success_map_parplot) <- xlab.str
     #--------------------------------------------------------------------------#
 
-
-    xlab.str <- names(cont.env$arg_register)
     
     # setnames(data, old=c() new=c()) in library(data.table)
-    colnames(failure_map_parplot) <- xlab.str
-    colnames(success_map_parplot) <- xlab.str
+    
 
     # TODO: print everything on the same chart:
     # reference: http://stackoverflow.com/questions/6853204/plotting-multiple-curves-same-graph-and-same-scale
@@ -236,24 +244,40 @@ plot.tests <- function(env=cont.env, pass=TRUE, fail=TRUE,
     if(verbose) message("drawing 'full test map'")
     
     browser(expr=DEBUG)
+    #--------------------------------------------------------------------------#
     # determine the two 'line coordinates' for the boundary (top & bottom):
+
     # TODO: factor out this to an external function
     parplot_boundary_p
     parplot_boundary_f
+    
+    # min/max boundaries based on actual data
+    
     tmp <- rbind(parplot_boundary_p,parplot_boundary_f)
-    parplot_boundary_max <- apply(X = tmp, MARGIN = 2, FUN = max)
+    parplot_boundary_max <- apply(X = tmp, MARGIN = 2, FUN = max) # could be taken from arg_register
+    parplot_boundary_min <- apply(X = tmp, MARGIN = 2, FUN = min) # should usually be 1 for all options
+    
     # str(parplot_boundary_max)
     parplot_boundary_max <- t(parplot_boundary_max)
+    parplot_boundary_min <- t(parplot_boundary_min)
     
     # parplot_boundary_max <- t(as.matrix(parplot_boundary_max))
     parplot_boundary_max <- as.data.frame(parplot_boundary_max, row.names = "0")
+    parplot_boundary_min <- as.data.frame(parplot_boundary_min, row.names = "0")
+    
     colnames(parplot_boundary_max) <- xlab.str
-    parplot_boundary_min <- parplot_boundary_max
+    colnames(parplot_boundary_min) <- xlab.str
     
-    # make them the minimum group "coordinate representation of a group number)
-    parplot_boundary_min[1,] <- 1 
-
     
+    # min/max boundaries based on actual data (not implemented for MAX yet)
+    if(0) { 
+        # just to have a template
+        parplot_boundary_min <- parplot_boundary_max 
+        
+        # the minimum group number is always 1 in this case
+        parplot_boundary_min[1,] <- 1
+    }
+        
     parplot_boundaries <- rbind(parplot_boundary_max, parplot_boundary_min)
     
     # color_technical <- as.character("#FF0000FF") # TODO: change to all 'F' - this is for debugging only
@@ -264,6 +288,8 @@ plot.tests <- function(env=cont.env, pass=TRUE, fail=TRUE,
         
     ## add 2 col's - status(pass/fail/'TECH'-nical) & color
     
+    #--------------------------------------------------------------------------#
+    # assigning technical fields for pass & fail data
     
     # it is important to have this 'stacked' pass/fail approach so PASS always
     # appearth underneath the FAIL. i.e. so that FAIL lines are never 
@@ -280,6 +306,9 @@ plot.tests <- function(env=cont.env, pass=TRUE, fail=TRUE,
         fal <- cbind(failure_map_parplot,fld="FAIL", 
                      color=color_fail, stringsAsFactors=FALSE)
     }
+    
+    #--------------------------------------------------------------------------#
+    # binding all data into one chunk for plotting
     
     if( nr_s>0 && nr_f>0 ) {
         if(pass && fail) {
@@ -329,9 +358,8 @@ plot.tests <- function(env=cont.env, pass=TRUE, fail=TRUE,
     if(nr_all>1) { # TODO consider removing !!! due to added boundaries (min/max)
     col_qty <- length(xlab.str)
     chart_all <- parallelplot(~all[1:col_qty], horizontal.axis=FALSE, col=all[,'color'],
-                              main="Argument Combinations vs Test Results (PASS - grey, FAIL - color)",
-                              drop.unused.levels=TRUE)
-                              # drop.unused.levels=FALSE)
+                              main="Argument Combinations vs Test Results (PASS - grey, FAIL - color)"),
+                              drop.unused.levels=FALSE) # lvls of factors
     # chart_all <- parallelplot(all, horizontal.axis=FALSE, col=rainbow(10))
     print(chart_all)
     } else {
