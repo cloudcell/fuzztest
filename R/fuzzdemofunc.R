@@ -50,11 +50,11 @@ fuzzdemofunc <- function(x, y, option, suboption)
                switch(suboption,
                       "a"={                                    },
                       "b"={                                    },
-                      "c"={ if(x + y <0) stop("[control flow] demo bug #1CF") },
+                      "c"={ if(x + y <0) stop("demo bug #1CF (control flow)") },
                       "d"={                                    },
                       { stop("Wrong suboption (valid 'FAIL')") }
                )
-               if(abs(x-y+1)<0.1) stop("[numeric calc.] demo bug #1NC")
+               if(abs(x-y+1)<0.01) stop("demo bug #1NC (numeric calc.)")
            },
            "b"={
                x <- 1
@@ -62,29 +62,29 @@ fuzzdemofunc <- function(x, y, option, suboption)
                       "a"={ x <- x*1.5                         },
                       "b"={ x <- y                             },
                       "c"={ y <- 1                             },
-                      "d"={ if(x>y) stop("[control flow] demo bug #2CF") },
+                      "d"={ if(x>y) stop("demo bug #2CF (control flow)") },
                       { stop("Wrong suboption (valid 'FAIL')") }
                )
-               if(abs(x %% 5 - y)<0.01) stop("[numeric calc.] demo bug #2NC")
+               if(abs(x %% 5 - y)<0.01) stop("demo bug #2NC (numeric calc.)")
            },
            "c"={
                switch(suboption,
-                      "a"={ stop("[control flow] demo bug #3CF") },
+                      "a"={ stop("demo bug #3CF (control flow)") },
                       "b"={                                    },
                       "c"={                                    },
                       "d"={  rm(tmp1)                          },
                       { stop("Wrong suboption (valid 'FAIL')") }
                )
-               if(abs(x %/% 5 - y)<0.01) stop("[numeric calc.] demo bug #3NC")
+               if(abs(x %/% 5 - y)<0.01) stop("demo bug #3NC  (numeric calc.)")
            },
            { stop("Wrong option (valid 'FAIL')") }
     )
     
-    if(!exists("tmp1")) stop("[control flow] demo bug #4CF")
+    if(!exists("tmp1")) stop("demo bug #4CF (control flow)")
     
-    result <- x - y*2 + 10
+    result <- x - y*2 + 5
     
-    if(abs(result)<0.1) stop("[numeric calc.] demo bug #4NC")
+    if(abs(result)<0.01) stop("demo bug #4NC  (numeric calc.)")
     
     result
 }
