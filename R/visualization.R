@@ -1,4 +1,4 @@
-#------------------------------------------------------------------------------#
+############################################################################## #
 # Description: a visualization function that uses parallel coordinates 
 #              to plot argument options as levels along each axis. 
 #              The function plots argument value combinations that are 
@@ -11,23 +11,27 @@
 # Author: cloudcell
 # Date: 2016-03
 # License: GPL-3
-#------------------------------------------------------------------------------#
-
+############################################################################## #
 
 # References:
 #
-# TODO: add viridis colormap
-#       http://matplotlib.org/users/colormaps.html
+# a quote from https://en.wikipedia.org/wiki/Parallel_coordinates
+# "
+# When used for statistical data visualisation there are three important
+# considerations: the order, the rotation, and the scaling of the axes.
 #
+# The order of the axes is critical for finding features, and in typical data
+# analysis many reorderings will need to be tried. Some authors have come up
+# with ordering heuristics which may create illuminating orderings.
+# "
+
 # TODO: consider using prp() plot from rpart package
 #       http://www.milbo.org/rpart-plot/prp.pdf
-
-# TODO: plot all the 'PASS' tests with a transparent ink so that the vertical
-#       scale of the axes correctly corresponds to the category ordered position
-
 # TODO: use this for shuffling columns & other neat stuff !
 #       https://syntagmatic.github.io/parallel-coordinates/
 
+
+# internal function
 # generates analytics for plotting (internal function)
 generate.analytics <- function(env=cont.env, verbose=FALSE, DEBUG=FALSE)
 {
@@ -62,15 +66,6 @@ generate.analytics <- function(env=cont.env, verbose=FALSE, DEBUG=FALSE)
     if(verbose) message("Transformed test results saved in the test environment")
 }
 
-# a quote from https://en.wikipedia.org/wiki/Parallel_coordinates
-# "
-# When used for statistical data visualisation there are three important
-# considerations: the order, the rotation, and the scaling of the axes.
-#
-# The order of the axes is critical for finding features, and in typical data
-# analysis many reorderings will need to be tried. Some authors have come up
-# with ordering heuristics which may create illuminating orderings.
-# "
 
 
 #' uses parallelplot with added spacing to diplay better view of 
@@ -104,7 +99,7 @@ generate.analytics <- function(env=cont.env, verbose=FALSE, DEBUG=FALSE)
 #' @author cloudcell
 #' 
 #' @export             
-plot.tests <- function(env=cont.env, pass=TRUE, fail=TRUE, dist=1.0,
+plot_tests <- function(env=cont.env, pass=TRUE, fail=TRUE, dist=1.0,
                        verbose=FALSE, DEBUG=FALSE)
 {
     browser(expr=DEBUG)
@@ -376,7 +371,8 @@ plot.tests <- function(env=cont.env, pass=TRUE, fail=TRUE, dist=1.0,
 }
 
 
-
+#---sandbox--------------------------------------------------------------------#
+#
 # TODO: print everything on the same chart:
 # reference: http://stackoverflow.com/questions/6853204/plotting-multiple-curves-same-graph-and-same-scale
 # par(new = TRUE)

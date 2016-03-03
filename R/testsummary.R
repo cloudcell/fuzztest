@@ -1,8 +1,10 @@
-#------------------------------------------------------------------------------#
+############################################################################## #
+# Description: Produces Test Summary
+# 
 # Author: cloudcell
 # Date: 2016-03
 # License: GPL-3
-#------------------------------------------------------------------------------#
+############################################################################## #
 
 #' Aggregates all the test results by argument 'state' and provides statistics
 #' 
@@ -18,12 +20,12 @@
 #' @param verbose provides additional text output during processing
 #' @param DEBUG enters the debug mode on function entry
 #' 
-#' @aliases test_summary, summary.fuzz
+#' @aliases test_summary, summary.fuzztest
 #' @author cloudcell
 #' 
 #' @export
 #TODO: make sure all functions have DEBUG listed as the _last_ argument
-summary.fuzztest <- # alias
+summary_fuzztest <- # alias
 test_summary <- function(env=cont.env, verbose=FALSE, DEBUG=FALSE) 
 {
     if(DEBUG) browser()

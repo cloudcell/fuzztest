@@ -1,4 +1,4 @@
-#------------------------------------------------------------------------------#
+############################################################################## #
 # Package: "stresstest"
 # Test functions aimed at improving the quality of R code
 #------------------------------------------------------------------------------#
@@ -11,7 +11,7 @@
 # Date: 2016-02-19
 # License: GPL-3
 # Licensing Reference: http://choosealicense.com/
-#------------------------------------------------------------------------------#
+############################################################################## #
 
 # TODO: use my assertion code templates to assure argument register is valid
 #       before processing it ! (or drawing anything based on it)
