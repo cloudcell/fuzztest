@@ -1,3 +1,6 @@
+
+# TODO: use this file only via source(fuzzdemo.R)
+
 ################################################################################
 # Description: A Demo of the Package fuzztest (a Work in Progress)
 # Author: cloudcell
@@ -150,9 +153,10 @@ if(1) {
 }
 
 waitForUserInput()
-message("Now it's time to eliminate each bug one by one.")
-
-
+message("Now there are a number of ways one can proceed from here:")
+message("* If the bugs are trivial, eliminate each bug one by one.")
+message("* If they are intractable, one can start with narrowing")
+message("  down the (numeric) input range and analyze the behavior further.")
 
 message("")
 message("-------------")
