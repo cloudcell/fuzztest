@@ -12,7 +12,7 @@
 #              orders of magnitude, so for the purpose of demos in this package,
 #              they shall be classified as such.
 # 
-# Author: cloudcello
+# Author: cloudcell
 # 
 # Date: 2016-02-29
 ################################################################################
@@ -39,7 +39,7 @@ waitForUserInput <- function()
 #' @param option any character value from "a", "b", "c"
 #' @param suboption any character value from "a", "b", "c", "d"
 #' 
-#' @author cloudcello
+#' @author cloudcell
 #' 
 #' @export
 fuzzdemofunc <- function(x, y, option, suboption)

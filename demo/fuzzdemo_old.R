@@ -1,6 +1,6 @@
 ################################################################################
 # Description: A Demo of the Package fuzztest (a work in progress)
-# Author: cloudcello 
+# Author: cloudcell 
 # Date: 2016-02-29
 ################################################################################
 

@@ -8,6 +8,9 @@
 # License: GPL-3
 ################################################################################
 
+# if FALSE, the demo will only display text
+RUN_CALC=FALSE
+
 # options: a,b,c
 # suboptions: a,b,c,d
 
@@ -18,7 +21,7 @@ waitForUserInput()
 ################################################################################
 # CONTROL FLOW TEST
 ################################################################################
-if(1) {
+if(RUN_CALC) {
     set.seed(0)
     r <- list()
     r$x <- c(0)
@@ -68,15 +71,15 @@ message("    21 options for argument 'x'. The visualized test results")
 message("    will list those from 'Min' to 'Max'. So finding errors ")
 message("    will be easier as it will be easier to deduce the dependence ")
 message("    of failures on a range of input values from 'x'. ")
-message(" 2. generate random numbers within some range and let the ")
-message("    test framework generate a data set of all possible combinations")
-message("    of those options.")
+message(" 2. generate random parameters for selected arguments and let the test")
+message("    framework generate and test all possible parameter combinations.")
+message("    ")
 message("...")
 message("Now the first approach will be demonstrated:")
 
 waitForUserInput()
 
-if(1) { 
+if(RUN_CALC) { 
     set.seed(0)
     r <- list()
     r$x <- c(seq(from=-10, to=10, length.out = 21))
@@ -96,7 +99,6 @@ waitForUserInput()
 
 message("    Now one can clearly see two linear relationships between ")
 message("    'x' and 'y'. These correspond to 'numeric bugs' #1NC and 4NC")
-message("    'x' and 'y'. These correspond to 'numeric bugs' #1NC and 4NC")
 message("...")
 message("Let's assume those are fixed now.")
 
@@ -112,7 +114,7 @@ message("easily indexed and randomly selected as well.")
 
 waitForUserInput()
 
-if(1) { 
+if(RUN_CALC) { 
     set.seed(0)
     r <- list()
     r$x <- runif(15, min=-10, max=10)
@@ -138,7 +140,7 @@ message("a smaller dataset to speed up testing.")
 waitForUserInput()
 
 
-if(1) { 
+if(RUN_CALC) { 
     set.seed(0)
     r <- list()
     r$x <- runif(5, min=-10, max=10)

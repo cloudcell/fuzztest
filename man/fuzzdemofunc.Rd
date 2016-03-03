@@ -23,6 +23,6 @@ Upon a successful completion, the function returns a numeric value into the
 environment from which the function was called.
 }
 \author{
-cloudcello
+cloudcell
 }
 

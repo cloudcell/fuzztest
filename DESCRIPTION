@@ -1,7 +1,7 @@
 Package: fuzztest
 Title: Fuzz/Stress Testing Environment
 Version: 0.0.1.0002
-Authors@R: person("cloudcello", "_", email = "ef256aff@opayq.com", role = c("aut", "cre"))
+Authors@R: person("cloudcell", "_", email = "ef256aff@opayq.com", role = c("aut", "cre"))
 Description: Automated fuzzing / stress testing environment almost without any set up time.  
     Makes debugging simple by visualization of parameters leading to test failures. 
 Depends:
