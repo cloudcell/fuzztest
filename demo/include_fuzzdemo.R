@@ -19,6 +19,11 @@ source(tmpfpath)
 # suboptions: a,b,c,d
 
 message("Demo of the fuzztest package") 
+message("") 
+message("+----------------------------------------------------------+") 
+message("|  Note: some charts may require some time to be plotted.  |") 
+message("|  Please, be patient.                                     |") 
+message("+----------------------------------------------------------+") 
 
 waitForUserInput()
 
@@ -167,10 +172,9 @@ message("The visual chart still looks messy. This can happen when there is a ")
 message("disproportional difference in the number of parameters tested ")
 message("among arguments of a function. To make the plot more clear, one")
 message("can adjust the 'dist' argument of the plot_tests() function.")
-message("We will try setting it to 15: 'plot_tests(dist=15)', which")
-message("means that the gap between adjacent groups will fit the max")
-message("number of parameters 15 times (see help on plot_tests()) ")
-message("for more info.")
+message("We will try setting it to 15: 'plot_tests(dist=15)', which means")
+message("that the gap between adjacent groups will fit the max number of")
+message("parameters 15 times (see help on 'plot_tests()' for more info).")
 
 waitForUserInput()
 
