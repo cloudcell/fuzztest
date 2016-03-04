@@ -2,9 +2,7 @@
 % Please edit documentation in R/stresstest.R
 \name{apply.argset}
 \alias{apply.argset}
-\title{tests a function provided to the argument FUN with argument value sets
-prepared earlier and stored in the default work environment and returns 
-a vector with {PASS|FAIL} for every argument value combination.}
+\title{tests a function based on a set of parameters}
 \usage{
 apply.argset(env = NULL, arg_register = cont.env$arg_register, FUN,
   subset = NULL, verbose = FALSE, DEBUG = FALSE)
@@ -24,6 +22,11 @@ apply.argset(env = NULL, arg_register = cont.env$arg_register, FUN,
 \item{DEBUG}{enters the debug mode on function entry}
 }
 \description{
+tests a function provided to the argument FUN with argument value sets
+prepared earlier and stored in the default work environment and returns 
+a vector with PASS/FAIL for every argument value combination.
+}
+\details{
 An alternative work environment may be supplied in the future 
 (not tested yet)
 }

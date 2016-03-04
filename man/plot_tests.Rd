@@ -2,10 +2,7 @@
 % Please edit documentation in R/visualization.R
 \name{plot_tests}
 \alias{plot_tests}
-\title{uses parallelplot with added spacing to diplay better view of 
-combinations of argument options leading to either PASS/FAIL exit status
-TODO: allow to save as a *.PDF file for further analysis
-(pdf allows for increased magnification)}
+\title{Plots test results}
 \usage{
 plot_tests(env = cont.env, pass = TRUE, fail = TRUE, dist = 1,
   verbose = FALSE, DEBUG = FALSE)
@@ -40,10 +37,8 @@ The value of dist must be greater than -1.}
 \item{DEBUG}{enters the debug mode on function entry}
 }
 \description{
-uses parallelplot with added spacing to diplay better view of 
-combinations of argument options leading to either PASS/FAIL exit status
-TODO: allow to save as a *.PDF file for further analysis
-(pdf allows for increased magnification)
+uses parallelplot with added spacing to diplay combinations of argument 
+values groupped by PASS/FAIL exit state
 }
 \author{
 cloudcell
