@@ -17,12 +17,12 @@
 # Date: 2016-02-29
 ################################################################################
 
-#' @export
-waitForUserInput <- function() 
-{ 
-    message("press Enter when ready")
-    invisible(readline()) 
-}
+
+# waitForUserInput <- function() 
+# { 
+#     message("press Enter when ready")
+#     invisible(readline()) 
+# }
 
 
 
