@@ -6,26 +6,23 @@
 # License: GPL-3
 ############################################################################## #
 
-#' Aggregates all the test results by argument 'state' and provides statistics
+#' Groups test results by argument
 #' 
-#' The Function splits statistics into detailed and short summaries.
-#' The 'detailed statistics': PASS/FAIL count, percentage of failed tests.
-#' The short summary contains only key data for determining a degree to which 
-#' some argument 'state' is associated with whether a function completes
-#' its operations with a 'PASS' or 'FAIL' state. Use this statistics to isolate
-#' those arguments analyze how code 'misbehaves' by looking up a more detailed
-#' output from the first 'detailed statistics' table.
+#' The function produces two reports: detailed and short. The detailed report 
+#' contains PASS/FAIL count and a percentage of failed tests.
+#' The short report contains only key data for determining a degree to which 
+#' an argument contributes to a PASS/FAIL exit state of a function being tested..
+#' These reports can be used to choose arguments associated with most failures
+#' for immediate analysis.
 #' 
 #' @param env work environment, set only if default environment is not used
 #' @param verbose provides additional text output during processing
 #' @param DEBUG enters the debug mode on function entry
 #' 
-#' @aliases test_summary, summary.fuzztest
 #' @author cloudcell
 #' 
 #' @export
 #TODO: make sure all functions have DEBUG listed as the _last_ argument
-summary_fuzztest <- # alias
 test_summary <- function(env=cont.env, verbose=FALSE, DEBUG=FALSE) 
 {
     if(DEBUG) browser()

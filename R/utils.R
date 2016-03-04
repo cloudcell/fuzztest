@@ -1,6 +1,8 @@
 ############################################################################## #
 # Description: Some Utility Function(s)
-# 
+# Author: cloudcell
+# Date: 2016-03
+# License: GPL-3
 ############################################################################## #
 
 #' @export
@@ -13,7 +15,8 @@ waitForUserInput <- function()
 }
 
 
-#' logged message
+#' displays a message and stores it in a log file
+#' 
 #' @param x value to be submitted as a message to message()
 #' @param logger logger handle which must be set up prior to running 
 #'        lmessage
@@ -25,7 +28,7 @@ lmessage <- function(x, logger, env=cont.env, verbose=TRUE)
 {
     if(!exists(logger)) stop(paste0("trying to write to logger '", logger, 
                                     "', which has not been set up / 
-                                    initialized yet.")
+                                    initialized yet."))
     if(verbose) message(x)
     zz_logger <- env$loggers[lgr_name]
     
@@ -33,7 +36,7 @@ lmessage <- function(x, logger, env=cont.env, verbose=TRUE)
     
 }
 
-#' logger setup
+#' creates a new logger
 #' 
 #' @param lgr_name logger name
 #' @param dest destination directory (defaults to the current work directory)

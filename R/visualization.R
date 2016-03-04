@@ -68,10 +68,10 @@ generate.analytics <- function(env=cont.env, verbose=FALSE, DEBUG=FALSE)
 
 
 
-#' uses parallelplot with added spacing to diplay better view of 
-#' combinations of argument options leading to either PASS/FAIL exit status
-#' TODO: allow to save as a *.PDF file for further analysis
-#' (pdf allows for increased magnification)
+#' Plots test results
+#' 
+#' uses parallelplot with added spacing to diplay combinations of argument 
+#' values groupped by PASS/FAIL exit state
 #' 
 #' @param env work environment, set only if default environment is not used
 #' @param pass determines whether the chart includes the full test set data.
@@ -99,6 +99,8 @@ generate.analytics <- function(env=cont.env, verbose=FALSE, DEBUG=FALSE)
 #' @author cloudcell
 #' 
 #' @export             
+# TODO: allow to save as a *.PDF file for further analysis
+# (pdf allows for increased magnification)
 plot_tests <- function(env=cont.env, pass=TRUE, fail=TRUE, dist=1.0,
                        verbose=FALSE, DEBUG=FALSE)
 {

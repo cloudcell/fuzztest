@@ -1,11 +1,10 @@
 ############################################################################## #
-# Package: "stresstest"
+# Package: "fuzztest"
 # Test functions aimed at improving the quality of R code
 #------------------------------------------------------------------------------#
-# Description: a set of functions to verify that none of
-#              the combinations of input arguments
-#              causes a function undergoing stress test
-#              to produce an error
+# Description: a set of functions to verify that none of the combinations 
+#              of input arguments causes a function undergoing stress/fuzz test
+#              to produce an invalid error state
 #
 # Author: cloudcell
 # Date: 2016-02-19
@@ -378,9 +377,11 @@ errorHandlingTest <- function(FUN,args)
 }
 
 
+#' tests a function based on a set of parameters
+#' 
 #' tests a function provided to the argument FUN with argument value sets
 #' prepared earlier and stored in the default work environment and returns 
-#' a vector with {PASS|FAIL} for every argument value combination.
+#' a vector with PASS/FAIL for every combination of input parameters.
 #' 
 #' An alternative work environment may be supplied in the future 
 #' (not tested yet)
