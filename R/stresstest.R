@@ -108,8 +108,7 @@ getComboQty <- function(register, verbose=TRUE)
 #' "__val.NULL__" and "NULL", 
 #' "__val.NA__" and "NA",
 #' "__val.TRUE__" and "TRUE",
-#' "__val.FALSE__" and "FALSE",
-#' '__MISSING__'.
+#' "__val.FALSE__" and "FALSE".
 #' If you would like to actually assign character strings such as "NULL", "NA",
 #' "TRUE", "FALSE", simply override the function "prepareArgs" with your
 #' modified version.
