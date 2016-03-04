@@ -101,19 +101,18 @@ getComboQty <- function(register, verbose=TRUE)
 #' possible combiations of arguments, including argument 'states', such as
 #' 'missing' specified as '__MISSING__' in the register. The result is stored
 #' in the work environment. There is no special function to create an
-#' argument register to be used with 'generate.argset()' as a register is
+#' argument register to be used with 'generate.argset()' as the register is
 #' simply a list. Please see file 'fuzzdemo.R' for an example. 
 #' At the moment the following character strings are interchangeable when
 #' setting up the test (the argument register):
-#' "__val.NULL__" and "NULL"
-#' "__val.NA__" and "NA"
-#' "__val.TRUE__" and  "TRUE"
-#' "__val.FALSE__" and "FALSE"
-#' '__MISSING__'
+#' "__val.NULL__" and "NULL", 
+#' "__val.NA__" and "NA",
+#' "__val.TRUE__" and "TRUE",
+#' "__val.FALSE__" and "FALSE",
+#' '__MISSING__'.
 #' If you would like to actually assign character strings such as "NULL", "NA",
 #' "TRUE", "FALSE", simply override the function "prepareArgs" with your
 #' modified version.
-#' 
 #' 
 #' @param arg_register an argument register that contains all argument 
 #'                     'states' required to be tested (while combined with 

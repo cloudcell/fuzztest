@@ -24,7 +24,7 @@ apply.argset(env = NULL, arg_register = cont.env$arg_register, FUN,
 \description{
 tests a function provided to the argument FUN with argument value sets
 prepared earlier and stored in the default work environment and returns 
-a vector with PASS/FAIL for every argument value combination.
+a vector with PASS/FAIL for every combination of input parameters.
 }
 \details{
 An alternative work environment may be supplied in the future 
