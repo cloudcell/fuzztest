@@ -2,16 +2,16 @@
 % Please edit documentation in R/utils.R
 \name{rm_logger}
 \alias{rm_logger}
-\title{removes a specified logger after closing the log file}
+\title{removes a specified logger after flushing and closing its log file}
 \usage{
-rm_logger(lgr_name, env = cont.env)
+rm_logger(logger_name = "fuzzlog", env = cont.env)
 }
 \arguments{
-\item{lgr_name}{logger name}
+\item{logger_name}{logger name}
 
-\item{env}{work (container) environment (default 'cont.env')}
+\item{env}{work (container) environment (default == 'cont.env')}
 }
 \description{
-removes a specified logger after closing the log file
+removes a specified logger after flushing and closing its log file
 }
 

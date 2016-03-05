@@ -4,19 +4,19 @@
 \alias{lmessage}
 \title{displays a message and stores it in a log file}
 \usage{
-lmessage(x, logger, env = cont.env, verbose = TRUE)
+lmessage(x, .logger_name = "fuzzlog", .env = cont.env, .verbose = TRUE)
 }
 \arguments{
-\item{x}{value to be submitted as a message to message()}
+\item{.env}{container-environment of the testing framework}
 
-\item{logger}{logger handle which must be set up prior to running 
-lmessage}
+\item{.verbose}{(default==TRUE) whether to call message}
 
-\item{env}{container-environment of the testing framework}
+\item{...}{values to be concatenated and submitted as text to message()}
 
-\item{verbose}{(default==TRUE) whether to call message}
+\item{.logger}{logger name/handle (as a character string), which must 
+be set up prior to running lmessage()}
 }
 \description{
-displays a message and stores it in a log file
+No matching of partially spelled arguments is performed in this function.
 }
 
