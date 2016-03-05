@@ -5,7 +5,7 @@ Authors@R: person("cloudcell", "_", email = "ef256aff@opayq.com", role = c("aut"
 Description: Automated fuzzing / stress testing environment almost without any set up time.  
     Makes debugging simple by visualization of parameters leading to test failures. 
 Depends:
-    lattice
+    evaluate, lattice
 License: GPL-3
 LazyData: true
 Copyright: (c) 2015-16

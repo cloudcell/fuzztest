@@ -23,7 +23,7 @@ waitForUserInput <- function()
 #' @param env work (container) environment (default 'cont.env')
 #' 
 #' @export
-logger_new <- function( fname=NULL, logger_name="fuzzlog", dest=getwd(), env=cont.env)
+new_logger <- function( fname=NULL, logger_name="fuzzlog", dest=getwd(), env=cont.env)
 {
     cont.env <- env
     # fname="test-debug.log"
@@ -38,34 +38,55 @@ logger_new <- function( fname=NULL, logger_name="fuzzlog", dest=getwd(), env=con
     }
     
     if(!is.null(cont.env$loggers[[logger_name]])) 
-        stop("A logger with this handle already exists: remove it or create a different one.")
+        stop("A logger with handle '",logger_name,"' already exists: remove it or create a different one.")
     
     cont.env$loggers[[logger_name]] <- file(full_path_and_fname, "w")
 }
 
 #' displays a message and stores it in a log file
+#'
+#' No matching of partially spelled arguments is performed in this function.
 #' 
-#' @param x value to be submitted as a message to message()
-#' @param logger logger name/handle (as a character string), which must 
+#' @param ... values to be concatenated and submitted as text to message()
+#' @param .logger logger name/handle (as a character string), which must 
 #'        be set up prior to running lmessage()
-#' @param env container-environment of the testing framework
-#' @param verbose (default==TRUE) whether to call message
+#' @param .env container-environment of the testing framework
+#' @param .verbose (default==TRUE) whether to call message
 #' 
 #' @export
-lmessage <- function(x, logger_name="fuzzlog", env=cont.env, verbose=TRUE)
+lmessage <- function(x, .logger_name="fuzzlog", .env=cont.env, .verbose=TRUE)
+# lmessage <- function(...)
 {
-    cont.env <- env # to make it easy running this code in the global env.
+    # .logger_name="fuzzlog"
+    # .env=cont.env
+    # .verbose=TRUE
+    # TODO: take partial arg. matching from lm()
+    cont.env <- .env # to make it easy running this code in the global env.
+     
+    # x= as.list(match.call(expand.dots = TRUE)[-1])
+    # # x= match.call()[-1]
+    str(x)
     
-    # logger_objs <- cont.env$loggers
-    if(is.na(cont.env$loggers[logger_name])) {
-        stop(paste0("trying to write to logger '", logger_name, 
+    # # delete these before concatenating
+    # x$.verbose <- NULL
+    # x$.logger_name <- NULL
+    # x$.env <- NULL
+
+    # merge all parts of the message for printing    
+    # x <- paste0(lapply(x,eval))
+    # x <- paste0(unlist(x))
+    # x <- paste0(unlist(x))
+    str(x)
+        
+    if(.verbose) message(x)
+    
+    logger_obj <- cont.env$loggers[[.logger_name]]
+    
+    if( !inherits(logger_obj ,"connection") ) {
+        stop(paste0("Trying to write to logger '", .logger_name, 
                     "', which has not been set up / initialized yet."))
     }
-    
-    if(verbose) message(x)
-    
-    logger_obj <- cont.env$loggers[[logger_name]]
-    
+        
     cat(x, file = logger_obj, sep = "\n", append = TRUE)
 }
 

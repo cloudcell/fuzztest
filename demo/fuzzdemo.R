@@ -5,7 +5,7 @@
 
 # set demo flags
 FUZZ_DEMO_ON = TRUE
-RUN_CALC=FALSE
+# RUN_CALC=FALSE
 RUN_CALC=TRUE
 
 # source("y:\\devt\\fuzztest\\demo\\fuzzdemo.R")

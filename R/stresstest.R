@@ -365,13 +365,64 @@ prepareArgs <- function(arg_register, arg_selection_vector, verbose=FALSE, DEBUG
 # the actual testing function (handles FUN and args) and catches exceptions
 errorHandlingTest <- function(FUN,args)
 {
-    rc <- try(do.call(what = FUN,args=args))
-    if(inherits(x = rc,what = "try-error")) {
-        result <- "FAIL"
-    } else {
-        result <- "PASS"
-    }
-    result
+    # rc <- try(do.call(what = FUN,args=args))
+    # if(inherits(x = rc,what = "try-error")) {
+    #     result <- "FAIL"
+    # } else {
+    #     result <- "PASS"
+    # }
+
+    #--------------------------------------------------------------------------#
+    # preliminaries
+    
+    eval_result=NULL
+    # eval_value=NULL
+    # package evaluate:: output handler
+    oh <- new_output_handler(
+        # messages, warning, value, etc. handlers can be added
+        error=function(x)
+        {
+            # evaluate:::identity
+            eval_result<<-"FAIL"
+        }
+    )#, value=function(x){eval_value<<-})
+    
+    #--------------------------------------------------------------------------#
+    # test
+    message(paste0("before ",eval_result))
+    
+    res <- evaluate("do.call(what=FUN, args=args)", output_handler = oh)
+    # res
+    
+    if(is.null(eval_result)) { eval_result <- "PASS"}
+    
+    message(paste0("after ",eval_result))
+    
+    # purely log-related code
+    output_captured <- capture.output( dump(list = "res", file="") )
+    
+    # cat(output_captured)
+    # 
+    # output_captured
+    # replay(output_captured)
+    # 
+    # cat(output_captured)
+    # zz <- cat(paste(output_captured, collapse = ""))
+    log_msg <- paste(output_captured, collapse = "")
+    # replay(zz)
+    
+    # ls_loggers()
+    # new_logger("somename.log")
+    lmessage(log_msg)
+    
+    # replay(paste0(dump(list = "fuzztest_res", file=""), collapse = ""))
+    
+    
+    #--------------------------------------------------------------------------#
+    # save log
+    
+    #--------------------------------------------------------------------------#
+    eval_result
 }
 
 
@@ -399,6 +450,14 @@ apply.argset <- function(env=NULL, arg_register=cont.env$arg_register,
                          FUN, subset=NULL, verbose=FALSE, DEBUG=FALSE)
 {
     browser(expr = DEBUG)
+    
+    #--------------------------------------------------------------------------#
+    # libraries
+    require(evaluate) # in the test function invoked from apply.argset
+    
+    #--------------------------------------------------------------------------#
+    # preliminaries
+        
     if(DEBUG) { verbose = TRUE }
 
     if(mode(FUN)!="character")
@@ -411,13 +470,30 @@ apply.argset <- function(env=NULL, arg_register=cont.env$arg_register,
         stop("Supplied function name \"", FUN,
              "\" does not correspond to an existing function.")
     }
-
+    
     if(is.null(env)) {
         cont.env <- .GlobalEnv$cont.env
     } else {
         cont.env <- env
     }
+    
+    #--------------------------------------------------------------------------#
+    # output-related variables
+    
+    base_fname <- paste0("StressTest_", FUN, "_", gsub("[\\ :]","-",Sys.time()))
+    env_fname <- paste0(base_fname, ".RData")
+    log_fname <- paste0(base_fname, ".log")
+    
+    #--------------------------------------------------------------------------#
+    # create a logger
+    
+    try(rm_logger()) # flush & delete default logger w/o warnings
+    
+    new_logger(log_fname) # with a default logger 'handle'
 
+    #--------------------------------------------------------------------------#
+    # start testing
+    
     r=arg_register # to be able to run function code "in the global env."
 
     # store the register in the test container environment
@@ -445,11 +521,12 @@ apply.argset <- function(env=NULL, arg_register=cont.env$arg_register,
         #       use R6
         selected_argset <- subset
     }
-
-    message(rep("-",70))
-    for(i in selected_argset) {
-
-        message("STRESSTEST: Argument Combination ID ", i)
+    
+    lmessage(paste(rep("-",70),collapse=""))
+    for(i in selected_argset) { #XXX: weird R behavior, when selected_argset is undefined, i==TRUE :(?
+        
+        lmessage(paste0("STRESSTEST: Argument Combination ID ", i))
+        
         arg_ids.vct <- cont.env$container_test_args[i,]
 
         # prepare a single set of arguments for testing
@@ -457,26 +534,34 @@ apply.argset <- function(env=NULL, arg_register=cont.env$arg_register,
 
         # test error crash/handling
         result <- errorHandlingTest(FUN=FUN, args = final_arg)
-        message("Result: ", result)
-        message(rep("-",70))
+        
+        lmessage(paste0("Result: ", result))
+        lmessage(paste(rep("-",70),collapse=""))
 
         cont.env$container_test_results[i] <- result
     }
 
-    message("Test results were saved in the test environment in 'container_test_results'")
+    lmessage("Test results were saved in the test environment in 'container_test_results'")
     print(ls(envir = cont.env))
 
     # cont.env$container_test_results # throw the results out (a la 'foreach')
 
     #--------------------------------------------------------------------------#
+    # saving test 'container' environment
+
     # TODO: use a variable for the name of a tested function
-    fname <- paste0("StressTest_", FUN, "_", gsub("[\\ :]","-",Sys.time()), ".RData")
+    # env_fname <- paste0("StressTest_", FUN, "_", gsub("[\\ :]","-",Sys.time()), ".RData")
+    # env_fname <- paste0(base_fname, ".RData")
     # save(list="bound_test_data", envir = cont.env, file = fname)
     # TODO: ASAP: rename cont.env() to .stress and create such an environment
     # if any custom env. was used (rename within the function that saves data)
-    save(list="cont.env", envir = cont.env, file = fname)
-    message("Test data was saved in the work directory ", getwd(), " as ", fname)
+    save(list="cont.env", envir = cont.env, file = env_fname)
+    # lmessage(paste0("Test data was saved in the work directory ", getwd(), " as ", env_fname))
+    message("Test data was saved in the work directory ", getwd(), " as ", env_fname)
 
+    #--------------------------------------------------------------------------#
+    # deal with the logger
+    rm_logger() # flush & delete default logger
 }
 
 

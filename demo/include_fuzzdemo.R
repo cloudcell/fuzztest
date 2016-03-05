@@ -39,7 +39,8 @@ if(RUN_CALC) {
     r$suboption <- c("a", "b", "c","d")
     
     generate.argset(arg_register = r, display_progress=TRUE)
-    apply.argset(FUN="fuzzdemofunc")
+    # apply.argset(FUN="fuzzdemofunc", DEBUG = T)
+    apply.argset(FUN="fuzzdemofunc")#, DEBUG = T)
     test_summary()
     plot_tests()
     # plot.tests(pass = F)
