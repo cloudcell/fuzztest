@@ -17,12 +17,13 @@ waitForUserInput <- function()
 
 #' creates a new logger
 #' 
-#' @param lgr_name logger name
+#' @param fname log file name
+#' @param logger_name logger name (character identifier / handle)
 #' @param dest destination directory (defaults to the current work directory)
 #' @param env work (container) environment (default 'cont.env')
 #' 
 #' @export
-logger_new <- function(logger_name, dest=getwd(), fname=NULL, env=cont.env)
+logger_new <- function( fname=NULL, logger_name="fuzzlog", dest=getwd(), env=cont.env)
 {
     cont.env <- env
     # fname="test-debug.log"
@@ -51,7 +52,7 @@ logger_new <- function(logger_name, dest=getwd(), fname=NULL, env=cont.env)
 #' @param verbose (default==TRUE) whether to call message
 #' 
 #' @export
-lmessage <- function(x, logger_name, env=cont.env, verbose=TRUE)
+lmessage <- function(x, logger_name="fuzzlog", env=cont.env, verbose=TRUE)
 {
     cont.env <- env # to make it easy running this code in the global env.
     
@@ -74,7 +75,7 @@ lmessage <- function(x, logger_name, env=cont.env, verbose=TRUE)
 #' @param env work (container) environment (default == 'cont.env')
 #' 
 #' @export
-rm_logger <- function(logger_name, env=cont.env)
+rm_logger <- function(logger_name="fuzzlog", env=cont.env)
 {
     cont.env <- env
     con = cont.env$loggers[[logger_name]]
