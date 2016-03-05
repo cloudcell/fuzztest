@@ -389,14 +389,16 @@ errorHandlingTest <- function(FUN,args)
     
     #--------------------------------------------------------------------------#
     # test
-    message(paste0("before ",eval_result))
+    # message(paste0("before ",eval_result))
     
-    res <- evaluate("do.call(what=FUN, args=args)", output_handler = oh)
+    res <- evaluate::evaluate("do.call(what=FUN, args=args)", 
+                              output_handler = oh, 
+                              new_device = FALSE)
     # res
     
     if(is.null(eval_result)) { eval_result <- "PASS"}
     
-    message(paste0("after ",eval_result))
+    # message(paste0("after ",eval_result))
     
     # purely log-related code
     output_captured <- capture.output( dump(list = "res", file="") )
@@ -413,7 +415,7 @@ errorHandlingTest <- function(FUN,args)
     
     # ls_loggers()
     # new_logger("somename.log")
-    lmessage(log_msg)
+    lmessage(log_msg, verbose=FALSE)
     
     # replay(paste0(dump(list = "fuzztest_res", file=""), collapse = ""))
     
@@ -557,7 +559,7 @@ apply.argset <- function(env=NULL, arg_register=cont.env$arg_register,
     # if any custom env. was used (rename within the function that saves data)
     save(list="cont.env", envir = cont.env, file = env_fname)
     # lmessage(paste0("Test data was saved in the work directory ", getwd(), " as ", env_fname))
-    message("Test data was saved in the work directory ", getwd(), " as ", env_fname)
+    lmessage(paste0("Test data was saved in the work directory ", getwd(), " as ", env_fname))
 
     #--------------------------------------------------------------------------#
     # deal with the logger

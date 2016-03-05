@@ -92,8 +92,10 @@ waitForUserInput()
 if(RUN_CALC) { 
     set.seed(0)
     r <- list()
-    r$x <- c(seq(from=-10, to=10, length.out = 21))
-    r$y <- c(seq(from=-10, to=10, length.out = 21))
+    # r$x <- c(seq(from=-10, to=10, length.out = 21))
+    # r$y <- c(seq(from=-10, to=10, length.out = 21))
+    r$x <- c(seq(from=-5, to=5, length.out = 11))
+    r$y <- c(seq(from=-5, to=5, length.out = 11))
     r$option <- c("a")
     r$suboption <- c("a")
     

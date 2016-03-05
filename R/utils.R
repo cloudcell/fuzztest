@@ -54,7 +54,7 @@ new_logger <- function( fname=NULL, logger_name="fuzzlog", dest=getwd(), env=con
 #' @param .verbose (default==TRUE) whether to call message
 #' 
 #' @export
-lmessage <- function(x, .logger_name="fuzzlog", .env=cont.env, .verbose=TRUE)
+lmessage <- function(x, .logger_name="fuzzlog", .env=cont.env, verbose=TRUE)
 # lmessage <- function(...)
 {
     # .logger_name="fuzzlog"
@@ -65,7 +65,7 @@ lmessage <- function(x, .logger_name="fuzzlog", .env=cont.env, .verbose=TRUE)
      
     # x= as.list(match.call(expand.dots = TRUE)[-1])
     # # x= match.call()[-1]
-    str(x)
+    # str(x)
     
     # # delete these before concatenating
     # x$.verbose <- NULL
@@ -76,9 +76,9 @@ lmessage <- function(x, .logger_name="fuzzlog", .env=cont.env, .verbose=TRUE)
     # x <- paste0(lapply(x,eval))
     # x <- paste0(unlist(x))
     # x <- paste0(unlist(x))
-    str(x)
+    # if(verbose) str(x)
         
-    if(.verbose) message(x)
+    if(verbose) message(x)
     
     logger_obj <- cont.env$loggers[[.logger_name]]
     
