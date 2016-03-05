@@ -15,27 +15,6 @@ waitForUserInput <- function()
 }
 
 
-#' displays a message and stores it in a log file
-#' 
-#' @param x value to be submitted as a message to message()
-#' @param logger logger handle which must be set up prior to running 
-#'        lmessage
-#' @param env container-environment of the testing framework
-#' @param verbose (default==TRUE) whether to call message
-#' 
-#' @export
-lmessage <- function(x, logger, env=cont.env, verbose=TRUE)
-{
-    if(!exists(logger)) stop(paste0("trying to write to logger '", logger, 
-                                    "', which has not been set up / 
-                                    initialized yet."))
-    if(verbose) message(x)
-    zz_logger <- env$loggers[lgr_name]
-    
-    cat(x, file = zz_logger, sep = "\n")
-    
-}
-
 #' creates a new logger
 #' 
 #' @param lgr_name logger name
@@ -43,28 +22,88 @@ lmessage <- function(x, logger, env=cont.env, verbose=TRUE)
 #' @param env work (container) environment (default 'cont.env')
 #' 
 #' @export
-logger_new <- function(lgr_name, dest=getwd(), fname=NULL, env=cont.env)
+logger_new <- function(logger_name, dest=getwd(), fname=NULL, env=cont.env)
 {
+    cont.env <- env
+    # fname="test-debug.log"
+    # dest=getwd()
+    # logger_name="log-debug"
     if(is.null(fname)) {stop("log file name must be provided!")}
     full_path_and_fname <- paste0(dest,"/",fname)
     
-    if(!exists(envir = env, "loggers")) {
-        env$loggers <- list()
+    if(!exists(envir = cont.env, "loggers")) {
+        cont.env$loggers <- list()
+        message("Created a register of loggers.")
     }
     
-    # TODO: check whether a logger with the same name already exists
-    env$loggers[lgr_name] <- file(full_path_and_fname, "w") 
+    if(!is.null(cont.env$loggers[[logger_name]])) 
+        stop("A logger with this handle already exists: remove it or create a different one.")
     
+    cont.env$loggers[[logger_name]] <- file(full_path_and_fname, "w")
 }
 
-#' removes a specified logger after closing the log file
+#' displays a message and stores it in a log file
 #' 
-#' @param lgr_name logger name
-#' @param env work (container) environment (default 'cont.env')
+#' @param x value to be submitted as a message to message()
+#' @param logger logger name/handle (as a character string), which must 
+#'        be set up prior to running lmessage()
+#' @param env container-environment of the testing framework
+#' @param verbose (default==TRUE) whether to call message
 #' 
 #' @export
-rm_logger <- function(lgr_name, env=cont.env)
+lmessage <- function(x, logger_name, env=cont.env, verbose=TRUE)
 {
-    # TODO: first, check a logger exists
-    close( env$loggers[lgr_name] )
+    cont.env <- env # to make it easy running this code in the global env.
+    
+    # logger_objs <- cont.env$loggers
+    if(is.na(cont.env$loggers[logger_name])) {
+        stop(paste0("trying to write to logger '", logger_name, 
+                    "', which has not been set up / initialized yet."))
+    }
+    
+    if(verbose) message(x)
+    
+    logger_obj <- cont.env$loggers[[logger_name]]
+    
+    cat(x, file = logger_obj, sep = "\n", append = TRUE)
 }
+
+#' removes a specified logger after flushing and closing its log file
+#' 
+#' @param logger_name logger name
+#' @param env work (container) environment (default == 'cont.env')
+#' 
+#' @export
+rm_logger <- function(logger_name, env=cont.env)
+{
+    cont.env <- env
+    con = cont.env$loggers[[logger_name]]
+    
+    # if(is.null(con)) { stop("Logger '", logger_name,"' does not exist.")}
+    if(!(logger_name %in% ls_loggers() )) { 
+        stop("Logger '", logger_name,"' does not exist.")
+    }
+    
+    flush(con=con)
+    close(con=con, type="w")
+    
+    cont.env$loggers[[logger_name]] <- NULL
+    message("Log file flushed, closed, and logger '", logger_name, "' deleted.")
+}
+
+#' lists existing loggers
+#' 
+#' @param env work (container) environment (default == 'cont.env')
+#' 
+#' @export
+ls_loggers <- function(env=cont.env)
+{
+    cont.env <- env
+    # message(ls(cont.env$loggers))
+    # cat(ls(cont.env$loggers))
+    objects(cont.env$loggers)
+}
+
+
+
+
