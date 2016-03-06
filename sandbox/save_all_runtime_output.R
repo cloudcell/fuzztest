@@ -146,7 +146,7 @@ oh <- new_output_handler(
 FUN=log
 args=list(x="test_text")
 
-fuzztest_res <- evaluate("do.call(what=FUN, args=args)",output_handler = oh)
+fuzztest_res <- evaluate("do.call(what=FUN, args=args)",output_handler = oh, debug=TRUE)
 fuzztest_res
 eval_result
 # replay(fuzztest_res)
