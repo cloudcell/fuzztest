@@ -393,7 +393,8 @@ errorHandlingTest <- function(FUN,args)
     
     res <- evaluate::evaluate("do.call(what=FUN, args=args)", 
                               output_handler = oh, 
-                              new_device = FALSE)
+                              new_device = FALSE,
+                              debug=FALSE) #saves to much data if true
     # res
     
     if(is.null(eval_result)) { eval_result <- "PASS"}
