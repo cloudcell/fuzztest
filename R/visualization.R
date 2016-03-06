@@ -198,7 +198,7 @@ plot_tests <- function(env=cont.env, pass=TRUE, fail=TRUE, dist=1.0,
             # message("col j = ", j, " row i= ", i, " total gap = ", graph_shift[[j]][level])
             
             # plotting starts from with no additional gap at all
-            graph_shift[[j]][level] <- graph_shift[[j]][level] + gap
+            graph_shift[[j]][level] <- graph_shift[[j]][level] + gap # prepares coord. for the next point
         }
     }
     parplot_boundary_f <- failure_map_parplot[i,]
@@ -245,7 +245,7 @@ plot_tests <- function(env=cont.env, pass=TRUE, fail=TRUE, dist=1.0,
             gap <- ( 1 / max_levels ) / (1 + dist) # TODO get it out of the loop!
             
             # plotting starts from with no additional gap at all
-            graph_shift[[j]][level] <- graph_shift[[j]][level] + gap
+            graph_shift[[j]][level] <- graph_shift[[j]][level] + gap # prepares coord. for the next point
             
             # message("col j = ", j, " row i= ", i, " total gap = ", graph_shift[[j]][level])
             
@@ -268,11 +268,18 @@ plot_tests <- function(env=cont.env, pass=TRUE, fail=TRUE, dist=1.0,
     # determine the two 'line coordinates' for the boundary (top & bottom):
 
     # min/max boundaries based on actual data
-    tmp <- rbind(parplot_boundary_p,parplot_boundary_f)
+    # tmp <- rbind(parplot_boundary_p,parplot_boundary_f)
+    # parplot_boundary_f <- apply(X = failure_map_parplot, MARGIN = 2, FUN = max) # could be taken from arg_register
+    # parplot_boundary_p <- apply(X = success_map_parplot, MARGIN = 2, FUN = max) # could be taken from arg_register
+    
+    # tmp <- rbind(parplot_boundary_f, parplot_boundary_p)
+    tmp <- rbind(failure_map_parplot, success_map_parplot)
+    
     parplot_boundary_max <- apply(X = tmp, MARGIN = 2, FUN = max) # could be taken from arg_register
+    
     parplot_boundary_max <- t(parplot_boundary_max)
     parplot_boundary_max <- as.data.frame(parplot_boundary_max, row.names = "0")
-    colnames(parplot_boundary_max) <- xlab.str
+    # colnames(parplot_boundary_max) <- xlab.str
     
     # simply copy to use as a ready template
     parplot_boundary_min <- parplot_boundary_max
@@ -286,9 +293,12 @@ plot_tests <- function(env=cont.env, pass=TRUE, fail=TRUE, dist=1.0,
     
     # add 2 col's - status(pass/fail/'TECH'-nical) & color:
     
-    # color_technical <- as.character("#FF0000FF") # TODO: change to all 'F' - this is for debugging only
+    # color_technical <- as.character("#FF999999") # TODO: change to all 'F' - this is for debugging only
+    # color_technical <- as.character("#00000000") # TODO: change to all 'F' - this is for debugging only
+    # color_technical <- as.character("red") # TODO: change to all 'F' - this is for debugging only
+    color_technical <- as.character("#99999999") # TODO: change to all 'F' - this is for debugging only
     # color_technical <- as.character("#05110505") # TODO: change to all 'F' - this is for debugging only
-    color_technical <- as.character("#fefefefe") # TODO: change to all 'F' - this is for debugging only
+    # color_technical <- as.character("#fefefefe") # TODO: change to all 'F' - this is for debugging only
                                                  # TODO: find out what the first #XX stands for, alpha ???
     # order: {min, max} color
     tech <- cbind(parplot_boundaries, fld="TECH", 
@@ -319,37 +329,46 @@ plot_tests <- function(env=cont.env, pass=TRUE, fail=TRUE, dist=1.0,
     
     if( nr_s>0 && nr_f>0 ) {
         if(pass && fail) {
-            all <- rbind(tech[1,], pss, fal, tech[2,])
+            # all <- rbind(tech[1,], pss, fal, tech[2,])
+            all <- rbind(tech, pss, fal)
         } else if (pass) {
-            all <- rbind(tech[1,], pss, tech[2,])
+            # all <- rbind(tech[1,], pss, tech[2,])
+            all <- rbind(tech, pss)
         } else if (fail) {
-            all <- rbind(tech[1,], fal, tech[2,])
+            # all <- rbind(tech[1,], fal, tech[2,])
+            all <- rbind(tech, fal)
         } else {
-            all <- rbind(tech)
+            all <- tech
         }
     } else if (nr_f>0) {
         if(pass && fail) {
-            all <- rbind(tech[1,], fal, tech[2,])
+            # all <- rbind(tech[1,], fal, tech[2,])
+            all <- rbind(tech, fal)
         } else if (pass) {
             all <- tech
         } else if (fail) {
-            all <- rbind(tech[1,], fal, tech[2,])
+            # all <- rbind(tech[1,], fal, tech[2,])
+            all <- rbind(tech, fal)
         } else {
-            all <- rbind(tech)
+            all <- tech
         }
     } else if (nr_s>0) {
         if(pass && fail) {
-            all <- rbind(tech[1,], pss, tech[2,])
+            # all <- rbind(tech[1,], pss, tech[2,])
+            all <- rbind(tech, pss)
         } else if (pass) {
-            all <- rbind(tech[1,], pss, tech[2,])
+            # all <- rbind(tech[1,], pss, tech[2,])
+            all <- rbind(tech, pss)
         } else if (fail) {
             all <- tech
         } else {
-            all <- rbind(tech)
+            all <- tech
         }
     } else {
         stop("No test results are available for graphing.")
     }
+    
+    # browser()
     
     # nr_all <- nr_s + nr_f + 2 # 2 == rn_boundary
         

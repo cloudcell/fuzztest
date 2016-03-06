@@ -5,6 +5,9 @@
 # License: GPL-3
 ################################################################################
 
+# This demo defines its own 'user feedback' spots
+par(ask=FALSE)
+
 if( !exists("FUZZ_DEMO_ON") || !FUZZ_DEMO_ON ) { 
     stop ("This file must only be started by 'fuzzdemo.R'") 
 }
@@ -42,9 +45,18 @@ if(RUN_CALC) {
     # apply.argset(FUN="fuzzdemofunc", DEBUG = T)
     apply.argset(FUN="fuzzdemofunc")#, DEBUG = T)
     test_summary()
+    
+waitForUserInput()
+message("Drawing only 'passing' representations of tests") 
+    plot_tests(pass = F)
+    
+waitForUserInput()
+message("Drawing only 'failing' representations of tests") 
+    plot_tests(fail = F)
+    
+waitForUserInput()
+message("Drawing all representations of tests") 
     plot_tests()
-    # plot.tests(pass = F)
-    # plot.tests(fail = F)
 }
 
 waitForUserInput()
@@ -206,8 +218,11 @@ message("-------------")
 # the bottom to the top of the chart.
 # 
 # The chart is drawn as follows.
-# First, all test lines for those tests that returned the PASS status. They
-# Second, all the test lines for FAIL tests.
+# 1. Min boundary line (almost invisible due to light color)
+# 2. all the test lines for those tests that returned the PASS status. They
+# 3. all the test lines for FAIL tests.
+# 4. Max boundary line (almost invisible due to light color)
+# 
 # All the test lines are drawn in such a way so that when the lines intersect
 # axes, no line occludes another line. I.e. each test line must be visible
 # at such junction points with FAIL test lines occupying the lower portion
