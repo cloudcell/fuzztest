@@ -275,17 +275,22 @@ plot_tests <- function(env=cont.env, pass=TRUE, fail=TRUE, dist=1.0,
     colnames(parplot_boundary_max) <- xlab.str
     
     # simply copy to use as a ready template
-    parplot_boundary_min <- parplot_boundary_max 
+    parplot_boundary_min <- parplot_boundary_max
+    
     # the minimum group number should always == 1, for all args !
     parplot_boundary_min[1,] <- 1
     
-    parplot_boundaries <- rbind(parplot_boundary_max, parplot_boundary_min)
+    
+    # do not change this order
+    parplot_boundaries <- rbind(parplot_boundary_min, parplot_boundary_max)
     
     # add 2 col's - status(pass/fail/'TECH'-nical) & color:
     
     # color_technical <- as.character("#FF0000FF") # TODO: change to all 'F' - this is for debugging only
-    color_technical <- as.character("#11111105") # TODO: change to all 'F' - this is for debugging only
+    # color_technical <- as.character("#05110505") # TODO: change to all 'F' - this is for debugging only
+    color_technical <- as.character("#fefefefe") # TODO: change to all 'F' - this is for debugging only
                                                  # TODO: find out what the first #XX stands for, alpha ???
+    # order: {min, max} color
     tech <- cbind(parplot_boundaries, fld="TECH", 
                  color=color_technical, stringsAsFactors=FALSE) # grey
         
@@ -314,29 +319,29 @@ plot_tests <- function(env=cont.env, pass=TRUE, fail=TRUE, dist=1.0,
     
     if( nr_s>0 && nr_f>0 ) {
         if(pass && fail) {
-            all <- rbind(tech, pss, fal)
+            all <- rbind(tech[1,], pss, fal, tech[2,])
         } else if (pass) {
-            all <- rbind(tech, pss)
+            all <- rbind(tech[1,], pss, tech[2,])
         } else if (fail) {
-            all <- rbind(tech, fal)
+            all <- rbind(tech[1,], fal, tech[2,])
         } else {
             all <- rbind(tech)
         }
     } else if (nr_f>0) {
         if(pass && fail) {
-            all <- rbind(tech, fal)
+            all <- rbind(tech[1,], fal, tech[2,])
         } else if (pass) {
             all <- tech
         } else if (fail) {
-            all <- rbind(tech, fal)
+            all <- rbind(tech[1,], fal, tech[2,])
         } else {
             all <- rbind(tech)
         }
     } else if (nr_s>0) {
         if(pass && fail) {
-            all <- rbind(tech, pss)
+            all <- rbind(tech[1,], pss, tech[2,])
         } else if (pass) {
-            all <- rbind(tech, pss)
+            all <- rbind(tech[1,], pss, tech[2,])
         } else if (fail) {
             all <- tech
         } else {
@@ -355,6 +360,9 @@ plot_tests <- function(env=cont.env, pass=TRUE, fail=TRUE, dist=1.0,
     # color[which(all[,'fld']=="PASS")] <- "#10222222" # grey
     # str(all)
 
+    
+    #--------------------------------------------------------------------------#
+    # plotting
         
     if(nr_all>1) { # TODO consider removing !!! due to added boundaries (min/max)
     col_qty <- length(xlab.str)
