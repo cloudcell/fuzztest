@@ -154,6 +154,11 @@ if(RUN_CALC) {
     apply.argset(FUN="fuzzdemofunc")
     test_summary()
     plot_tests()
+
+message("This graph looks too crowded. ")
+message("Let's adjust the distance between adjacent groups.")
+    waitForUserInput()    
+    plot_tests(dist=10)
 }
 
 waitForUserInput()
