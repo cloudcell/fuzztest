@@ -296,9 +296,11 @@ plot_tests <- function(env=cont.env, pass=TRUE, fail=TRUE, dist=1.0,
     # color_technical <- as.character("#FF999999") # TODO: change to all 'F' - this is for debugging only
     # color_technical <- as.character("#00000000") # TODO: change to all 'F' - this is for debugging only
     # color_technical <- as.character("red") # TODO: change to all 'F' - this is for debugging only
-    color_technical <- as.character("#99999999") # TODO: change to all 'F' - this is for debugging only
+    # color_technical <- as.character("#FcFcFcFc") # TODO: change to all 'F' - this is for debugging only
     # color_technical <- as.character("#05110505") # TODO: change to all 'F' - this is for debugging only
-    # color_technical <- as.character("#fefefefe") # TODO: change to all 'F' - this is for debugging only
+    
+    # close to pure white not to be confused with a test 'line' !
+    color_technical <- as.character("#fefefefe") # TODO: change to all 'F' - this is for debugging only
                                                  # TODO: find out what the first #XX stands for, alpha ???
     # order: {min, max} color
     tech <- cbind(parplot_boundaries, fld="TECH", 
