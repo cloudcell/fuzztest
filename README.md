@@ -19,13 +19,12 @@ whether exit status is identical for all combinations of input parameters.
 (Timestamped data is saved in a current work directory after every test.)                            
 
 ### Roadmap
-1. To save a function output value along with an exit status ("PASS/FAIL")
-for use in unit tests 
+1. To arrange axes on a parallel plot automatically based on a relative 
+influence of a particular parameter to make the visual analysis faster. 
 2. To enable automatic comparison and visualization of a current test against
 saved reference data. 
-2. To report "incremental" "PASS/FAIL" i.e. only differences between the 
+3. To report "incremental" "PASS/FAIL" i.e. only differences between the 
 current test and previously recorded reference data.
-3. To enable saving test log in a separate log file. 
            
 ***
 
