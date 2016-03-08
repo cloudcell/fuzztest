@@ -160,7 +160,13 @@ message("{part 2d}")
 message("What about the chart?")
 waitForUserInput()
 message("")
-    plot_tests()
+message(" ... you may have to wait some time for R to draw this plot")
+message("     before pressing 'Enter' for the next part of the demo ...")
+plot_tests()
+message("")
+message("... if you don't see a new graph, it is being prepared ...")
+waitForUserInput()
+message("")
 message("Now one can clearly see two linear relationships between 'x' and 'y'")
 message("on the graph, which would be hard to deduce from a data table.")
 message("These correspond to 'numeric bugs' #1NC and #4NC")
@@ -263,30 +269,8 @@ if(RUN_CALC) {
 
 message("{part 4b}")
 message("The textual test summary shows the same pattern as in the previous ")
-message("test, but the chart still looks confusing. ")
-message("To make the plot more clear, again, one can adjust")
-message("the 'dist' argument of the plot_tests() function.")
-message("")
-message("We will try setting it to -0.5: 'plot_tests(dist=-0.5)' to reduce") 
-message("space between groups and add more space between lines within groups.")
-
-waitForUserInput()
-message("")
-
-if(RUN_CALC) { 
-    message("... if you don't see a new graph, it is being prepared ...")
-    message("")
-    
-    plot_tests(dist=-0.5)
-    
-}
-    
-waitForUserInput()
-message("")
-message("{part 4c}")
-message("Now, with a reduced parameter set, the test produced a more clear")
-message("picture of the combinations of input parameters")
-message("without losing important details.")
+message("test. Also a reduced set of test cases produced a more clear")
+message("picture of without losing important details.")
 # message("")
 waitForUserInput()
 message("")
