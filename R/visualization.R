@@ -93,6 +93,9 @@ generate.analytics <- function(env=cont.env, verbose=FALSE, DEBUG=FALSE)
 #'             of intersection with the vertical axis). A dist of -0.9999 
 #'             creates almost complete overlap with an adjacent group.
 #'             The value of dist must be greater than -1. 
+#'             (TODO: for the parameter dist to work properly, it is necessary
+#'             to calculate max_levels as a product of n-1 largest numbers
+#'             of options for each argument). 
 #' @param verbose provides additional text output during processing
 #' @param DEBUG enters the debug mode on function entry
 #' 
@@ -144,15 +147,35 @@ plot_tests <- function(env=cont.env, pass=TRUE, fail=TRUE, dist=1.0,
     #--------------------------------------------------------------------------#
     # preparing a laddered shift counter for the graph
     graph_shift <- list()
-    max_levels <- 0
+    max_levels <- 1
+    min_levels <- 0
+    total_product <- 1
     for (i in 1:length(r)) {
         level_qty <- length(r[[i]])
         if(verbose) message("level_qty= ",level_qty)
-        if(max_levels<level_qty) { max_levels <- level_qty }
+        
+        # need this to calculate the max number of lines passing
+        # through each 'graph' groupping
+        total_product <- total_product * level_qty
+
+        if(min_levels<1 && min_levels<level_qty && level_qty>1) {
+           min_levels <- level_qty
+        }
+        if(min_levels>1 && min_levels>level_qty) {
+           min_levels <- level_qty
+        }
+
+        if(max_levels<level_qty) { 
+            max_levels <- level_qty 
+        }
         
         graph_shift[[i]] <- vector(mode = "numeric", length = level_qty)
         if(verbose) message("graph_shift= ", graph_shift)
     }
+    # need this to calculate the max number of lines passing
+    # through each 'graph' groupping
+    max_levels_mult <- total_product/min_levels # min non-1-option levels
+    
     axes_names <- names(r)
     graph_shift <- setNames(graph_shift, axes_names)
     
@@ -193,7 +216,8 @@ plot_tests <- function(env=cont.env, pass=TRUE, fail=TRUE, dist=1.0,
             
             # gap <- ( 1 / graph_shift_base[[j]][level] ) / 3
             # gap <- ( 1 / max_levels ) / 3
-            gap <- ( 1 / max_levels ) / (1 + dist) # TODO get it out of the loop!
+            # gap <- ( 1 / max_levels ) / (1 + dist) # TODO get it out of the loop!
+            gap <- ( 1 / max_levels_mult ) / (1 + dist) # TODO get it out of the loop!
             
             # message("col j = ", j, " row i= ", i, " total gap = ", graph_shift[[j]][level])
             
@@ -242,7 +266,8 @@ plot_tests <- function(env=cont.env, pass=TRUE, fail=TRUE, dist=1.0,
             
             # gap <- ( 1 / graph_shift_base[[j]][level] ) / 3
             # gap <- ( 1 / max_levels ) / 3
-            gap <- ( 1 / max_levels ) / (1 + dist) # TODO get it out of the loop!
+            # gap <- ( 1 / max_levels ) / (1 + dist) # TODO get it out of the loop!
+            gap <- ( 1 / max_levels_mult ) / (1 + dist) # TODO get it out of the loop!
             
             # plotting starts from with no additional gap at all
             graph_shift[[j]][level] <- graph_shift[[j]][level] + gap # prepares coord. for the next point

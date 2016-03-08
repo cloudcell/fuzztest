@@ -8,9 +8,9 @@
 #' @export
 waitForUserInput <- function() 
 { 
-    message(" ")
-    message("-= Press 'Enter' when ready =-")
-    message(" ")
+    # message(" ")
+    message(">>>~~~> press 'enter' to continue...")
+    # message(" ")
     invisible(readline()) 
 }
 
