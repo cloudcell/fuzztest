@@ -46,6 +46,7 @@ if(RUN_CALC) {
     apply.argset(FUN="fuzzdemofunc")#, DEBUG = T)
     test_summary()
     
+message("{part 1a}") 
 message("The text summary shows that the argument 'option' explains the most") 
 message("variability in the outcome. So let's concentrate on the arg. 'option.'")
 message("")
@@ -63,24 +64,38 @@ message("suboption 'a', the next one up is suboption 'b', and so on.")
 message("In case an argument has only one value in the test, the whole")
 message("group of lines will be evenly spread from the bottom to top of the")
 message("graph, as is the case for arguments 'x' and 'y'.")
-message("")
-message("Drawing all representations of tests") 
+# message("")
+waitForUserInput()
+message("{part 1b}") 
+message("* Drawing all representations of tests") 
+waitForUserInput()
 plot_tests()
 
+waitForUserInput()
+message("")
+message("{part 1c}") 
 message("One can also selectively display only passing or failing tests")
 message("as will be shown next:")
 waitForUserInput()
+message("")
+message("{part 1d}") 
 message("* Drawing only 'passing' representations of tests") 
+waitForUserInput()
 plot_tests(fail = F)
 
 waitForUserInput()
+message("")
+message("{part 1e}") 
 message("* Drawing only 'failing' representations of tests") 
+waitForUserInput()
+message("")
 plot_tests(pass = F)
 }
 
 waitForUserInput()
+message("")
 
-# message("...")
+message("{part 2a}") 
 message("Let's assume all the control flow related bugs are fixed without ")
 message("actually going and changing anything in the code. For that ")
 message("assumption to work, we will choose a combination of options ")
@@ -88,11 +103,13 @@ message("that results in the test outcome 'PASS'. Such a combination ")
 message("could be, for example, {x=0, y=0, option='a', suboption='a'}.")
 
 waitForUserInput()
+message("")
 
 ################################################################################
 # NUMERIC TEST
 ################################################################################
 # message("...")
+message("{part 2b}")
 message("Now we will concentrate on the numeric part of the test.")
 message("There are two main approaches here:")
 message(" 1. create an evenly spaced sequence of values for each (x and y)")
@@ -111,8 +128,10 @@ message("    framework generate and test all possible parameter combinations.")
 message("    ")
 # message("...")
 message("Now the first approach will be demonstrated:")
+message("(The test consists of 124 cases.)")
 
 waitForUserInput()
+message("")
 
 if(RUN_CALC) { 
     set.seed(0)
@@ -127,13 +146,21 @@ if(RUN_CALC) {
     generate.argset(arg_register = r, display_progress=TRUE)
     apply.argset(FUN="fuzzdemofunc")
     test_summary()
-    plot_tests()
+    # plot_tests()
     # plot.tests(pass = F)
     # plot.tests(fail = F)
 }
 
-waitForUserInput()
+message("{part 2c}")
+message("Simple test summary shows that argument 'y' contributes to ")
+message("failure the most.")
+message("")
 
+message("{part 2d}")
+message("What about the chart?")
+waitForUserInput()
+message("")
+    plot_tests()
 message("Now one can clearly see two linear relationships between 'x' and 'y'")
 message("on the graph, which would be hard to deduce from a data table.")
 message("These correspond to 'numeric bugs' #1NC and #4NC")
@@ -141,11 +168,12 @@ message("(Please, see details in the file 'include_fuzzdemofunc.R')")
 message("")
 
 waitForUserInput()
+message("")
 
 ################################################################################
 # FUZZ TESTING
 ################################################################################
-message("")
+message("{part 3a}")
 message("Let's assume the previously discovered bugs have been fixed.")
 message("So we will again choose a different combination of input parameters:")
 message("for arguments 'option' and 'suboption' for the next test.")
@@ -158,10 +186,13 @@ message("arguments requiring character input in this particular demo function.")
 message("As for options, it makes no sense randomizing those as all")
 message("combinations of provided values will be tested anyway.")
 message("")
+message("~~v~~^~~v~~^~~v~~^~~v~~^~~v~~^~~v~~^~~v~~^~~v~~^~~v~~^~~v~~")
 message("This test has 900 cases and might take a couple of minutes,")
-message("so you have time to pour yourself a cup of coffee: (_)]...")
+message("so you have time to pour yourself a cup of coffee: (_)]... ")
+message("~~^~~v~~^~~v~~^~~v~~^~~v~~^~~v~~^~~v~~^~~v~~^~~v~~^~~v~~^~~")
 
 waitForUserInput()
+message("")
 
 if(RUN_CALC) { 
     set.seed(0)
@@ -174,35 +205,42 @@ if(RUN_CALC) {
     generate.argset(arg_register = r, display_progress=TRUE)
     apply.argset(FUN="fuzzdemofunc")
     test_summary()
+message("{part 3b}")
 message("One can see the following now:")
 message("The text output shows that suboption #3 ('c') is always failing.")
 message("")
-message("Let's see if the visual approach adds any new info.")
+message("Let's see if the visual approach provides a better perspective.")
+# message("")
 
-    plot_tests()
-
-message("This graph looks too crowded. So let's adjust the distance ")
-message("between adjacent groups: 'plot_tests(dist=25)'")
+waitForUserInput()
 message("")
-
-    waitForUserInput()   
-    plot_tests(dist=25)
-    
 message(" ... you may have to wait some time for R to draw this plot")
 message("     before pressing 'Enter' for the next part of the demo ...")
-    
+message("")
+plot_tests()
+message("... if you don't see a new graph, it is being prepared ...")
+waitForUserInput()
+message("")
+
 }
 
-waitForUserInput()
-message("An axis that has only one option should either be hidden")
-message("or placed at an edge of the plot so relations with other parameters")
-message("could be clearly visible. This axis reordering can be done")
-message("using various methods; however, for the sake of simplicity, we will")
-message("create a 'test register' with a different sequence of arguments. ")
-message("A different sequence of arguments will effectively change the sequence")
-message("of axes. See the source code of the demo for details.")
+message("{part 3c}")
+message("This graph has a confusing order of axes.")
+message("An axis that has only one option should either be hidden or placed")
+message("at an edge of the plot so relations with other parameters could ")
+message("be clearly visible. This axis reordering can be done using various")
+message("methods; however, for the sake of simplicity, we will create a")
+message("'test register' with a different sequence of arguments. ")
+message("A different sequence of arguments will effectively change the ")
+message("sequence of axes. See the source code of the demo for details.")
+message("")
+
+message("{part 4a}")
 message("Let's also use a smaller set of parameters to speed up the process.")
+message("(The test consists of 100 cases.)")
+
 waitForUserInput()
+message("")
 
 
 if(RUN_CALC) { 
@@ -217,28 +255,44 @@ if(RUN_CALC) {
     generate.argset(arg_register = r, display_progress=TRUE)
     apply.argset(FUN="fuzzdemofunc")
     test_summary()
+    
+    message("... if you don't see a new graph, it is being prepared ...")
+    message("")
     plot_tests()
 }
 
-message("The chart still looks confusing. This can happen when there is a ")
-message("disproportional difference in the number of parameters tested ")
-message("among arguments of a function. To make the plot more clear, again, one")
-message("can adjust the 'dist' argument of the plot_tests() function.")
-message("We will try setting it to 15: 'plot_tests(dist=15)', which means")
-message("that the gap between adjacent groups will fit the max number of")
-message("parameters 15 times (see help on 'plot_tests()' for more info).")
+message("{part 4b}")
+message("The textual test summary shows the same pattern as in the previous ")
+message("test, but the chart still looks confusing. ")
+message("To make the plot more clear, again, one can adjust")
+message("the 'dist' argument of the plot_tests() function.")
+message("")
+message("We will try setting it to -0.5: 'plot_tests(dist=-0.5)'.")
 
 waitForUserInput()
+message("")
 
 if(RUN_CALC) { 
-    plot_tests(dist=15)
+    message("... if you don't see a new graph, it is being prepared ...")
+    message("")
+    
+    plot_tests(dist=-0.5)
+    
 }
     
 waitForUserInput()
-message("Now, with a reduced parameter set, the test produced a more clear")
-message("picture of the combinations of input parameters.")
 message("")
+message("{part 4c}")
+message("Now, with a reduced parameter set, the test produced a more clear")
+message("picture of the combinations of input parameters")
+message("without losing important details.")
+# message("")
+waitForUserInput()
+message("")
+message("{part 5a}")
 message("There are many ways to proceed from here:")
+message("* if some 'error' states are valid, exclude them from mests using")
+message("  subset argument of apply.argset().")
 message("* if bugs are trivial, eliminate each bug one by one.")
 message("* if bugs are intractable, one can start with narrowing down the")
 message("  range of input parameters and analyze function behavior further.")
