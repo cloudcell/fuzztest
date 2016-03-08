@@ -175,7 +175,7 @@ message("")
 ################################################################################
 message("{part 3a}")
 message("Let's assume the previously discovered bugs have been fixed.")
-message("So we will again choose a different combination of input parameters:")
+message("So we will again choose a different combination of input parameters")
 message("for arguments 'option' and 'suboption' for the next test.")
 message("")
 
@@ -267,7 +267,8 @@ message("test, but the chart still looks confusing. ")
 message("To make the plot more clear, again, one can adjust")
 message("the 'dist' argument of the plot_tests() function.")
 message("")
-message("We will try setting it to -0.5: 'plot_tests(dist=-0.5)'.")
+message("We will try setting it to -0.5: 'plot_tests(dist=-0.5)' to reduce") 
+message("space between groups and add more space between lines within groups.")
 
 waitForUserInput()
 message("")
