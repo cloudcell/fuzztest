@@ -196,6 +196,7 @@ message("~~v~~^~~v~~^~~v~~^~~v~~^~~v~~^~~v~~^~~v~~^~~v~~^~~v~~^~~v~~")
 message("This test has 900 cases and might take a couple of minutes,")
 message("so you have time to pour yourself a cup of coffee: (_)]... ")
 message("~~^~~v~~^~~v~~^~~v~~^~~v~~^~~v~~^~~v~~^~~v~~^~~v~~^~~v~~^~~")
+message("")
 
 waitForUserInput()
 message("")

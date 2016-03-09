@@ -365,6 +365,11 @@ prepareArgs <- function(arg_register, arg_selection_vector, verbose=FALSE, DEBUG
 # the actual testing function (handles FUN and args) and catches exceptions
 errorHandlingTest <- function(FUN,args)
 {
+    #--------------------------------------------------------------------------#
+    # libraries
+    # require(evaluate) # in the test function invoked from apply.argset
+    
+    #--------------------------------------------------------------------------#
     # rc <- try(do.call(what = FUN,args=args))
     # if(inherits(x = rc,what = "try-error")) {
     #     result <- "FAIL"
@@ -457,6 +462,13 @@ apply.argset <- function(env=NULL, arg_register=cont.env$arg_register,
     #--------------------------------------------------------------------------#
     # libraries
     require(evaluate) # in the test function invoked from apply.argset
+    
+    # a hack to stop dumping the latest generated graphics into the log
+    # by the 'evaluate' package
+    # TODO: find a more optimal solution
+    dev.new()
+    # in case a function needs to open its own graphics device
+    dev_to_close_upon_exit <- dev.cur() 
     
     #--------------------------------------------------------------------------#
     # preliminaries
@@ -567,6 +579,12 @@ apply.argset <- function(env=NULL, arg_register=cont.env$arg_register,
     #--------------------------------------------------------------------------#
     # deal with the logger
     rm_logger() # flush & delete default logger
+    
+    # deal with the 'evaluate' package
+    # TODO: find out how to prevent it from recording graphics
+    # dev.off(which = dev.cur())
+    dev.off(which = dev_to_close_upon_exit)
+    
 }
 
 
