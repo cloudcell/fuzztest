@@ -25,14 +25,16 @@ waitForUserInput <- function()
 #' @export
 new_logger <- function( fname=NULL, logger_name="fuzzlog", dest=getwd(), env=cont.env)
 {
+    # default env. name
     cont.env <- env
+    
     # fname="test-debug.log"
     # dest=getwd()
     # logger_name="log-debug"
     if(is.null(fname)) {stop("log file name must be provided!")}
     full_path_and_fname <- paste0(dest,"/",fname)
     
-    if(!exists(envir = cont.env, "loggers")) {
+    if(!exists(x="loggers", envir = cont.env)) {
         cont.env$loggers <- list()
         message("Created a register of loggers.")
     }
@@ -96,21 +98,34 @@ lmessage <- function(x, .logger_name="fuzzlog", .env=cont.env, verbose=TRUE)
 #' @param env work (container) environment (default == 'cont.env')
 #' 
 #' @export
-rm_logger <- function(logger_name="fuzzlog", env=cont.env)
+rm_logger <- function(logger_name="fuzzlog", env=cont.env, silent=FALSE)
 {
     cont.env <- env
     con = cont.env$loggers[[logger_name]]
     
+    # catch the error here as well!
+    if(is.null(con)) {
+        if(!silent) message("Logger '", logger_name,"' does not exist.")
+        return()
+    }
+    
     # if(is.null(con)) { stop("Logger '", logger_name,"' does not exist.")}
-    if(!(logger_name %in% ls_loggers() )) { 
-        stop("Logger '", logger_name,"' does not exist.")
+    # # the following line produces 
+    # # "Error in as.environment(pos) : using 'as.environment(NULL)' is defunct"
+    # browser()
+    if(!(logger_name %in% ls_loggers(env=env) )) { 
+        if(!silent) message("Logger '", logger_name,"' does not exist.")
+        return()
     }
     
     flush(con=con)
     close(con=con, type="w")
     
     cont.env$loggers[[logger_name]] <- NULL
-    message("Log file flushed, closed, and logger '", logger_name, "' deleted.")
+    if(!silent) {
+        message("Log file flushed, closed, and logger '",
+                logger_name, "' deleted.")
+    }
 }
 
 #' lists existing loggers

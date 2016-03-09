@@ -490,8 +490,10 @@ apply.argset <- function(env=NULL, arg_register=cont.env$arg_register,
     #--------------------------------------------------------------------------#
     # create a logger
     
-    try(rm_logger()) # flush & delete default logger w/o warnings
+    if(verbose) message("apply.argset(): deleting an old logger")
+    try(rm_logger(silent=TRUE)) # flush & delete default logger w/o warnings
     
+    if(verbose) message("apply.argset(): creating a logger")
     new_logger(log_fname) # with a default logger 'handle'
 
     #--------------------------------------------------------------------------#

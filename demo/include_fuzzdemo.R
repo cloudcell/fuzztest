@@ -269,11 +269,11 @@ if(RUN_CALC) {
 
 message("{part 4b}")
 message("The textual test summary shows the same pattern as in the previous ")
-message("test. Also a reduced set of test cases produced a more clear")
-message("picture of without losing important details.")
-# message("")
+message("test. Also, a reduced set of test cases produced a more transparent")
+message("representation of test results without losing important details.")
 waitForUserInput()
 message("")
+
 message("{part 5a}")
 message("There are many ways to proceed from here:")
 message("* if some 'error' states are valid, exclude them from mests using")
