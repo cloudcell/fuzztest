@@ -1,5 +1,7 @@
 # fuzztest
 
+_(Please read a supplementary description here: https://gtdir.wordpress.com/2016/03/02/fuzz-testing/)_
+
 ### Purpose 
 To isolate errors through identifying groups of parameter combinations 
 that cause them.  
