@@ -30,7 +30,10 @@ with the axis. Distance of 0 makes no gap (with only a
 regular distance separating any two adjacent lines at a point
 of intersection with the vertical axis). A dist of -0.9999 
 creates almost complete overlap with an adjacent group.
-The value of dist must be greater than -1.}
+The value of dist must be greater than -1. 
+(Ror each particular axis, the distance between groups of lines
+ representing test cases is based on a product of the number 
+ of groups of all the neighboring axes.)}
 
 \item{verbose}{provides additional text output during processing}
 

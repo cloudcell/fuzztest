@@ -96,6 +96,9 @@ lmessage <- function(x, .logger_name="fuzzlog", .env=cont.env, verbose=TRUE)
 #' 
 #' @param logger_name logger name
 #' @param env work (container) environment (default == 'cont.env')
+#' @param silent allows prevent messages when they are least expected in the
+#'        program, e.g.: in the beginning of the code when a logger 'slot'
+#'        is being cleaned and created anew. The default is FALSE.
 #' 
 #' @export
 rm_logger <- function(logger_name="fuzzlog", env=cont.env, silent=FALSE)

@@ -93,9 +93,9 @@ generate.analytics <- function(env=cont.env, verbose=FALSE, DEBUG=FALSE)
 #'             of intersection with the vertical axis). A dist of -0.9999 
 #'             creates almost complete overlap with an adjacent group.
 #'             The value of dist must be greater than -1. 
-#'             (TODO: for the parameter dist to work properly, it is necessary
-#'             to calculate max_levels as a product of n-1 largest numbers
-#'             of options for each argument). 
+#'             (Ror each particular axis, the distance between groups of lines
+#'              representing test cases is based on a product of the number 
+#'              of groups of all the neighboring axes.)
 #' @param verbose provides additional text output during processing
 #' @param DEBUG enters the debug mode on function entry
 #' 
