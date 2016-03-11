@@ -12,6 +12,10 @@
 # Licensing Reference: http://choosealicense.com/
 ############################################################################## #
 
+# TODO: Read these references:
+# * http://mags.acm.org/communications/201009/?folio=5&CFID=587423442&CFTOKEN=33448999&pg=79#pg79
+# * 
+
 # TODO: use my assertion code templates to assure argument register is valid
 #       before processing it ! (or drawing anything based on it)
 
@@ -574,7 +578,11 @@ apply.argset <- function(env=NULL, arg_register=cont.env$arg_register,
     # if any custom env. was used (rename within the function that saves data)
     save(list="cont.env", envir = cont.env, file = env_fname)
     # lmessage(paste0("Test data was saved in the work directory ", getwd(), " as ", env_fname))
-    lmessage(paste0("Test data was saved in the work directory ", getwd(), " as ", env_fname))
+
+    # do not save unique file names in the log: they make it difficult
+    # to compare results across tests using a simple 'diff' command
+    # so the following command only prints a message to stdout
+    message(paste0("Test data was saved in the work directory ", getwd(), " as ", env_fname))
 
     #--------------------------------------------------------------------------#
     # deal with the logger
